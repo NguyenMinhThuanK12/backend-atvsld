@@ -11,7 +11,7 @@ export class DepartmentController {
   @Get('login-list')
   @HttpCode(HttpStatus.OK)
   async getDepartmentsForLogin() {
-    const data = await this.departmentService.findForLogin();
+    const data = await this.departmentService.findAll();
     return ApiResponse.success(HttpStatus.OK, 'Lấy danh sách đơn vị cho đăng nhập thành công', data);
   }
 

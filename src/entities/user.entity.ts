@@ -8,7 +8,14 @@ import {
 } from 'typeorm';
 import { Role } from './role.entity';
 import { Department } from './department.entity';
-import { GenderEnum } from 'libs/shared/ATVSLD/enums/gender.enum';
+// import { GenderEnum } from 'libs/shared/ATVSLD/enums/gender.enum';
+
+export enum GenderEnum {
+  MALE = 'Nam',
+  FEMALE = 'Nữ',
+  OTHER = 'Khác',
+}
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()

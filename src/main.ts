@@ -13,6 +13,14 @@ async function bootstrap() {
       transform: true,            // tự ép kiểu theo DTO
     }),
   );
+
+  app.enableCors({
+    origin: 'http://localhost:3001', // URL của Next.js
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Các phương thức HTTP được phép
+    credentials: true, // Cho phép gửi cookie hoặc header xác thực
+  });
+
+
   await app.listen(3000);
 }
 bootstrap();
