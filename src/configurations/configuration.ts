@@ -6,7 +6,6 @@ export default () => ({
     username: 'postgres',
     password: '3008',
     database: 'atvsld_dev',
-    synchronize: true,
     autoLoadEntities: true,
   },
 });

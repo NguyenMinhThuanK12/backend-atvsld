@@ -1,5 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn } from 'typeorm';
 import { RolePermission } from './role-permission.entity';
+import { PermissionEnum } from 'libs/shared/ATVSLD/enums/permission.enum';
+
+
 @Entity('permissions')
 export class Permission {
   @PrimaryGeneratedColumn()
@@ -11,9 +14,13 @@ export class Permission {
   @Column({ length: 100 })
   name: string;
 
-  @Column({ length: 20 })
-  type: 'Group' | 'Component';
+  @Column({ type: 'enum', enum: PermissionEnum })
+  type: PermissionEnum;
 
   @OneToMany(() => RolePermission, (rp) => rp.permission)
   rolePermissions: RolePermission[];
+
+  @CreateDateColumn()
+  created_at: Date;
 }
+

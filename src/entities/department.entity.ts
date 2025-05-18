@@ -5,9 +5,11 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  CreateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Role } from './role.entity';
+
 @Entity('departments')
 export class Department {
   @PrimaryGeneratedColumn()
@@ -40,4 +42,7 @@ export class Department {
 
   @OneToMany(() => Role, (role) => role.department)
   roles: Role[];
+
+  @CreateDateColumn()
+  created_at: Date;
 }

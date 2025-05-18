@@ -4,10 +4,11 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
 } from 'typeorm';
-import { Department } from './department.entity';
 import { Role } from './role.entity';
-
+import { Department } from './department.entity';
+import { GenderEnum } from 'libs/shared/ATVSLD/enums/gender.enum';
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
@@ -25,8 +26,8 @@ export class User {
   @Column({ length: 100, nullable: true })
   job_title: string;
 
-  @Column({ length: 10 })
-  gender: 'Male' | 'Female';
+  @Column({ type: 'enum', enum: GenderEnum })
+  gender: GenderEnum;
 
   @Column({ type: 'date', nullable: true })
   birthday: Date;
@@ -45,9 +46,15 @@ export class User {
   @JoinColumn({ name: 'department_id' })
   department: Department;
 
+  @Column()
+  department_id: number; 
+
   @Column({ default: true })
   is_active: boolean;
 
   @Column({ type: 'text', nullable: true })
   avatar_url: string;
+
+  @CreateDateColumn()
+  created_at: Date;
 }

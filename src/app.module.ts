@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './configurations/configuration';
-import { Department } from './entities/department.entity';
-import { User } from './entities/user.entity';
-import { Role } from './entities/role.entity';
-import { Permission } from './entities/permission.entity';
-import { RolePermission } from './entities/role-permission.entity';
-import { UserImportLog } from './entities/user-import-log.entity';
+import { UserModule } from './modules/user.module';
+import { DepartmentModule } from './modules/department.module';
+import { PermissionModule } from './modules/permission.module';
+import { RoleModule } from './modules/role.module';
+import { AuthModule } from './modules/auth.module';
+// import { UserModule, DepartmentModule, PermissionModule, RoleModule  } from './modules/';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -18,17 +19,15 @@ import { UserImportLog } from './entities/user-import-log.entity';
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
         ...config.get('database'),
-        entities: [
-          Department,
-          User,
-          Role,
-          Permission,
-          RolePermission,
-          UserImportLog,
-        ],
+        autoLoadEntities: true,
       }),
       inject: [ConfigService],
     }),
+    AuthModule,
+    UserModule,
+    DepartmentModule,
+    PermissionModule,
+    RoleModule
   ],
   controllers: [],
   providers: [],

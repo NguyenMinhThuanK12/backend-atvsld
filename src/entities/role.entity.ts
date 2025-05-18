@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  CreateDateColumn,
 } from 'typeorm';
 import { Department } from './department.entity';
 import { User } from './user.entity';
@@ -30,4 +31,7 @@ export class Role {
 
   @OneToMany(() => RolePermission, (rp) => rp.role)
   rolePermissions: RolePermission[];
+
+  @CreateDateColumn()
+  created_at: Date;
 }
