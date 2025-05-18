@@ -1,28 +1,36 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from 'libs/core/services/auth.service';
-import { AuthRequest } from '../../../libs/shared/ATVSLD/models/requests/auth/auth.request';
+import { AuthRequest } from 'libs/shared/ATVSLD/models/requests/auth/auth.request';
+import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
+import { SUCCESS_LOGIN } from 'libs/shared/ATVSLD/constants/success-message.constant';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @HttpCode(HttpStatus.OK) // HTTP Header sẽ là 200 OK
   async login(@Body() authRequest: AuthRequest) {
     const user = await this.authService.validateUser(
       authRequest.account,
       authRequest.password,
       authRequest.department_id,
     );
-    return this.authService.login(user);
+    const data = await this.authService.login(user);
+    return ApiResponse.success(HttpStatus.OK, SUCCESS_LOGIN, data);
   }
 
   @Post('refresh-token')
-  refresh(@Body() body: { refresh_token: string }) {
-    return this.authService.refreshAccessToken(body.refresh_token);
+  @HttpCode(HttpStatus.OK)
+  async refresh(@Body() body: { refresh_token: string }) {
+    const access_token = await this.authService.refreshAccessToken(body.refresh_token);
+    return ApiResponse.success(HttpStatus.OK, 'Làm mới access token thành công', access_token);
   }
 
   @Post('logout')
-  logout(@Body() body: { refresh_token: string }) {
-    return this.authService.logout(body.refresh_token);
+  @HttpCode(HttpStatus.OK)
+  async logout(@Body() body: { refresh_token: string }) {
+    await this.authService.logout(body.refresh_token);
+    return ApiResponse.success(HttpStatus.OK, 'Đăng xuất thành công');
   }
 }

@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
@@ -8,6 +8,8 @@ import { User } from 'src/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserToken } from 'src/entities/user-token.entity';
 import { Repository } from 'typeorm/repository/Repository';
+import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
+import { ERROR_INACTIVE_ACCOUNT, ERROR_USER_NOT_IN_DEPARTMENT } from 'libs/shared/ATVSLD/constants/error-message.constant';
 
 @Injectable()
 export class AuthService {
@@ -25,20 +27,29 @@ export class AuthService {
 
   async validateUser(account: string, password: string, department_id: number): Promise<User> {
     const user = await this.userRepo.findByAccountAndDepartment(account, department_id);
-
+  
     if (!user) {
-      throw new UnauthorizedException('Tài khoản không tồn tại trong đơn vị đã chọn');
+      throw new HttpException(
+        ApiResponse.fail(HttpStatus.UNAUTHORIZED, ERROR_USER_NOT_IN_DEPARTMENT),
+        HttpStatus.UNAUTHORIZED,
+      );
     }
-
+  
     if (!user.is_active) {
-      throw new UnauthorizedException('Tài khoản đã bị khóa');
+      throw new HttpException(
+        ApiResponse.fail(HttpStatus.UNAUTHORIZED, ERROR_INACTIVE_ACCOUNT),
+        HttpStatus.UNAUTHORIZED,
+      );
     }
-
+  
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      throw new UnauthorizedException('Sai mật khẩu');
+      throw new HttpException(
+        ApiResponse.fail(HttpStatus.UNAUTHORIZED, ERROR_INACTIVE_ACCOUNT),
+        HttpStatus.UNAUTHORIZED,
+      );
     }
-
+  
     return user;
   }
 
@@ -81,7 +92,10 @@ export class AuthService {
 
   async refreshAccessToken(refresh_token: string) {
     if (!refresh_token) {
-      throw new UnauthorizedException('Refresh token không được để trống');
+      throw new HttpException(
+        ApiResponse.fail(HttpStatus.UNAUTHORIZED, 'Refresh token không được để trống'),
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   
     const savedToken = await this.tokenRepo.findOne({
@@ -90,7 +104,10 @@ export class AuthService {
     });
   
     if (!savedToken) {
-      throw new UnauthorizedException('Token không hợp lệ');
+      throw new HttpException(
+        ApiResponse.fail(HttpStatus.UNAUTHORIZED, 'Token không hợp lệ'),
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   
     let payload: AuthResponse;
@@ -102,16 +119,18 @@ export class AuthService {
       const { exp, iat, ...rest } = decoded;
       payload = rest;
     } catch (err) {
-      throw new UnauthorizedException('Token hết hạn hoặc không hợp lệ');
+      throw new HttpException(
+        ApiResponse.fail(HttpStatus.UNAUTHORIZED, 'Token hết hạn hoặc không hợp lệ'),
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   
     const access_token = this.jwtService.sign(payload, {
       expiresIn: '15m',
     });
   
-    return { access_token };
+    return ApiResponse.success(HttpStatus.OK, 'Làm mới access_token thành công', { access_token });
   }
-
   async logout(refresh_token: string) {
     await this.tokenRepo.delete({ refresh_token });
     return { message: 'Đăng xuất thành công' };
