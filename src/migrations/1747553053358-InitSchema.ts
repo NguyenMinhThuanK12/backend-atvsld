@@ -1,10 +1,9 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class InitSchema1747547213052 implements MigrationInterface {
-    name = 'InitSchema1747547213052'
+export class InitSchema1747553053358 implements MigrationInterface {
+    name = 'InitSchema1747553053358'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TYPE "public"."permissions_type_enum" AS ENUM('Group', 'Component')`);
         await queryRunner.query(`CREATE TABLE "permissions" ("id" SERIAL NOT NULL, "code" character varying(100) NOT NULL, "name" character varying(100) NOT NULL, "type" "public"."permissions_type_enum" NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_8dad765629e83229da6feda1c1d" UNIQUE ("code"), CONSTRAINT "PK_920331560282b8bd21bb02290df" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "role_permissions" ("role_id" integer NOT NULL, "permission_id" integer NOT NULL, CONSTRAINT "PK_25d24010f53bb80b78e412c9656" PRIMARY KEY ("role_id", "permission_id"))`);
         await queryRunner.query(`CREATE TABLE "roles" ("id" SERIAL NOT NULL, "code" character varying(30) NOT NULL, "name" character varying(30) NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "department_id" integer, CONSTRAINT "UQ_f6d54f95c31b73fb1bdd8e91d0c" UNIQUE ("code"), CONSTRAINT "PK_c1433d71a4838793a49dcad46ab" PRIMARY KEY ("id"))`);
@@ -36,7 +35,6 @@ export class InitSchema1747547213052 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE "roles"`);
         await queryRunner.query(`DROP TABLE "role_permissions"`);
         await queryRunner.query(`DROP TABLE "permissions"`);
-        await queryRunner.query(`DROP TYPE "public"."permissions_type_enum"`);
     }
 
 }

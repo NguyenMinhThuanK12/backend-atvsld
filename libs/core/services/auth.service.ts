@@ -9,8 +9,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserToken } from 'src/entities/user-token.entity';
 import { Repository } from 'typeorm/repository/Repository';
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
-import { ERROR_INACTIVE_ACCOUNT, ERROR_USER_NOT_IN_DEPARTMENT } from 'libs/shared/ATVSLD/constants/error-message.constant';
+import { ERROR_INACTIVE_ACCOUNT, ERROR_INVALID_TOKEN, ERROR_REFRESH_TOKEN_REQUIRED, ERROR_USER_NOT_IN_DEPARTMENT } from 'libs/shared/ATVSLD/constants/error-message.constant';
 import { UserAuthenticatedResponse } from 'libs/shared/ATVSLD/models/response/user/userAuthenticated';
+import { SUCCESS_LOGOUT, SUCCESS_REFRESH_TOKEN } from 'libs/shared/ATVSLD/constants/success-message.constant';
 
 @Injectable()
 export class AuthService {
@@ -85,7 +86,6 @@ export class AuthService {
       expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 
-    // Đổi tên 'role' thành 'role_code' và ánh xạ thành userAuthenticated
     return {
       access_token,
       refresh_token,
@@ -93,10 +93,10 @@ export class AuthService {
         id: user.id,
         full_name: user.full_name,
         account: user.account,
-        role_code: payload.role_code, // Sửa từ role thành role_code
+        role_code: payload.role_code, 
         department_id: payload.department_id,
       },
-    } as AuthResponse; // Đảm bảo type là AuthResponse
+    } as AuthResponse; 
   }
 
   async refreshAccessToken(refresh_token: string) {
@@ -104,7 +104,7 @@ export class AuthService {
       throw new HttpException(
         ApiResponse.fail(
           HttpStatus.UNAUTHORIZED,
-          'Refresh token không được để trống',
+          ERROR_REFRESH_TOKEN_REQUIRED,
         ),
         HttpStatus.UNAUTHORIZED,
       );
@@ -117,7 +117,7 @@ export class AuthService {
 
     if (!savedToken) {
       throw new HttpException(
-        ApiResponse.fail(HttpStatus.UNAUTHORIZED, 'Token không hợp lệ'),
+        ApiResponse.fail(HttpStatus.UNAUTHORIZED, ERROR_INVALID_TOKEN),
         HttpStatus.UNAUTHORIZED,
       );
     }
@@ -134,7 +134,7 @@ export class AuthService {
       throw new HttpException(
         ApiResponse.fail(
           HttpStatus.UNAUTHORIZED,
-          'Token hết hạn hoặc không hợp lệ',
+          ERROR_INVALID_TOKEN,
         ),
         HttpStatus.UNAUTHORIZED,
       );
@@ -146,12 +146,12 @@ export class AuthService {
 
     return ApiResponse.success(
       HttpStatus.OK,
-      'Làm mới access_token thành công',
+      SUCCESS_REFRESH_TOKEN,
       { access_token },
     );
   }
   async logout(refresh_token: string) {
     await this.tokenRepo.delete({ refresh_token });
-    return { message: 'Đăng xuất thành công' };
+    return {SUCCESS_LOGOUT}; 
   }
 }
