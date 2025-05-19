@@ -6,21 +6,19 @@ export class ApiResponse<T> {
      */
     status: number;
     message: string;
-    data?: T;
+    data: T;
   
-    constructor(status: number, message: string, data?: T) {
+    constructor(status: number, message: string, data: T) {
       this.status = status;
       this.message = message;
-      if (data !== undefined) {
-        this.data = data;
-      }
+      this.data = data;
     }
   
-    static success<T>(status: number, message: string, data?: T): ApiResponse<T> {
+    static success<T>(status: number, message: string, data: T): ApiResponse<T> {
       return new ApiResponse<T>(status, message, data);
     }
   
-    static fail<T = null>(status: number, message: string): ApiResponse<T> {
-      return new ApiResponse<T>(status, message);
+    static fail<T = null>(status: number, message: string, data: T = null): ApiResponse<T> {
+      return new ApiResponse<T>(status, message, data);
     }
   }

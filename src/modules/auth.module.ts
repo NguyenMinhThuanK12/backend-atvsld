@@ -10,11 +10,15 @@ import { User } from 'src/entities/user.entity';
 import { Role } from 'src/entities/role.entity';
 import { UserModule } from './user.module';
 import { UserToken } from 'src/entities/user-token.entity';
-
+import { PasswordReset } from 'src/entities/password-reset.entity';
+import { UserRepository } from 'src/repositories/user/user.repository';
+import { PasswordResetRepository } from 'src/repositories/password-reset/password-reset.repository';
+import { PasswordResetModule } from './password-reset.module';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Role, UserToken]),
+    TypeOrmModule.forFeature([User, Role, UserToken, PasswordReset]),
     UserModule,
+    PasswordResetModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -25,7 +29,15 @@ import { UserToken } from 'src/entities/user-token.entity';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    {
+      provide: 'IUserRepository',
+      useClass: UserRepository,
+    },
+    
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

@@ -20,4 +20,8 @@ export class UserRepository implements IUserRepository {
       relations: ['department', 'role'],
     });
   }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return await this.repo.findOne({ where: { email } });
+  }
 }

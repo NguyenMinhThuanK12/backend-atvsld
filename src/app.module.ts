@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MailerModule } from '@nestjs-modules/mailer';
 import configuration from './configurations/configuration';
+
 import { UserModule } from './modules/user.module';
 import { DepartmentModule } from './modules/department.module';
 import { PermissionModule } from './modules/permission.module';
 import { RoleModule } from './modules/role.module';
 import { AuthModule } from './modules/auth.module';
-// import { UserModule, DepartmentModule, PermissionModule, RoleModule  } from './modules/';
 
 @Module({
   imports: [
@@ -23,11 +24,28 @@ import { AuthModule } from './modules/auth.module';
       }),
       inject: [ConfigService],
     }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        transport: {
+          host: config.get('MAIL_HOST'),
+          port: config.get('MAIL_PORT'),
+          auth: {
+            user: config.get('MAIL_USER'),
+            pass: config.get('MAIL_PASS'),
+          },
+        },
+        defaults: {
+          from: '"ATVSLĐ System" <no-reply@atvsld.com>',
+        },
+      }),
+    }),
     AuthModule,
     UserModule,
     DepartmentModule,
     PermissionModule,
-    RoleModule
+    RoleModule,
   ],
   controllers: [],
   providers: [],

@@ -3,19 +3,22 @@ import { AuthService } from 'libs/core/services/auth.service';
 import { AuthRequest } from 'libs/shared/ATVSLD/models/requests/auth/auth.request';
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import { SUCCESS_LOGIN } from 'libs/shared/ATVSLD/constants/success-message.constant';
+import { ForgotPasswordRequest } from 'libs/shared/ATVSLD/models/requests/auth/forgot-password.request';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  @HttpCode(HttpStatus.OK) // HTTP Header sẽ là 200 OK
+  @HttpCode(HttpStatus.OK) 
   async login(@Body() authRequest: AuthRequest) {
     const user = await this.authService.validateUser(
       authRequest.account,
       authRequest.password,
       authRequest.department_id,
     );
+    
+    
     const data = await this.authService.login(user);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_LOGIN, data);
   }
@@ -31,6 +34,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async logout(@Body() body: { refresh_token: string }) {
     await this.authService.logout(body.refresh_token);
-    return ApiResponse.success(HttpStatus.OK, 'Đăng xuất thành công');
+    return ApiResponse.success(HttpStatus.OK, 'Đăng xuất thành công',null);
   }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() dto: ForgotPasswordRequest) {
+  return this.authService.sendForgotPasswordEmail(dto);
+}
 }
