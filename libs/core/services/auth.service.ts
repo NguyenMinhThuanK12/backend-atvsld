@@ -17,11 +17,13 @@ import { Repository } from 'typeorm/repository/Repository';
 
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import {
-  ERROR_INACTIVE_ACCOUNT,
+
   ERROR_INVALID_TOKEN,
   ERROR_REFRESH_TOKEN_REQUIRED,
   ERROR_USER_NOT_IN_DEPARTMENT,
   ERROR_EMAIL_NOT_FOUND,
+  ERROR_INVALID_ACCOUNT,
+  ERROR_INACTIVE_ACCOUNT,
 } from 'libs/shared/ATVSLD/constants/error-message.constant';
 import { SUCCESS_LOGOUT, SUCCESS_REFRESH_TOKEN } from 'libs/shared/ATVSLD/constants/success-message.constant';
 
@@ -50,16 +52,16 @@ export class AuthService {
   async validateUser(account: string, password: string, department_id: number): Promise<User> {
     const user = await this.userRepo.findByAccountAndDepartment(account, department_id);
     if (!user) {
-      throw new HttpException(ApiResponse.fail(HttpStatus.UNAUTHORIZED, ERROR_USER_NOT_IN_DEPARTMENT), HttpStatus.UNAUTHORIZED);
+      throw new HttpException(ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_USER_NOT_IN_DEPARTMENT), HttpStatus.BAD_REQUEST);
     }
 
     if (!user.is_active) {
-      throw new HttpException(ApiResponse.fail(HttpStatus.UNAUTHORIZED, ERROR_INACTIVE_ACCOUNT), HttpStatus.UNAUTHORIZED);
+      throw new HttpException(ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_INACTIVE_ACCOUNT), HttpStatus.BAD_REQUEST);
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      throw new HttpException(ApiResponse.fail(HttpStatus.UNAUTHORIZED, ERROR_INACTIVE_ACCOUNT), HttpStatus.UNAUTHORIZED);
+      throw new HttpException(ApiResponse.fail(HttpStatus.BAD_REQUEST,ERROR_INVALID_ACCOUNT),HttpStatus.BAD_REQUEST);
     }
 
     return user;
@@ -200,7 +202,7 @@ export class AuthService {
       expiresIn: this.configService.get('jwt.accessExpiresIn'),
     });
 
-    return ApiResponse.success(HttpStatus.OK, SUCCESS_REFRESH_TOKEN, { access_token });
+    return  access_token ;
   }
 
   async logout(refresh_token: string) {

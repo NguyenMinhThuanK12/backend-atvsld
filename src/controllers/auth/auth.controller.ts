@@ -27,7 +27,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async refresh(@Body() body: { refresh_token: string }) {
     const access_token = await this.authService.refreshAccessToken(body.refresh_token);
-    return ApiResponse.success(HttpStatus.OK, 'Làm mới access token thành công', access_token);
+    return ApiResponse.success(HttpStatus.OK, 'Làm mới access token thành công', {access_token});
   }
 
   @Post('logout')

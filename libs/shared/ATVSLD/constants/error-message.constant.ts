@@ -1,6 +1,6 @@
 //  Lỗi xác thực
-export const ERROR_INACTIVE_ACCOUNT = 'Tài khoản hoặc mật khẩu không đúng';
-export const ERROR_ACCOUNT_INACTIVE = 'Tài khoản đã bị khóa';
+export const ERROR_INVALID_ACCOUNT = 'Tài khoản hoặc mật khẩu không đúng';
+export const ERROR_INACTIVE_ACCOUNT = 'Tài khoản đã bị khóa';
 export const ERROR_USER_NOT_IN_DEPARTMENT = 'Tài khoản không tồn tại trong đơn vị đã chọn';
 export const ERROR_INVALID_TOKEN = 'Token hết hạn hoặc không hợp lệ';
 export const ERROR_TOKEN_EXPIRED = 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại';
