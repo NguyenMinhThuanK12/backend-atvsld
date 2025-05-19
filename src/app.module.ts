@@ -14,6 +14,7 @@ import { AuthModule } from './modules/auth.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env', 
       load: [configuration],
     }),
     TypeOrmModule.forRootAsync({
@@ -27,20 +28,23 @@ import { AuthModule } from './modules/auth.module';
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (config: ConfigService) => ({
-        transport: {
-          host: config.get('MAIL_HOST'),
-          port: config.get('MAIL_PORT'),
-          secure: false,
-          auth: {
-            user: config.get('MAIL_USER'),
-            pass: config.get('MAIL_PASS'),
+      useFactory: async (config: ConfigService) => {
+        console.log('MAIL_HOST =', config.get('MAIL_HOST')); // 👈 log thử
+        return {
+          transport: {
+            host: config.get('MAIL_HOST'),
+            port: config.get<number>('MAIL_PORT'),
+            secure: false,
+            auth: {
+              user: config.get('MAIL_USER'),
+              pass: config.get('MAIL_PASS'),
+            },
           },
-        },
-        defaults: {
-          from: '"ATVSLĐ System" <no-reply@atvsld.com>',
-        },
-      }),
+          defaults: {
+            from: '"ATVSLĐ System" <no-reply@atvsld.local>',
+          },
+        };
+      },
     }),
     AuthModule,
     UserModule,

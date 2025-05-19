@@ -8,7 +8,7 @@ export default () => ({
     database: 'atvsld_dev',
     autoLoadEntities: true,
   },
-  
+
   jwt: {
     secret: process.env.JWT_SECRET || 'access_default_secret',
     refreshSecret: process.env.JWT_REFRESH_SECRET || 'refresh_default_secret',

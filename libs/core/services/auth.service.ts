@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
 import { v4 as uuid } from 'uuid';
 import ms from 'ms';
+import { generateRandomPassword  } from 'libs/shared/ATVSLD/utils/password.util';
 import { AuthResponse } from 'libs/shared/ATVSLD/models/response/auth/auth.response';
 import { IUserRepository } from 'src/repositories/user/user.repository.interface';
 import { IPasswordResetRepository } from 'src/repositories/password-reset/password-reset.repository.interface';
@@ -111,21 +112,39 @@ export class AuthService {
       return ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_EMAIL_NOT_FOUND);
     }
 
-    const token = uuid();
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 phút
+     //  Tạo password mới ngẫu nhiên
+  const newPassword = generateRandomPassword();
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await this.passwordResetRepository.createAndSave(user.id, token, expiresAt);
+  // Cập nhật vào DB
+  user.password = hashedPassword;
+  await this.userRepo.save(user);
 
-    const frontendUrl = this.configService.get<string>('frontend.url');
-    const resetLink = `${frontendUrl}/reset-password?token=${token}`;
+  const frontendUrl = this.configService.get<string>('frontend.url');
+  //  Gửi email chứa mật khẩu mới
+  await this.mailerService.sendMail({
+    to: user.email,
+    subject: 'Mật khẩu mới',
+    text: `Mật khẩu mới của bạn là: ${newPassword}\n Nhấn vào link sau: ${frontendUrl}.`,
+  });
 
-    await this.mailerService.sendMail({
-      to: user.email,
-      subject: 'Khôi phục mật khẩu',
-      text: `Bạn đã yêu cầu khôi phục mật khẩu. Nhấn vào link sau: ${resetLink}`,
-    });
+  return ApiResponse.success(HttpStatus.OK, 'Mật khẩu mới đã được gửi qua email', null);
 
-    return ApiResponse.success(HttpStatus.OK, 'Email khôi phục đã được gửi', null);
+    // const token = uuid();
+    // const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 phút
+
+    // await this.passwordResetRepository.createAndSave(user.id, token, expiresAt);
+
+    // const frontendUrl = this.configService.get<string>('frontend.url');
+    // const resetLink = `${frontendUrl}/reset-password?token=${token}`;
+
+    // await this.mailerService.sendMail({
+    //   to: user.email,
+    //   subject: 'Khôi phục mật khẩu',
+    //   text: `Bạn đã yêu cầu khôi phục mật khẩu. Nhấn vào link sau: ${resetLink}`,
+    // });
+
+    // return ApiResponse.success(HttpStatus.OK, 'Email khôi phục đã được gửi', null);
   }
 
   async resetPassword(dto: ResetPasswordRequest): Promise<ApiResponse<null>> {

@@ -19,7 +19,6 @@ export class AuthController {
       authRequest.department_id,
     );
     
-    
     const data = await this.authService.login(user);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_LOGIN, data);
   }
