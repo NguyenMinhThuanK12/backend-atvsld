@@ -4,6 +4,7 @@ import { AuthRequest } from 'libs/shared/ATVSLD/models/requests/auth/auth.reques
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import { SUCCESS_LOGIN } from 'libs/shared/ATVSLD/constants/success-message.constant';
 import { ForgotPasswordRequest } from 'libs/shared/ATVSLD/models/requests/auth/forgot-password.request';
+import { ResetPasswordRequest } from 'libs/shared/ATVSLD/models/requests/auth/reset-password.request';
 
 @Controller('auth')
 export class AuthController {
@@ -40,5 +41,10 @@ export class AuthController {
   @Post('forgot-password')
   async forgotPassword(@Body() dto: ForgotPasswordRequest) {
   return this.authService.sendForgotPasswordEmail(dto);
+}
+
+@Post('reset-password')
+async resetPassword(@Body() dto: ResetPasswordRequest) {
+  return this.authService.resetPassword(dto);
 }
 }

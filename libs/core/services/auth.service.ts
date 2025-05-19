@@ -26,6 +26,7 @@ import { SUCCESS_LOGOUT, SUCCESS_REFRESH_TOKEN } from 'libs/shared/ATVSLD/consta
 
 import { UserAuthenticatedResponse } from 'libs/shared/ATVSLD/models/response/user/userAuthenticated';
 import { ForgotPasswordRequest } from 'libs/shared/ATVSLD/models/requests/auth/forgot-password.request';
+import { ResetPasswordRequest } from 'libs/shared/ATVSLD/models/requests/auth/reset-password.request';
 
 @Injectable()
 export class AuthService {
@@ -36,7 +37,7 @@ export class AuthService {
     @Inject('IUserRepository')
     private readonly userRepo: IUserRepository,
 
-    @Inject('PasswordResetRepository')
+    @Inject('IPasswordResetRepository')
     private readonly passwordResetRepository: IPasswordResetRepository,
 
     private readonly jwtService: JwtService,
@@ -125,6 +126,27 @@ export class AuthService {
     });
 
     return ApiResponse.success(HttpStatus.OK, 'Email khôi phục đã được gửi', null);
+  }
+
+  async resetPassword(dto: ResetPasswordRequest): Promise<ApiResponse<null>> {
+    const record = await this.passwordResetRepository.findByToken(dto.token);
+  
+    if (!record || record.expires_at < new Date()) {
+      return ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_INVALID_TOKEN);
+    }
+  
+    const user = await this.userRepo.findById(record.user_id);
+    if (!user) {
+      return ApiResponse.fail(HttpStatus.BAD_REQUEST, 'Tài khoản không tồn tại');
+    }
+  
+    const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
+    user.password = hashedPassword;
+  
+    await this.userRepo.save(user); // cập nhật mật khẩu
+    await this.passwordResetRepository.deleteByToken(dto.token); // xóa token sau khi dùng
+  
+    return ApiResponse.success(HttpStatus.OK, 'Đặt lại mật khẩu thành công', null);
   }
 
   //  refresh token
