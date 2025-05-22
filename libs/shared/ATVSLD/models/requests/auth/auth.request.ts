@@ -1,9 +1,6 @@
-import { IsString, Matches, MinLength, IsNumber } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class AuthRequest {
-  @IsNumber()
-  department_id: number;
-
   @IsString()
   account: string;
 

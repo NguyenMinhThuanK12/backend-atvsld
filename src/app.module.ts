@@ -29,7 +29,6 @@ import { AuthModule } from './modules/auth.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
-        console.log('MAIL_HOST =', config.get('MAIL_HOST')); // 👈 log thử
         return {
           transport: {
             host: config.get('MAIL_HOST'),

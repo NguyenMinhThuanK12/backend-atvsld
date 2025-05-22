@@ -11,13 +11,12 @@ export class UserRepository implements IUserRepository {
     private readonly repo: Repository<User>,
   ) {}
 
-  async findByAccountAndDepartment(account: string, departmentId: number): Promise<User | null> {
-    return this.repo.findOne({
+  async findByAccount(account: string): Promise<User | null> {
+    return await this.repo.findOne({
       where: {
         account,
-        department: { id: departmentId },
       },
-      relations: ['department', 'role'],
+      relations: ['role'],
     });
   }
 
@@ -28,7 +27,7 @@ export class UserRepository implements IUserRepository {
   async findById(id: number): Promise<User | undefined> {
     return await this.repo.findOne({ where: { id } });
   }
-  
+
   async save(user: User): Promise<User> {
     return await this.repo.save(user);
   }

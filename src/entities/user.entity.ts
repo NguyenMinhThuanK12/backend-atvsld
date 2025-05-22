@@ -10,8 +10,6 @@ import { Role } from './role.entity';
 import { Department } from './department.entity';
 import { GenderEnum } from '../../libs/shared/ATVSLD/enums/gender.enum';
 
-
-
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
@@ -50,7 +48,7 @@ export class User {
   department: Department;
 
   @Column()
-  department_id: number; 
+  department_id: number;
 
   @Column({ default: true })
   is_active: boolean;
