@@ -1,10 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
@@ -23,13 +17,21 @@ import { Repository } from 'typeorm/repository/Repository';
 
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 
-
-
 import { UserAuthenticatedResponse } from 'libs/shared/ATVSLD/models/response/user/userAuthenticated';
 import { ForgotPasswordRequest } from 'libs/shared/ATVSLD/models/requests/auth/forgot-password.request';
 import { ResetPasswordRequest } from 'libs/shared/ATVSLD/models/requests/auth/reset-password.request';
-import { ERROR_INACTIVE_ACCOUNT, ERROR_INVALID_ACCOUNT, ERROR_INVALID_TOKEN, ERROR_REFRESH_TOKEN_REQUIRED, SUCCESS_LOGOUT } from 'libs/shared/ATVSLD/constants/auth-message.constant';
-import { EMAIL_NEW_PASSWORD_SENT, EMAIL_RESET_PASSWORD_SUCCESS, ERROR_EMAIL_NOT_FOUND } from 'libs/shared/ATVSLD/constants/mail.constant';
+import {
+  ERROR_INACTIVE_ACCOUNT,
+  ERROR_INVALID_ACCOUNT,
+  ERROR_INVALID_TOKEN,
+  ERROR_REFRESH_TOKEN_REQUIRED,
+  SUCCESS_LOGOUT,
+} from 'libs/shared/ATVSLD/constants/auth-message.constant';
+import {
+  EMAIL_NEW_PASSWORD_SENT,
+  EMAIL_RESET_PASSWORD_SUCCESS,
+  ERROR_EMAIL_NOT_FOUND,
+} from 'libs/shared/ATVSLD/constants/mail.constant';
 
 @Injectable()
 export class AuthService {
@@ -52,25 +54,16 @@ export class AuthService {
   async validateUser(account: string, password: string): Promise<User> {
     const user = await this.userRepo.findByAccount(account);
     if (!user) {
-      throw new HttpException(
-        ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_INVALID_ACCOUNT),
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_INVALID_ACCOUNT), HttpStatus.NOT_FOUND);
     }
 
     if (!user.is_active) {
-      throw new HttpException(
-        ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_INACTIVE_ACCOUNT),
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_INACTIVE_ACCOUNT), HttpStatus.NOT_FOUND);
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      throw new HttpException(
-        ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_INVALID_ACCOUNT),
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_INVALID_ACCOUNT), HttpStatus.NOT_FOUND);
     }
 
     return user;
@@ -95,9 +88,7 @@ export class AuthService {
       secret: this.configService.get('jwt.refreshSecret'),
       expiresIn: this.configService.get('jwt.refreshExpiresIn'),
     });
-    const refreshExpiresMs = ms(
-      this.configService.get('jwt.refreshExpiresIn') || '7d',
-    );
+    const refreshExpiresMs = ms(this.configService.get('jwt.refreshExpiresIn') || '7d');
     await this.tokenRepo.save({
       user,
       refresh_token,
@@ -117,9 +108,7 @@ export class AuthService {
   }
 
   //  gửi email khôi phục mật khẩu
-  async sendForgotPasswordEmail(
-    dto: ForgotPasswordRequest,
-  ): Promise<ApiResponse<null>> {
+  async sendForgotPasswordEmail(dto: ForgotPasswordRequest): Promise<ApiResponse<null>> {
     const user = await this.userRepo.findByEmail(dto.email);
 
     if (!user) {
@@ -142,11 +131,7 @@ export class AuthService {
       text: `Mật khẩu mới của bạn là: ${newPassword}\n Nhấn vào link sau: ${frontendUrl}.`,
     });
 
-    return ApiResponse.success(
-      HttpStatus.OK,
-      EMAIL_NEW_PASSWORD_SENT,
-      null,
-    );
+    return ApiResponse.success(HttpStatus.OK, EMAIL_NEW_PASSWORD_SENT, null);
 
     // const token = uuid();
     // const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 phút
@@ -174,10 +159,7 @@ export class AuthService {
 
     const user = await this.userRepo.findById(record.user_id);
     if (!user) {
-      return ApiResponse.fail(
-        HttpStatus.BAD_REQUEST,
-        ERROR_INVALID_ACCOUNT,
-      );
+      return ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_INVALID_ACCOUNT);
     }
 
     const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
@@ -186,11 +168,7 @@ export class AuthService {
     await this.userRepo.save(user); // cập nhật mật khẩu
     await this.passwordResetRepository.deleteByToken(dto.token); // xóa token sau khi dùng
 
-    return ApiResponse.success(
-      HttpStatus.OK,
-      EMAIL_RESET_PASSWORD_SUCCESS,
-      null,
-    );
+    return ApiResponse.success(HttpStatus.OK, EMAIL_RESET_PASSWORD_SUCCESS, null);
   }
 
   //  refresh token
@@ -223,10 +201,7 @@ export class AuthService {
       const { exp, iat, ...rest } = decoded;
       payload = rest;
     } catch (err) {
-      throw new HttpException(
-        ApiResponse.fail(HttpStatus.UNAUTHORIZED, ERROR_INVALID_TOKEN),
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new HttpException(ApiResponse.fail(HttpStatus.UNAUTHORIZED, ERROR_INVALID_TOKEN), HttpStatus.UNAUTHORIZED);
     }
 
     const access_token = this.jwtService.sign(payload, {

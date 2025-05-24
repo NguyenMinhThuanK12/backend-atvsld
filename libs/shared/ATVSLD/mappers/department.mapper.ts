@@ -1,7 +1,6 @@
 import { Department } from 'src/entities/department.entity';
 import { DepartmentResponse } from '../models/response/department/department.response';
 import { CreateDepartmentRequest } from '../models/requests/department/create-department.request';
-import { UpdateDepartmentRequest } from '../models/requests/department/update-department.request';
 
 export const mapToDepartmentResponse = (d: Department): DepartmentResponse => ({
   id: d.id,
@@ -33,9 +32,7 @@ export const mapToDepartmentResponse = (d: Department): DepartmentResponse => ({
   isActive: d.isActive,
 });
 
-export const mapToDepartmentEntity = (
-  req: CreateDepartmentRequest,
-): Department => {
+export const mapToDepartmentEntity = (req: CreateDepartmentRequest): Department => {
   const entity = new Department();
 
   entity.name = req.name;
@@ -65,47 +62,6 @@ export const mapToDepartmentEntity = (
   entity.otherDocumentFile = req.otherDocumentFile ?? null;
 
   entity.isActive = true; // mặc định khi tạo là active
-
-  return entity;
-};
-
-export const mapToUpdatedDepartmentEntity = (
-  entity: Department,
-  req: UpdateDepartmentRequest,
-): Department => {
-  entity.name = req.name ?? entity.name;
-  entity.establishedDate = req.establishedDate ?? entity.establishedDate;
-  entity.businessType = req.businessType ?? entity.businessType;
-  entity.mainBusinessField = req.mainBusinessField ?? entity.mainBusinessField;
-
-  entity.registrationCity = req.registrationCity ?? entity.registrationCity;
-  entity.registrationDistrict =
-    req.registrationDistrict ?? entity.registrationDistrict;
-  entity.registrationWard = req.registrationWard ?? entity.registrationWard;
-  entity.registrationAddress =
-    req.registrationAddress ?? entity.registrationAddress;
-
-  entity.operationCity = req.operationCity ?? entity.operationCity;
-  entity.operationDistrict = req.operationDistrict ?? entity.operationDistrict;
-  entity.operationWard = req.operationWard ?? entity.operationWard;
-  entity.operationAddress = req.operationAddress ?? entity.operationAddress;
-
-  entity.foreignName = req.foreignName ?? entity.foreignName;
-  entity.email = req.email ?? entity.email;
-  entity.phoneNumber = req.phoneNumber ?? entity.phoneNumber;
-
-  entity.representativeName =
-    req.representativeName ?? entity.representativeName;
-  entity.representativePhone =
-    req.representativePhone ?? entity.representativePhone;
-
-  entity.businessLicenseFile =
-    req.businessLicenseFile ?? entity.businessLicenseFile;
-  entity.otherDocumentFile = req.otherDocumentFile ?? entity.otherDocumentFile;
-
-  if (req.isActive !== undefined) {
-    entity.isActive = req.isActive;
-  }
 
   return entity;
 };

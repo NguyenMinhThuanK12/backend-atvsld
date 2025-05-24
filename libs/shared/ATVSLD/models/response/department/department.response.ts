@@ -26,6 +26,6 @@ export interface DepartmentResponse {
   representativePhone: string | null;
 
   isActive: boolean;
-  businessLicenseFile: string | null; 
-  otherDocumentFile: string | null;  
+  businessLicenseFile: string | null;
+  otherDocumentFile: string | null;
 }

@@ -17,18 +17,13 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() authRequest: AuthRequest) {
-    const data = await this.authService.login(
-      authRequest.account,
-      authRequest.password,
-    );
+    const data = await this.authService.login(authRequest.account, authRequest.password);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_LOGIN, data);
   }
 
   @Post('refresh-token')
   async refresh(@Body() body: { refresh_token: string }) {
-    const access_token = await this.authService.refreshAccessToken(
-      body.refresh_token,
-    );
+    const access_token = await this.authService.refreshAccessToken(body.refresh_token);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_REFRESH_TOKEN, {
       access_token,
     });
