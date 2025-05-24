@@ -3,7 +3,6 @@ import { IDepartmentRepository } from 'src/repositories/department/department.re
 import { IDepartmentService } from './department.service.interface';
 import { DepartmentResponse } from 'libs/shared/ATVSLD/models/response/department/department.response';
 import { CreateDepartmentRequest } from 'libs/shared/ATVSLD/models/requests/department/create-department.request';
-
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import {
   ERROR_DEPARTMENT_NOT_FOUND,
@@ -32,10 +31,10 @@ export class DepartmentService implements IDepartmentService {
     private readonly deptRepo: IDepartmentRepository,
   ) {}
 
-  // lấy tất cả
   async findAllPaginated(query: PaginationQueryRequest): Promise<ApiResponse<PaginatedResponse<DepartmentResponse>>> {
     const { page = 1, limit = 10 } = query;
-    const [data, total] = await this.deptRepo.findPaginated(page, limit);
+    const [items, total] = await this.deptRepo.findPaginated(page, limit);
+    const data = items.map(mapToDepartmentResponse);
 
     const response: PaginatedResponse<DepartmentResponse> = {
       data,
@@ -49,13 +48,12 @@ export class DepartmentService implements IDepartmentService {
     };
 
     const message = data.length === 0 ? ERROR_NO_DATA : SUCCESS_GET_DEPARTMENT_LIST;
-
     return ApiResponse.success(HttpStatus.OK, message, response);
   }
 
-  // Tìm kiếm 1 hoặc nhiều điều kiện
   async findAdvanced(query: SearchDepartmentQueryRequest): Promise<ApiResponse<PaginatedResponse<DepartmentResponse>>> {
-    const [data, total] = await this.deptRepo.findAdvanced(query);
+    const [items, total] = await this.deptRepo.findAdvanced(query);
+    const data = items.map(mapToDepartmentResponse);
 
     const response: PaginatedResponse<DepartmentResponse> = {
       data,
@@ -67,11 +65,11 @@ export class DepartmentService implements IDepartmentService {
         currentPage: query.page,
       },
     };
+
     const message = data.length === 0 ? ERROR_NO_DATA : SUCCESS_GET_DEPARTMENT_LIST;
     return ApiResponse.success(HttpStatus.OK, message, response);
   }
 
-  // Thêm
   async create(data: CreateDepartmentRequest): Promise<ApiResponse<DepartmentResponse>> {
     await this.validateAddInput(data);
     const entity = mapToDepartmentEntity(data);
@@ -80,76 +78,68 @@ export class DepartmentService implements IDepartmentService {
     return ApiResponse.success<DepartmentResponse>(HttpStatus.CREATED, SUCCESS_CREATE_DEPARTMENT, result);
   }
 
-  // Cập nhật
   async update(id: number, data: UpdateDepartmentRequest): Promise<ApiResponse<DepartmentResponse>> {
     const department = await this.deptRepo.findById(id);
-
     if (!department) {
       throw new NotFoundException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_DEPARTMENT_NOT_FOUND));
     }
 
     await this.validateUpdateInput(id, data);
-
     const updatedEntity = await this.deptRepo.update(department, data);
     const result = mapToDepartmentResponse(updatedEntity);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_DEPARTMENT, result);
   }
 
-  // Xóa
   async delete(id: number): Promise<ApiResponse<null>> {
     const department = await this.deptRepo.findById(id);
-
     if (!department) {
       throw new NotFoundException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_DEPARTMENT_NOT_FOUND));
     }
 
     await this.deptRepo.delete(id);
-
     return ApiResponse.success(HttpStatus.OK, SUCCESS_DELETE_DEPARTMENT, null);
   }
 
-  // Kiểm tra đầu vào khi thêm
   private async validateAddInput(data: CreateDepartmentRequest): Promise<void> {
     const errors: string[] = [];
 
-    const [isTaxCodeDup, isEmailDup, isNameDup, isPhoneDup, isForeignNameDup, isRepPhoneDup] = await Promise.all([
-      this.deptRepo.isTaxCodeExisted(data.taxCode),
-      this.deptRepo.isEmailExisted(data.email),
-      this.deptRepo.isNameExisted(data.name),
-      this.deptRepo.isPhoneNumberExisted(data.phoneNumber),
-      this.deptRepo.isForeignNameExisted(data.foreignName),
-      this.deptRepo.isRepresentativePhoneExisted(data.representativePhone),
+    const checks = await Promise.all([
+      this.deptRepo.checkDuplicateField('taxCode', data.taxCode),
+      this.deptRepo.checkDuplicateField('email', data.email),
+      this.deptRepo.checkDuplicateField('name', data.name),
+      this.deptRepo.checkDuplicateField('phoneNumber', data.phoneNumber),
+      this.deptRepo.checkDuplicateField('foreignName', data.foreignName),
+      this.deptRepo.checkDuplicateField('representativePhone', data.representativePhone),
     ]);
 
-    if (isTaxCodeDup) errors.push(ERROR_TAXCODE_ALREADY_EXISTS);
-    if (isEmailDup) errors.push(ERROR_EMAIL_ALREADY_EXISTS);
-    if (isNameDup) errors.push(ERROR_NAME_ALREADY_EXISTS);
-    if (isPhoneDup) errors.push(ERROR_PHONE_ALREADY_EXISTS);
-    if (isForeignNameDup) errors.push(ERROR_FOREIGN_NAME_ALREADY_EXISTS);
-    if (isRepPhoneDup) errors.push(ERROR_REPRESENTATIVE_PHONE_ALREADY_EXISTS);
+    if (checks[0]) errors.push(ERROR_TAXCODE_ALREADY_EXISTS);
+    if (checks[1]) errors.push(ERROR_EMAIL_ALREADY_EXISTS);
+    if (checks[2]) errors.push(ERROR_NAME_ALREADY_EXISTS);
+    if (checks[3]) errors.push(ERROR_PHONE_ALREADY_EXISTS);
+    if (checks[4]) errors.push(ERROR_FOREIGN_NAME_ALREADY_EXISTS);
+    if (checks[5]) errors.push(ERROR_REPRESENTATIVE_PHONE_ALREADY_EXISTS);
 
     if (errors.length > 0) {
       throw new HttpException(ApiResponse.fail(HttpStatus.CONFLICT, errors.join(' | ')), HttpStatus.CONFLICT);
     }
   }
 
-  //Kiểm tra đầu vào khi cập nhật
   private async validateUpdateInput(id: number, data: UpdateDepartmentRequest): Promise<void> {
     const errors: string[] = [];
 
-    const [isEmailDup, isNameDup, isPhoneDup, isForeignNameDup, isRepPhoneDup] = await Promise.all([
-      this.deptRepo.isEmailExistedExceptId(data.email, id),
-      this.deptRepo.isNameExistedExceptId(data.name, id),
-      this.deptRepo.isPhoneNumberExistedExceptId(data.phoneNumber, id),
-      this.deptRepo.isForeignNameExistedExceptId(data.foreignName, id),
-      this.deptRepo.isRepresentativePhoneExistedExceptId(data.representativePhone, id),
+    const checks = await Promise.all([
+      this.deptRepo.checkDuplicateFieldExceptId('email', data.email, id),
+      this.deptRepo.checkDuplicateFieldExceptId('name', data.name, id),
+      this.deptRepo.checkDuplicateFieldExceptId('phoneNumber', data.phoneNumber, id),
+      this.deptRepo.checkDuplicateFieldExceptId('foreignName', data.foreignName, id),
+      this.deptRepo.checkDuplicateFieldExceptId('representativePhone', data.representativePhone, id),
     ]);
 
-    if (isEmailDup) errors.push(ERROR_EMAIL_ALREADY_EXISTS);
-    if (isNameDup) errors.push(ERROR_NAME_ALREADY_EXISTS);
-    if (isPhoneDup) errors.push(ERROR_PHONE_ALREADY_EXISTS);
-    if (isForeignNameDup) errors.push(ERROR_FOREIGN_NAME_ALREADY_EXISTS);
-    if (isRepPhoneDup) errors.push(ERROR_REPRESENTATIVE_PHONE_ALREADY_EXISTS);
+    if (checks[0]) errors.push(ERROR_EMAIL_ALREADY_EXISTS);
+    if (checks[1]) errors.push(ERROR_NAME_ALREADY_EXISTS);
+    if (checks[2]) errors.push(ERROR_PHONE_ALREADY_EXISTS);
+    if (checks[3]) errors.push(ERROR_FOREIGN_NAME_ALREADY_EXISTS);
+    if (checks[4]) errors.push(ERROR_REPRESENTATIVE_PHONE_ALREADY_EXISTS);
 
     if (errors.length > 0) {
       throw new HttpException(ApiResponse.fail(HttpStatus.CONFLICT, errors.join(' | ')), HttpStatus.CONFLICT);
