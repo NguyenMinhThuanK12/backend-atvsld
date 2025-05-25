@@ -11,5 +11,6 @@ export interface IDepartmentService {
   findAdvanced(query: SearchDepartmentQueryRequest): Promise<ApiResponse<PaginatedResponse<DepartmentResponse>>>;
   create(data: CreateDepartmentRequest): Promise<ApiResponse<DepartmentResponse>>;
   update(id: number, data: UpdateDepartmentRequest): Promise<ApiResponse<DepartmentResponse>>;
+  updateStatus(id: number, isActive: boolean): Promise<ApiResponse<DepartmentResponse>>;
   delete(id: number): Promise<ApiResponse<null>>;
 }

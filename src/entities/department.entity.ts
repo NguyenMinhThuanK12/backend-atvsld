@@ -7,6 +7,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Role } from './role.entity';
@@ -85,6 +86,9 @@ export class Department {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date; // Ngày cập nhật cuối cùng
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 
   @OneToMany(() => User, (user) => user.department)
   users: User[];

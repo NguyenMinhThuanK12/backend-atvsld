@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, DeleteDateColumn } from 'typeorm';
 import { RolePermission } from './role-permission.entity';
 import { PermissionEnum } from '../../libs/shared/ATVSLD/enums/permission.enum';
 
@@ -24,5 +24,8 @@ export class Permission {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 }
 

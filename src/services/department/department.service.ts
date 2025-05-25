@@ -16,6 +16,7 @@ import {
   SUCCESS_DELETE_DEPARTMENT,
   SUCCESS_GET_DEPARTMENT_LIST,
   SUCCESS_UPDATE_DEPARTMENT,
+  SUCCESS_UPDATE_DEPARTMENT_STATUS,
 } from 'libs/shared/ATVSLD/constants/department-message.constant';
 import { PaginationQueryRequest } from 'libs/shared/ATVSLD/common/pagination-query.request';
 import { PaginatedResponse } from 'libs/shared/ATVSLD/common/paginated-response';
@@ -23,12 +24,16 @@ import { ERROR_NO_DATA } from 'libs/shared/ATVSLD/constants/system.constant';
 import { mapToDepartmentEntity, mapToDepartmentResponse } from 'libs/shared/ATVSLD/mappers/department.mapper';
 import { UpdateDepartmentRequest } from 'libs/shared/ATVSLD/models/requests/department/update-department.request';
 import { SearchDepartmentQueryRequest } from 'libs/shared/ATVSLD/models/requests/department/search-department-query.request';
+import { PdfGeneratorService } from 'libs/core/pdf/pdf-generator.service';
+import { PdfTemplate } from 'libs/core/pdf/pdf-template.interface';
+import { Department } from 'src/entities/department.entity';
 
 @Injectable()
 export class DepartmentService implements IDepartmentService {
   constructor(
     @Inject(IDepartmentRepository)
     private readonly deptRepo: IDepartmentRepository,
+    private readonly pdfGenerator: PdfGeneratorService,
   ) {}
 
   async findAllPaginated(query: PaginationQueryRequest): Promise<ApiResponse<PaginatedResponse<DepartmentResponse>>> {
@@ -78,6 +83,17 @@ export class DepartmentService implements IDepartmentService {
     return ApiResponse.success<DepartmentResponse>(HttpStatus.CREATED, SUCCESS_CREATE_DEPARTMENT, result);
   }
 
+  async updateStatus(id: number, isActive: boolean): Promise<ApiResponse<DepartmentResponse>> {
+    const dept = await this.deptRepo.findById(id);
+    if (!dept) {
+      throw new NotFoundException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_DEPARTMENT_NOT_FOUND));
+    }
+
+    const updated = await this.deptRepo.updateStatus(id, isActive);
+    const result = mapToDepartmentResponse(updated);
+    return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_DEPARTMENT_STATUS, result);
+  }
+
   async update(id: number, data: UpdateDepartmentRequest): Promise<ApiResponse<DepartmentResponse>> {
     const department = await this.deptRepo.findById(id);
     if (!department) {
@@ -98,6 +114,28 @@ export class DepartmentService implements IDepartmentService {
 
     await this.deptRepo.delete(id);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_DELETE_DEPARTMENT, null);
+  }
+
+  async exportPdf(ids: number[]): Promise<Buffer> {
+    if (!ids || ids.length === 0) {
+      throw new HttpException('Vui lòng chọn ít nhất 1 bản ghi', HttpStatus.BAD_REQUEST);
+    }
+  
+    const departments = await this.deptRepo.findByIds(ids);
+  
+    const template: PdfTemplate<Department> = {
+      title: 'Danh sách doanh nghiệp',
+      columns: ['STT', 'Tên doanh nghiệp', 'Mã số thuế', 'Tỉnh', 'Trạng thái'],
+      mapper: (dept, idx) => [
+        (idx + 1).toString(),
+        dept.name,
+        dept.taxCode,
+        dept.registrationCity,
+        dept.isActive ? 'Đang hoạt động' : 'Ngừng hoạt động',
+      ],
+    };
+  
+    return this.pdfGenerator.generatePdf(departments, template);
   }
 
   private async validateAddInput(data: CreateDepartmentRequest): Promise<void> {

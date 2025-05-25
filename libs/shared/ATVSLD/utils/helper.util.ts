@@ -23,4 +23,14 @@ export function generateRandomPassword (length = 10): string {
       .sort(() => Math.random() - 0.5)
       .join('');
   }
+
+  export function validateEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+  
+  export function validatePhone(phone: string): boolean {
+    const phoneRegex = /^0\d{9}$/; //  số bắt đầu bằng 0, theo sau 9 chữ số
+    return phoneRegex.test(phone);
+  }
   

@@ -9,6 +9,7 @@ import { DepartmentModule } from './modules/department.module';
 import { PermissionModule } from './modules/permission.module';
 import { RoleModule } from './modules/role.module';
 import { AuthModule } from './modules/auth.module';
+import { PdfModule } from './modules/pdf.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { AuthModule } from './modules/auth.module';
         };
       },
     }),
+    PdfModule,
     AuthModule,
     UserModule,
     DepartmentModule,

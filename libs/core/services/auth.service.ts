@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
 import { v4 as uuid } from 'uuid';
 import ms from 'ms';
-import { generateRandomPassword } from 'libs/shared/ATVSLD/utils/password.util';
+import { generateRandomPassword } from 'libs/shared/ATVSLD/utils/helper.util';
 import { AuthResponse } from 'libs/shared/ATVSLD/models/response/auth/auth.response';
 import { IUserRepository } from 'src/repositories/user/user.repository.interface';
 import { IPasswordResetRepository } from 'src/repositories/password-reset/password-reset.repository.interface';

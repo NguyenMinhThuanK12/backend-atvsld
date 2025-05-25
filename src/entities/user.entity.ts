@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
 import { Department } from './department.entity';
@@ -58,4 +59,7 @@ export class User {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 }

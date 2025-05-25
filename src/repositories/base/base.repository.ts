@@ -1,11 +1,15 @@
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, In, Repository } from 'typeorm';
 import { IBaseRepository } from './base.repository.interface';
 
 export abstract class BaseRepository<T> implements IBaseRepository<T> {
   constructor(protected readonly repo: Repository<T>) {}
 
   async findById(id: number): Promise<T | null> {
-    return this.repo.findOne({ where: { id } as any });
+    return this.repo.findOne({ where: { id } as any});
+  }
+
+  async findByIds(ids: number[]): Promise<T[]> {
+    return this.repo.findBy({ id: In(ids) } as any);
   }
 
   async create(data: T): Promise<T> {

@@ -6,6 +6,7 @@ import {
   JoinColumn,
   OneToMany,
   CreateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Department } from './department.entity';
 import { User } from './user.entity';
@@ -34,4 +35,7 @@ export class Role {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 }

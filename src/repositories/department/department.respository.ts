@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Department } from 'src/entities/department.entity';
 import { IDepartmentRepository } from './department.repository.interface';
 import { SearchDepartmentQueryRequest } from 'libs/shared/ATVSLD/models/requests/department/search-department-query.request';
-import { BaseRepository } from 'libs/core/base/base.repository';
+import { BaseRepository } from 'src/repositories/base/base.repository';
 
 @Injectable()
 export class DepartmentRepository extends BaseRepository<Department> implements IDepartmentRepository {
@@ -13,6 +13,14 @@ export class DepartmentRepository extends BaseRepository<Department> implements 
     departmentRepo: Repository<Department>,
   ) {
     super(departmentRepo);
+  }
+  // async delete(id: number): Promise<void> {
+  //   await this.softDelete(id); // dùng soft delete  (override lại hàm delete trong BaseRepository)
+  // }
+
+  async updateStatus(id: number, isActive: boolean): Promise<Department> {
+    await this.repo.update({ id }, { isActive });
+    return this.repo.findOne({ where: { id } });
   }
 
   async findAdvanced(query: SearchDepartmentQueryRequest): Promise<[Department[], number]> {
