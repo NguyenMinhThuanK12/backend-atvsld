@@ -8,7 +8,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { Department } from './department.entity';
+import { Business } from './business.entity';
 import { User } from './user.entity';
 import { RolePermission } from './role-permission.entity';
 
@@ -23,9 +23,9 @@ export class Role {
   @Column({ length: 30 })
   name: string;
 
-  @ManyToOne(() => Department, (department) => department.roles)
-  @JoinColumn({ name: 'department_id' })
-  department: Department;
+  @ManyToOne(() => Business, (business) => business.roles)
+  @JoinColumn({ name: 'business_id' })
+  business: Business;
 
   @OneToMany(() => User, (user) => user.role)
   users: User[];

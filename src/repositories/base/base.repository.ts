@@ -38,6 +38,9 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
     return this.repo.findAndCount({
       skip: (page - 1) * limit,
       take: limit,
+      order: {
+        id: 'DESC',
+      } as any
     });
   }
   // Kiểm tra trùng khi thêm mới 

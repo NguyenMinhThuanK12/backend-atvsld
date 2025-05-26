@@ -8,7 +8,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
-import { Department } from './department.entity';
+import { Business } from './business.entity';
 import { GenderEnum } from '../../libs/shared/ATVSLD/enums/gender.enum';
 
 @Entity('users')
@@ -44,12 +44,12 @@ export class User {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  @ManyToOne(() => Department, (department) => department.users)
-  @JoinColumn({ name: 'department_id' })
-  department: Department;
+  @ManyToOne(() => Business, (business) => business.users)
+  @JoinColumn({ name: 'business_id' })
+  business: Business;
 
   @Column()
-  department_id: number;
+  business_id: number;
 
   @Column({ default: true })
   is_active: boolean;

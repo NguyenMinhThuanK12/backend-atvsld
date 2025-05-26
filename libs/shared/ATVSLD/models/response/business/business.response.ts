@@ -1,6 +1,6 @@
 import { BusinessType } from '../../../enums/business-type.enum';
 
-export interface DepartmentResponse {
+export interface BusinessResponse {
   id: number;
   name: string;
   taxCode: string;

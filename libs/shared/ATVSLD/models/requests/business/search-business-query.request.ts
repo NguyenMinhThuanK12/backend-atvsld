@@ -1,7 +1,7 @@
 import { PaginationQueryRequest } from 'libs/shared/ATVSLD/common/pagination-query.request';
 import { IsOptional, IsString } from 'class-validator';
 
-export class SearchDepartmentQueryRequest extends PaginationQueryRequest {
+export class SearchBusinessQueryRequest extends PaginationQueryRequest {
   @IsOptional()
   @IsString()
   name?: string;

@@ -1,7 +1,7 @@
 // data-source.ts
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
-import { Department } from './src/entities/department.entity';
+import { Business } from './src/entities/business.entity';
 import { Role } from './src/entities/role.entity';
 import { User } from './src/entities/user.entity';
 import { Permission } from './src/entities/permission.entity';
@@ -16,7 +16,7 @@ export const AppDataSource = new DataSource({
   username: 'postgres',
   password: '3008',
   database: 'atvsld_dev',
-  entities: [Department, Role, User, Permission, RolePermission, UserToken, PasswordReset],
+  entities: [Business, Role, User, Permission, RolePermission, UserToken, PasswordReset],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
 });

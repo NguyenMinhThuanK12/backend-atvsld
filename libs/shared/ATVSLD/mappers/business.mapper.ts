@@ -1,8 +1,8 @@
-import { Department } from 'src/entities/department.entity';
-import { DepartmentResponse } from '../models/response/department/department.response';
-import { CreateDepartmentRequest } from '../models/requests/department/create-department.request';
+import { Business } from 'src/entities/business.entity';
+import { BusinessResponse } from '../models/response/business/business.response';
+import { CreateBusinessRequest } from '../models/requests/business/create-business.request';
 
-export const mapToDepartmentResponse = (d: Department): DepartmentResponse => ({
+export const mapToBusinessResponse = (d: Business): BusinessResponse => ({
   id: d.id,
   name: d.name,
   taxCode: d.taxCode,
@@ -32,8 +32,8 @@ export const mapToDepartmentResponse = (d: Department): DepartmentResponse => ({
   isActive: d.isActive,
 });
 
-export const mapToDepartmentEntity = (req: CreateDepartmentRequest): Department => {
-  const entity = new Department();
+export const mapToBusinessEntity = (req: CreateBusinessRequest): Business => {
+  const entity = new Business();
 
   entity.name = req.name;
   entity.taxCode = req.taxCode;

@@ -1,12 +1,9 @@
 import { IsEnum, IsOptional, IsString, IsDateString } from 'class-validator';
 import { BusinessType } from '../../../enums/business-type.enum';
 
-export class CreateDepartmentRequest {
+export class UpdateBusinessRequest {
   @IsString()
   name: string;
-
-  @IsString()
-  taxCode: string;
 
   @IsDateString()
   establishedDate: Date;

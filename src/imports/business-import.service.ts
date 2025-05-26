@@ -1,33 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import { BusinessType } from 'libs/shared/ATVSLD/enums/business-type.enum';
-import { CreateDepartmentRequest } from 'libs/shared/ATVSLD/models/requests/department/create-department.request';
+import { CreateBusinessRequest } from 'libs/shared/ATVSLD/models/requests/business/create-business.request';
 import { ImportExcelResponse, importExcelGeneric } from 'libs/core/excel/excel-import';
-import { DepartmentService } from 'src/services/department/department.service';
+import { BusinessService } from 'src/services/business/business.service';
 import * as ExcelJS from 'exceljs';
-import {validateEmail, validatePhone } from 'libs/shared/ATVSLD/utils/helper.util';
+import { validateEmail, validatePhone } from 'libs/shared/ATVSLD/utils/helper.util';
 @Injectable()
-export class DepartmentImportService {
-  constructor(private readonly departmentService: DepartmentService) {}
+export class BusinessImportService {
+  constructor(private readonly businessService: BusinessService) {}
 
   async importFromExcel(filePath: string): Promise<ApiResponse<ImportExcelResponse>> {
-    const result = await importExcelGeneric<CreateDepartmentRequest>(
+    const result = await importExcelGeneric<CreateBusinessRequest>(
       filePath,
       0, // sheet index
       this.mapRowToDto,
       this.validateRow,
       async (dto) => {
-        await this.departmentService.create(dto);
+        await this.businessService.create(dto);
       },
     );
 
     return ApiResponse.success(200, 'Import hoàn tất', result);
   }
 
-  private mapRowToDto(row: ExcelJS.Row, rowIndex: number): CreateDepartmentRequest {
+  private mapRowToDto(row: ExcelJS.Row, rowIndex: number): CreateBusinessRequest {
     const businessTypeRaw = row.getCell(4).value?.toString().trim();
 
-    const dto: CreateDepartmentRequest = {
+    const dto: CreateBusinessRequest = {
       name: row.getCell(1).value?.toString().trim() || '',
       taxCode: row.getCell(2).value?.toString().trim() || '',
       establishedDate: new Date(row.getCell(3).value as string),
@@ -53,9 +53,8 @@ export class DepartmentImportService {
     return dto;
   }
 
-  private validateRow(dto: CreateDepartmentRequest, rowIndex: number): string[] {
+  private validateRow(dto: CreateBusinessRequest, rowIndex: number): string[] {
     const errors: string[] = [];
-    console.log(`Row ${rowIndex} - Phone: ${dto.phoneNumber}- (${dto.phoneNumber.length}), RepPhone: ${dto.representativePhone}`);
 
     if (!dto.name) errors.push('Tên doanh nghiệp không được bỏ trống');
     if (!dto.taxCode) errors.push('Mã số thuế không được bỏ trống');

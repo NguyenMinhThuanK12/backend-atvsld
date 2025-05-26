@@ -5,7 +5,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import configuration from './configurations/configuration';
 
 import { UserModule } from './modules/user.module';
-import { DepartmentModule } from './modules/department.module';
+import { BusinessModule } from './modules/business.module';
 import { PermissionModule } from './modules/permission.module';
 import { RoleModule } from './modules/role.module';
 import { AuthModule } from './modules/auth.module';
@@ -51,7 +51,7 @@ import { SupabaseModule } from 'libs/core/supabase/supabase.module';
     SupabaseModule,
     AuthModule,
     UserModule,
-    DepartmentModule,
+    BusinessModule,
     PermissionModule,
     RoleModule,
   ],

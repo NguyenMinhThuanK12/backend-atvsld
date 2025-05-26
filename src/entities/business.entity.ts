@@ -2,8 +2,6 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
@@ -13,8 +11,8 @@ import { User } from './user.entity';
 import { Role } from './role.entity';
 import { BusinessType } from '../../libs/shared/ATVSLD/enums/business-type.enum';
 
-@Entity('departments')
-export class Department {
+@Entity('business')
+export class Business {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -90,16 +88,16 @@ export class Department {
   @DeleteDateColumn({ nullable: true })
   deletedAt?: Date;
 
-  @OneToMany(() => User, (user) => user.department)
+  @OneToMany(() => User, (user) => user.business)
   users: User[];
 
-  @OneToMany(() => Role, (role) => role.department)
+  @OneToMany(() => Role, (role) => role.business)
   roles: Role[];
 
   // @Column()
   // level: number;
 
-  // @ManyToOne(() => Department)
+  // @ManyToOne(() => Business)
   // @JoinColumn({ name: 'parent_id' })
-  // parent: Department;
+  // parent: Business;
 }
