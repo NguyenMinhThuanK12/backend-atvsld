@@ -7,9 +7,10 @@ import { DepartmentService } from 'src/services/department/department.service';
 import { DepartmentRepository } from 'src/repositories/department/department.respository';
 import { DepartmentImportService } from 'src/imports/department-import.service';
 import { PdfModule } from './pdf.module';
+import { SupabaseModule } from 'libs/core/supabase/supabase.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Department]),PdfModule],
+  imports: [TypeOrmModule.forFeature([Department]), PdfModule, SupabaseModule],
   controllers: [DepartmentController],
   providers: [
     DepartmentImportService,

@@ -15,6 +15,7 @@ import {
   UploadedFile,
   Header,
   Res,
+  UploadedFiles,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/core/auth/jwt-auth.guard';
 import { DepartmentService } from 'src/services/department/department.service';
@@ -26,19 +27,21 @@ import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import { PaginationQueryRequest } from 'libs/shared/ATVSLD/common/pagination-query.request';
 import { SearchDepartmentQueryRequest } from 'libs/shared/ATVSLD/models/requests/department/search-department-query.request';
 import { UpdateDepartmentStatusRequest } from 'libs/shared/ATVSLD/models/requests/department/update-department-status.request';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
 import { Express } from 'express';
 import { Response } from 'express';
 import { DepartmentImportService } from 'src/imports/department-import.service';
 import { ExportDepartmentRequest } from 'libs/shared/ATVSLD/models/requests/export/export-department.request';
+import { SupabaseService } from 'libs/core/supabase/supabase.service';
 
 @Controller('departments')
 export class DepartmentController {
   constructor(
     private readonly departmentService: DepartmentService,
     private readonly departmentImportService: DepartmentImportService,
+    private readonly supabaseService: SupabaseService,
   ) {}
 
   @Get()
@@ -54,10 +57,31 @@ export class DepartmentController {
   }
 
   @Post()
-  // @UseGuards(JwtAuthGuard)
-  async create(@Body() dto: CreateDepartmentRequest): Promise<ApiResponse<DepartmentResponse>> {
-    return this.departmentService.create(dto);
-  }
+@UseInterceptors(
+  FileFieldsInterceptor(
+    [
+      { name: 'businessLicense', maxCount: 1 },
+      { name: 'otherDocument', maxCount: 1 },
+    ],
+    {
+      fileFilter: (req, file, cb) => {
+        if (!file.originalname.match(/\.(pdf)$/)) {
+          return cb(new Error('Chỉ cho phép file PDF'), false);
+        }
+        cb(null, true);
+      },
+    },
+  ),
+)
+async createDepartmentWithFiles(
+  @UploadedFiles() files: {
+    businessLicense?: Express.Multer.File[];
+    otherDocument?: Express.Multer.File[];
+  },
+  @Body() dto: CreateDepartmentRequest,
+): Promise<ApiResponse<DepartmentResponse>> {
+  return this.departmentService.create(dto, files);
+}
 
   @Post('import')
   @UseInterceptors(
@@ -96,12 +120,18 @@ export class DepartmentController {
   }
 
   @Patch(':id')
-  // @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'businessLicense', maxCount: 1 },
+      { name: 'otherDocument', maxCount: 1 },
+    ]),
+  )
   async update(
     @Param('id', ParseIntPipe) id: number,
+    @UploadedFiles() files,
     @Body() dto: UpdateDepartmentRequest,
   ): Promise<ApiResponse<DepartmentResponse>> {
-    return this.departmentService.update(id, dto);
+    return this.departmentService.update(id, dto, files);
   }
 
   @Delete(':id')

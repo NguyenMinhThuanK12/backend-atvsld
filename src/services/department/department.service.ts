@@ -27,6 +27,7 @@ import { SearchDepartmentQueryRequest } from 'libs/shared/ATVSLD/models/requests
 import { PdfGeneratorService } from 'libs/core/pdf/pdf-generator.service';
 import { PdfTemplate } from 'libs/core/pdf/pdf-template.interface';
 import { Department } from 'src/entities/department.entity';
+import { SupabaseService } from 'libs/core/supabase/supabase.service';
 
 @Injectable()
 export class DepartmentService implements IDepartmentService {
@@ -34,7 +35,18 @@ export class DepartmentService implements IDepartmentService {
     @Inject(IDepartmentRepository)
     private readonly deptRepo: IDepartmentRepository,
     private readonly pdfGenerator: PdfGeneratorService,
+    private readonly supabaseService: SupabaseService,
   ) {}
+
+  async findById(id: number): Promise<ApiResponse<DepartmentResponse>> {
+    const department = await this.deptRepo.findById(id);
+    if (!department) {
+      throw new NotFoundException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_DEPARTMENT_NOT_FOUND));
+    }
+
+    const result = mapToDepartmentResponse(department);
+    return ApiResponse.success(HttpStatus.OK, SUCCESS_GET_DEPARTMENT_LIST, result);
+  }
 
   async findAllPaginated(query: PaginationQueryRequest): Promise<ApiResponse<PaginatedResponse<DepartmentResponse>>> {
     const { page = 1, limit = 10 } = query;
@@ -75,8 +87,26 @@ export class DepartmentService implements IDepartmentService {
     return ApiResponse.success(HttpStatus.OK, message, response);
   }
 
-  async create(data: CreateDepartmentRequest): Promise<ApiResponse<DepartmentResponse>> {
+  async create(
+    data: CreateDepartmentRequest,
+    files?: {
+      businessLicense?: Express.Multer.File[];
+      otherDocument?: Express.Multer.File[];
+    },
+  ): Promise<ApiResponse<DepartmentResponse>> {
     await this.validateAddInput(data);
+
+    // Chỉ upload lên supbase nếu validate thành công
+    if (files?.businessLicense?.[0]) {
+      const file = files.businessLicense[0];
+      data.businessLicenseFile = await this.supabaseService.uploadPdf(file.buffer, file.originalname);
+    }
+
+    if (files?.otherDocument?.[0]) {
+      const file = files.otherDocument[0];
+      data.otherDocumentFile = await this.supabaseService.uploadPdf(file.buffer, file.originalname);
+    }
+
     const entity = mapToDepartmentEntity(data);
     const saved = await this.deptRepo.create(entity);
     const result = mapToDepartmentResponse(saved);
@@ -94,24 +124,45 @@ export class DepartmentService implements IDepartmentService {
     return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_DEPARTMENT_STATUS, result);
   }
 
-  async update(id: number, data: UpdateDepartmentRequest): Promise<ApiResponse<DepartmentResponse>> {
+  async update(
+    id: number,
+    data: UpdateDepartmentRequest,
+    files?: {
+      businessLicense?: Express.Multer.File[];
+      otherDocument?: Express.Multer.File[];
+    },
+  ): Promise<ApiResponse<DepartmentResponse>> {
     const department = await this.deptRepo.findById(id);
     if (!department) {
       throw new NotFoundException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_DEPARTMENT_NOT_FOUND));
     }
 
     await this.validateUpdateInput(id, data);
-    const updatedEntity = await this.deptRepo.update(department, data);
-    const result = mapToDepartmentResponse(updatedEntity);
+
+    //  Nếu có file mới, thì upload và xoá file cũ
+    if (files?.businessLicense?.[0]) {
+      const buffer = files.businessLicense[0].buffer;
+      const name = files.businessLicense[0].originalname;
+      data.businessLicenseFile = await this.supabaseService.uploadPdf(buffer, name, department.businessLicenseFile);
+    }
+
+    if (files?.otherDocument?.[0]) {
+      const buffer = files.otherDocument[0].buffer;
+      const name = files.otherDocument[0].originalname;
+      data.otherDocumentFile = await this.supabaseService.uploadPdf(buffer, name, department.otherDocumentFile);
+    }
+
+    const updated = await this.deptRepo.update(department, data);
+    const result = mapToDepartmentResponse(updated);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_DEPARTMENT, result);
   }
-
   async delete(id: number): Promise<ApiResponse<null>> {
     const department = await this.deptRepo.findById(id);
     if (!department) {
       throw new NotFoundException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_DEPARTMENT_NOT_FOUND));
     }
-
+    // xóa file trên supabase nếu có
+    await this.deleteDepartmentFiles(department);
     await this.deptRepo.delete(id);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_DELETE_DEPARTMENT, null);
   }
@@ -120,9 +171,9 @@ export class DepartmentService implements IDepartmentService {
     if (!ids || ids.length === 0) {
       throw new HttpException('Vui lòng chọn ít nhất 1 bản ghi', HttpStatus.BAD_REQUEST);
     }
-  
+
     const departments = await this.deptRepo.findByIds(ids);
-  
+
     const template: PdfTemplate<Department> = {
       title: 'Danh sách doanh nghiệp',
       columns: ['STT', 'Tên doanh nghiệp', 'Mã số thuế', 'Tỉnh', 'Trạng thái'],
@@ -134,7 +185,7 @@ export class DepartmentService implements IDepartmentService {
         dept.isActive ? 'Đang hoạt động' : 'Ngừng hoạt động',
       ],
     };
-  
+
     return this.pdfGenerator.generatePdf(departments, template);
   }
 
@@ -182,5 +233,21 @@ export class DepartmentService implements IDepartmentService {
     if (errors.length > 0) {
       throw new HttpException(ApiResponse.fail(HttpStatus.CONFLICT, errors.join(' | ')), HttpStatus.CONFLICT);
     }
+  }
+
+  private async deleteDepartmentFiles(department: Department): Promise<void> {
+    const { businessLicenseFile, otherDocumentFile } = department;
+
+    const deleteFile = async (url?: string) => {
+      if (!url) return;
+
+      try {
+        await this.supabaseService.deleteByUrl(url);
+      } catch (err) {
+        console.error(` Không thể xoá file: ${url}`, err.message);
+      }
+    };
+
+    await Promise.all([deleteFile(businessLicenseFile), deleteFile(otherDocumentFile)]);
   }
 }

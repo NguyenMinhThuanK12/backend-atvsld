@@ -66,8 +66,8 @@ export class UpdateDepartmentRequest {
   @IsString()
   representativePhone?: string;
 
-  @IsBoolean()
-  isActive: true;
+  // @IsBoolean()
+  // isActive: true;
 
   @IsOptional()
   @IsString()

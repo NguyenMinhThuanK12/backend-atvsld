@@ -10,7 +10,8 @@ import { PermissionModule } from './modules/permission.module';
 import { RoleModule } from './modules/role.module';
 import { AuthModule } from './modules/auth.module';
 import { PdfModule } from './modules/pdf.module';
-
+import { CloudinaryService } from 'libs/core/cloudinary/cloudinary.service';
+import { SupabaseModule } from 'libs/core/supabase/supabase.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -47,6 +48,7 @@ import { PdfModule } from './modules/pdf.module';
       },
     }),
     PdfModule,
+    SupabaseModule,
     AuthModule,
     UserModule,
     DepartmentModule,
@@ -54,6 +56,7 @@ import { PdfModule } from './modules/pdf.module';
     RoleModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [CloudinaryService],
+  exports: [CloudinaryService],  
 })
 export class AppModule {}

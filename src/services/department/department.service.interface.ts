@@ -7,6 +7,7 @@ import { UpdateDepartmentRequest } from 'libs/shared/ATVSLD/models/requests/depa
 import { DepartmentResponse } from 'libs/shared/ATVSLD/models/response/department/department.response';
 
 export interface IDepartmentService {
+  findById(id: number): Promise<ApiResponse<DepartmentResponse>>;
   findAllPaginated(query: PaginationQueryRequest): Promise<ApiResponse<PaginatedResponse<DepartmentResponse>>>;
   findAdvanced(query: SearchDepartmentQueryRequest): Promise<ApiResponse<PaginatedResponse<DepartmentResponse>>>;
   create(data: CreateDepartmentRequest): Promise<ApiResponse<DepartmentResponse>>;

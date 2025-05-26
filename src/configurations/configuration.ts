@@ -23,6 +23,18 @@ export default () => ({
     pass: process.env.MAIL_PASS,
   },
 
+  cloudinary: {
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  },
+
+  supabase: {
+    url: process.env.SUPABASE_URL,
+    anon_key: process.env.SUPABASE_ANON_KEY,
+    bucket: process.env.SUPABASE_BUCKET_NAME,
+  },
+
   frontend: {
     url: process.env.FRONTEND_URL || 'http://localhost:3001',
   },
