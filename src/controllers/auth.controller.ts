@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus } from '@nestjs/common';
 import { AuthService } from 'libs/core/services/auth.service';
 import { AuthRequest } from 'libs/shared/ATVSLD/models/requests/auth/auth.request';
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';

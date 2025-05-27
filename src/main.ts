@@ -8,9 +8,9 @@ async function bootstrap() {
   // Bật validation toàn app
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,            // loại bỏ field dư
+      whitelist: true, // loại bỏ field dư
       forbidNonWhitelisted: true, // ném lỗi nếu gửi field không được khai báo
-      transform: true,            // tự ép kiểu theo DTO
+      transform: true, // tự ép kiểu theo DTO
     }),
   );
 
@@ -19,7 +19,6 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Các phương thức HTTP được phép
     credentials: true, // Cho phép gửi cookie hoặc header xác thực
   });
-
 
   await app.listen(3000);
 }

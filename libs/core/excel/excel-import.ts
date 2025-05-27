@@ -1,15 +1,14 @@
 import * as ExcelJS from 'exceljs';
 export interface ImportError {
-    row: number;
-    message: string;
-  }
-  
-  export class ImportExcelResponse {
-    successCount: number;
-    errorCount: number;
-    errors: ImportError[];
-  }
-  
+  row: number;
+  message: string;
+}
+
+export class ImportExcelResponse {
+  successCount: number;
+  errorCount: number;
+  errors: ImportError[];
+}
 
 export type RowToDtoMapper<T> = (row: ExcelJS.Row, rowIndex: number) => T;
 export type RowValidator<T> = (dto: T, rowIndex: number) => string[];
@@ -20,7 +19,7 @@ export async function importExcelGeneric<T>(
   sheetIndex: number,
   mapRowToDto: RowToDtoMapper<T>,
   validateRow: RowValidator<T>,
-  processRow: RowProcessor<T>
+  processRow: RowProcessor<T>,
 ): Promise<ImportExcelResponse> {
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile(filePath);

@@ -1,7 +1,7 @@
 import {
   Controller,
   Get,
-  UseGuards,
+  // UseGuards,
   Body,
   Post,
   Query,
@@ -13,11 +13,11 @@ import {
   HttpException,
   HttpStatus,
   UploadedFile,
-  Header,
+  // Header,
   Res,
   UploadedFiles,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'libs/core/auth/jwt-auth.guard';
+// import { JwtAuthGuard } from 'libs/core/auth/jwt-auth.guard';
 import { BusinessService } from 'src/services/business/business.service';
 import { CreateBusinessRequest } from 'libs/shared/ATVSLD/models/requests/business/create-business.request';
 import { BusinessResponse } from 'libs/shared/ATVSLD/models/response/business/business.response';
@@ -34,7 +34,6 @@ import { Express } from 'express';
 import { Response } from 'express';
 import { BusinessImportService } from 'src/imports/business-import.service';
 import { ExportBusinessRequest } from 'libs/shared/ATVSLD/models/requests/export/export-business.request';
-
 
 @Controller('business')
 export class BusinessController {
@@ -56,6 +55,7 @@ export class BusinessController {
   }
 
   @Post()
+  // @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -84,6 +84,7 @@ export class BusinessController {
   }
 
   @Post('import')
+  // @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -120,6 +121,7 @@ export class BusinessController {
   }
 
   @Patch(':id')
+  // @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'businessLicense', maxCount: 1 },
@@ -140,6 +142,7 @@ export class BusinessController {
     return this.businessService.delete(id);
   }
   @Post('export')
+  // @UseGuards(JwtAuthGuard)
   async exportPdf(@Body() dto: ExportBusinessRequest, @Res() res: Response): Promise<void> {
     const pdfBuffer = await this.businessService.exportPdf(dto.ids);
     res.set({

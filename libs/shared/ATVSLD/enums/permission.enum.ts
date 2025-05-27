@@ -1,4 +1,4 @@
 export enum PermissionEnum {
-    GROUP = 'Group',
-    COMPONENT = 'Component',
-  }
+  GROUP = 'Group',
+  COMPONENT = 'Component',
+}

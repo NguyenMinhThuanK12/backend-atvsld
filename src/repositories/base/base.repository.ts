@@ -5,7 +5,7 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
   constructor(protected readonly repo: Repository<T>) {}
 
   async findById(id: number): Promise<T | null> {
-    return this.repo.findOne({ where: { id } as any});
+    return this.repo.findOne({ where: { id } as any });
   }
 
   async findByIds(ids: number[]): Promise<T[]> {
@@ -40,25 +40,24 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
       take: limit,
       order: {
         id: 'DESC',
-      } as any
+      } as any,
     });
   }
-  // Kiểm tra trùng khi thêm mới 
+  // Kiểm tra trùng khi thêm mới
   async checkDuplicateField<K extends keyof T>(field: K, value: T[K]): Promise<boolean> {
     if (!value) return false;
-  
+
     const where = { [field]: value } as any;
     const result = await this.repo.findOne({ where });
     return !!result;
   }
-  
+
   // kiểm tra trùng khi cập nhật (trừ chính nó ra)
   async checkDuplicateFieldExceptId<K extends keyof T>(field: K, value: T[K], id: number): Promise<boolean> {
     if (!value) return false;
-  
+
     const where = { [field]: value } as any;
     const result = await this.repo.findOne({ where });
     return !!(result && (result as any).id !== id);
   }
-  
 }

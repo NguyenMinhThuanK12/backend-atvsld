@@ -31,7 +31,7 @@ export class BusinessRepository extends BaseRepository<Business> implements IBus
     }
 
     if (query.taxCode) {
-      qb.andWhere('business.taxCode = :taxCode', { taxCode: query.taxCode });
+      qb.andWhere('business.taxCode ILIKE :taxCode', { taxCode: `%${query.taxCode}%` });
     }
 
     if (query.businessType) {
@@ -64,11 +64,11 @@ export class BusinessRepository extends BaseRepository<Business> implements IBus
       });
     }
 
-     // Sắp xếp theo ID giảm dần
-  qb.orderBy('business.id', 'DESC');
+    // Sắp xếp theo ID giảm dần
+    qb.orderBy('business.id', 'DESC');
 
-  // phân trang
-  qb.skip((query.page - 1) * query.limit).take(query.limit);
+    // phân trang
+    qb.skip((query.page - 1) * query.limit).take(query.limit);
 
     return qb.getManyAndCount();
   }

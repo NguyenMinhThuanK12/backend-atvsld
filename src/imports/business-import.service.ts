@@ -24,7 +24,7 @@ export class BusinessImportService {
     return ApiResponse.success(200, 'Import hoàn tất', result);
   }
 
-  private mapRowToDto(row: ExcelJS.Row, rowIndex: number): CreateBusinessRequest {
+  private mapRowToDto(row: ExcelJS.Row): CreateBusinessRequest {
     const businessTypeRaw = row.getCell(4).value?.toString().trim();
 
     const dto: CreateBusinessRequest = {
@@ -53,7 +53,7 @@ export class BusinessImportService {
     return dto;
   }
 
-  private validateRow(dto: CreateBusinessRequest, rowIndex: number): string[] {
+  private validateRow(dto: CreateBusinessRequest): string[] {
     const errors: string[] = [];
 
     if (!dto.name) errors.push('Tên doanh nghiệp không được bỏ trống');
@@ -72,6 +72,7 @@ export class BusinessImportService {
     if (!dto.registrationWard) errors.push('Phường/xã đăng ký không được bỏ trống');
 
     if (dto.email && !validateEmail(dto.email)) {
+      console.error(`Email không đúng định dạng: ${dto.email}`);
       errors.push('Email không đúng định dạng');
     }
 

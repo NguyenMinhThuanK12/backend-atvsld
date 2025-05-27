@@ -1,8 +1,8 @@
-import { IsArray, IsNumber, IsOptional } from "class-validator";
+import { IsArray, IsNumber, IsOptional } from 'class-validator';
 
 export class ExportBusinessRequest {
-    @IsOptional()
-    @IsArray()
-    @IsNumber({}, { each: true })
-    ids?: number[];
-  }
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  ids?: number[];
+}

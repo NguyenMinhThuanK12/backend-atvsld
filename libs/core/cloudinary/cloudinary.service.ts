@@ -18,5 +18,4 @@ export class CloudinaryService implements OnModuleInit {
   getInstance() {
     return cloudinary;
   }
-
 }

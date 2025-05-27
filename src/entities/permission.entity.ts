@@ -4,8 +4,6 @@ import { PermissionEnum } from '../../libs/shared/ATVSLD/enums/permission.enum';
 
 @Entity('permissions')
 export class Permission {
-  
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -18,7 +16,6 @@ export class Permission {
   @Column({ type: 'enum', enum: PermissionEnum })
   type: PermissionEnum;
 
-
   @OneToMany(() => RolePermission, (rp) => rp.permission)
   rolePermissions: RolePermission[];
 
@@ -28,4 +25,3 @@ export class Permission {
   @DeleteDateColumn({ nullable: true })
   deletedAt?: Date;
 }
-

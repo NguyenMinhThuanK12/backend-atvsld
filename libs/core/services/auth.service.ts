@@ -1,9 +1,9 @@
-import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
-import { v4 as uuid } from 'uuid';
+// import { v4 as uuid } from 'uuid';
 import ms from 'ms';
 import { generateRandomPassword } from 'libs/shared/ATVSLD/utils/helper.util';
 import { AuthResponse } from 'libs/shared/ATVSLD/models/response/auth/auth.response';
@@ -25,7 +25,7 @@ import {
   ERROR_INVALID_ACCOUNT,
   ERROR_INVALID_TOKEN,
   ERROR_REFRESH_TOKEN_REQUIRED,
-  SUCCESS_LOGOUT,
+  // SUCCESS_LOGOUT,
 } from 'libs/shared/ATVSLD/constants/auth-message.constant';
 import {
   EMAIL_NEW_PASSWORD_SENT,
@@ -198,6 +198,7 @@ export class AuthService {
         secret: this.configService.get('jwt.refreshSecret'),
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { exp, iat, ...rest } = decoded;
       payload = rest;
     } catch (err) {

@@ -16,7 +16,7 @@ import { SupabaseModule } from 'libs/core/supabase/supabase.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env', 
+      envFilePath: '.env',
       load: [configuration],
     }),
     TypeOrmModule.forRootAsync({
@@ -57,6 +57,6 @@ import { SupabaseModule } from 'libs/core/supabase/supabase.module';
   ],
   controllers: [],
   providers: [CloudinaryService],
-  exports: [CloudinaryService],  
+  exports: [CloudinaryService],
 })
 export class AppModule {}

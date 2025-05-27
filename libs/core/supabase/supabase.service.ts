@@ -25,19 +25,14 @@ export class SupabaseService {
     const cleanName = slugify(originalName, { lower: true, strict: true });
     const filePath = `departments/${cleanName}-${uuid()}.pdf`;
 
-    const { data, error } = await this.supabase.storage
-      .from(this.bucket)
-      .upload(filePath, fileBuffer, {
-        contentType: 'application/pdf',
-        upsert: true,
-      });
+    const { data, error } = await this.supabase.storage.from(this.bucket).upload(filePath, fileBuffer, {
+      contentType: 'application/pdf',
+      upsert: true,
+    });
 
     if (error) throw new Error(error.message);
 
-    const { publicUrl } = this.supabase
-      .storage
-      .from(this.bucket)
-      .getPublicUrl(data.path).data;
+    const { publicUrl } = this.supabase.storage.from(this.bucket).getPublicUrl(data.path).data;
 
     return publicUrl;
   }
