@@ -7,10 +7,10 @@ import { PasswordResetRepository } from 'src/repositories/password-reset/passwor
   imports: [TypeOrmModule.forFeature([PasswordReset])],
   providers: [
     {
-      provide: 'IPasswordResetRepository', 
+      provide: 'IPasswordResetRepository',
       useClass: PasswordResetRepository,
     },
   ],
-  exports: ['IPasswordResetRepository'], 
+  exports: ['IPasswordResetRepository'],
 })
 export class PasswordResetModule {}

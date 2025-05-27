@@ -4,7 +4,7 @@ import { User } from './user.entity';
 @Entity('user_tokens')
 export class UserToken {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @ManyToOne(() => User)
   user: User;

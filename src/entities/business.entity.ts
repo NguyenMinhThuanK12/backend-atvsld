@@ -1,20 +1,19 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { Role } from './role.entity';
 import { BusinessType } from '../../libs/shared/ATVSLD/enums/business-type.enum';
 
 @Entity('business')
 export class Business {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string; // Tên doanh nghiệp
@@ -90,9 +89,6 @@ export class Business {
 
   @OneToMany(() => User, (user) => user.business)
   users: User[];
-
-  @OneToMany(() => Role, (role) => role.business)
-  roles: Role[];
 
   // @Column()
   // level: number;

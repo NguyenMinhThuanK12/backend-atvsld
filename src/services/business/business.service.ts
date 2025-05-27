@@ -7,10 +7,7 @@ import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import {
   ERROR_BUSINESS_NOT_FOUND,
   ERROR_EMAIL_ALREADY_EXISTS,
-  ERROR_FOREIGN_NAME_ALREADY_EXISTS,
   ERROR_NAME_ALREADY_EXISTS,
-  ERROR_PHONE_ALREADY_EXISTS,
-  ERROR_REPRESENTATIVE_PHONE_ALREADY_EXISTS,
   ERROR_TAXCODE_ALREADY_EXISTS,
   SUCCESS_CREATE_BUSINESS,
   SUCCESS_DELETE_BUSINESS,
@@ -38,7 +35,7 @@ export class BusinessService implements IBusinessService {
     private readonly supabaseService: SupabaseService,
   ) {}
 
-  async findById(id: number): Promise<ApiResponse<BusinessResponse>> {
+  async findById(id: string): Promise<ApiResponse<BusinessResponse>> {
     const business = await this.businessRepo.findById(id);
     if (!business) {
       throw new NotFoundException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_BUSINESS_NOT_FOUND));
@@ -113,7 +110,7 @@ export class BusinessService implements IBusinessService {
     return ApiResponse.success<BusinessResponse>(HttpStatus.CREATED, SUCCESS_CREATE_BUSINESS, result);
   }
 
-  async updateStatus(id: number, isActive: boolean): Promise<ApiResponse<BusinessResponse>> {
+  async updateStatus(id: string, isActive: boolean): Promise<ApiResponse<BusinessResponse>> {
     const business = await this.businessRepo.findById(id);
     if (!business) {
       throw new NotFoundException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_BUSINESS_NOT_FOUND));
@@ -125,7 +122,7 @@ export class BusinessService implements IBusinessService {
   }
 
   async update(
-    id: number,
+    id: string,
     data: UpdateBusinessRequest,
     files?: {
       businessLicense?: Express.Multer.File[];
@@ -156,7 +153,7 @@ export class BusinessService implements IBusinessService {
     const result = mapToBusinessResponse(updated);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_BUSINESS, result);
   }
-  async delete(id: number): Promise<ApiResponse<null>> {
+  async delete(id: string): Promise<ApiResponse<null>> {
     const business = await this.businessRepo.findById(id);
     if (!business) {
       throw new NotFoundException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_BUSINESS_NOT_FOUND));
@@ -167,7 +164,7 @@ export class BusinessService implements IBusinessService {
     return ApiResponse.success(HttpStatus.OK, SUCCESS_DELETE_BUSINESS, null);
   }
 
-  async exportPdf(ids: number[]): Promise<Buffer> {
+  async exportPdf(ids: string[]): Promise<Buffer> {
     if (!ids || ids.length === 0) {
       throw new HttpException('Vui lòng chọn ít nhất 1 bản ghi', HttpStatus.BAD_REQUEST);
     }
@@ -189,46 +186,42 @@ export class BusinessService implements IBusinessService {
     return this.pdfGenerator.generatePdf(business, template);
   }
 
+  async checkDuplicateTaxCode(taxCode: string): Promise<ApiResponse<boolean>> {
+    const isDuplicate = await this.businessRepo.checkDuplicateField('taxCode', taxCode);
+    return ApiResponse.success(HttpStatus.OK, ERROR_TAXCODE_ALREADY_EXISTS, isDuplicate);
+  }
+
+  async checkDuplicateEmail(email: string): Promise<ApiResponse<boolean>> {
+    const isDuplicate = await this.businessRepo.checkDuplicateField('email', email);
+    return ApiResponse.success(HttpStatus.OK, ERROR_EMAIL_ALREADY_EXISTS, isDuplicate);
+  }
+
   private async validateAddInput(data: CreateBusinessRequest): Promise<void> {
     const errors: string[] = [];
 
     const checks = await Promise.all([
       this.businessRepo.checkDuplicateField('taxCode', data.taxCode),
       this.businessRepo.checkDuplicateField('email', data.email),
-      this.businessRepo.checkDuplicateField('name', data.name),
-      this.businessRepo.checkDuplicateField('phoneNumber', data.phoneNumber),
-      this.businessRepo.checkDuplicateField('foreignName', data.foreignName),
-      this.businessRepo.checkDuplicateField('representativePhone', data.representativePhone),
     ]);
 
     if (checks[0]) errors.push(ERROR_TAXCODE_ALREADY_EXISTS);
     if (checks[1]) errors.push(ERROR_EMAIL_ALREADY_EXISTS);
-    if (checks[2]) errors.push(ERROR_NAME_ALREADY_EXISTS);
-    if (checks[3]) errors.push(ERROR_PHONE_ALREADY_EXISTS);
-    if (checks[4]) errors.push(ERROR_FOREIGN_NAME_ALREADY_EXISTS);
-    if (checks[5]) errors.push(ERROR_REPRESENTATIVE_PHONE_ALREADY_EXISTS);
 
     if (errors.length > 0) {
       throw new HttpException(ApiResponse.fail(HttpStatus.CONFLICT, errors.join(' | ')), HttpStatus.CONFLICT);
     }
   }
 
-  private async validateUpdateInput(id: number, data: UpdateBusinessRequest): Promise<void> {
+  private async validateUpdateInput(id: string, data: UpdateBusinessRequest): Promise<void> {
     const errors: string[] = [];
 
     const checks = await Promise.all([
       this.businessRepo.checkDuplicateFieldExceptId('email', data.email, id),
       this.businessRepo.checkDuplicateFieldExceptId('name', data.name, id),
-      this.businessRepo.checkDuplicateFieldExceptId('phoneNumber', data.phoneNumber, id),
-      this.businessRepo.checkDuplicateFieldExceptId('foreignName', data.foreignName, id),
-      this.businessRepo.checkDuplicateFieldExceptId('representativePhone', data.representativePhone, id),
     ]);
 
     if (checks[0]) errors.push(ERROR_EMAIL_ALREADY_EXISTS);
     if (checks[1]) errors.push(ERROR_NAME_ALREADY_EXISTS);
-    if (checks[2]) errors.push(ERROR_PHONE_ALREADY_EXISTS);
-    if (checks[3]) errors.push(ERROR_FOREIGN_NAME_ALREADY_EXISTS);
-    if (checks[4]) errors.push(ERROR_REPRESENTATIVE_PHONE_ALREADY_EXISTS);
 
     if (errors.length > 0) {
       throw new HttpException(ApiResponse.fail(HttpStatus.CONFLICT, errors.join(' | ')), HttpStatus.CONFLICT);

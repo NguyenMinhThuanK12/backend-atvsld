@@ -18,7 +18,7 @@ export class BusinessRepository extends BaseRepository<Business> implements IBus
   //   await this.softDelete(id); // dùng soft delete  (override lại hàm delete trong BaseRepository)
   // }
 
-  async updateStatus(id: number, isActive: boolean): Promise<Business> {
+  async updateStatus(id: string, isActive: boolean): Promise<Business> {
     await this.repo.update({ id }, { isActive });
     return this.repo.findOne({ where: { id } });
   }

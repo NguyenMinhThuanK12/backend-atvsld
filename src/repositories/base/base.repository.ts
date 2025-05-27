@@ -4,11 +4,11 @@ import { IBaseRepository } from './base.repository.interface';
 export abstract class BaseRepository<T> implements IBaseRepository<T> {
   constructor(protected readonly repo: Repository<T>) {}
 
-  async findById(id: number): Promise<T | null> {
+  async findById(id: string): Promise<T | null> {
     return this.repo.findOne({ where: { id } as any });
   }
 
-  async findByIds(ids: number[]): Promise<T[]> {
+  async findByIds(ids: string[]): Promise<T[]> {
     return this.repo.findBy({ id: In(ids) } as any);
   }
 
@@ -22,15 +22,15 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
     return this.repo.save(entity);
   }
 
-  async hardDelete(id: number): Promise<void> {
+  async hardDelete(id: string): Promise<void> {
     await this.repo.delete(id);
   }
 
-  async softDelete(id: number): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     await this.repo.softDelete(id);
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.hardDelete(id); // Default là hard delete, override nếu muốn soft
   }
 
@@ -53,7 +53,7 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
   }
 
   // kiểm tra trùng khi cập nhật (trừ chính nó ra)
-  async checkDuplicateFieldExceptId<K extends keyof T>(field: K, value: T[K], id: number): Promise<boolean> {
+  async checkDuplicateFieldExceptId<K extends keyof T>(field: K, value: T[K], id: string): Promise<boolean> {
     if (!value) return false;
 
     const where = { [field]: value } as any;

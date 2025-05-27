@@ -4,5 +4,5 @@ export class ExportBusinessRequest {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  ids?: number[];
+  ids?: string[];
 }

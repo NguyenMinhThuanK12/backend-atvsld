@@ -1,7 +1,7 @@
 import { BusinessType } from '../../../enums/business-type.enum';
 
 export interface BusinessResponse {
-  id: number;
+  id: string;
   name: string;
   taxCode: string;
   establishedDate: Date;

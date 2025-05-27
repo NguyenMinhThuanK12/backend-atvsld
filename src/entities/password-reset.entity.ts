@@ -3,10 +3,10 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeor
 @Entity('password_resets')
 export class PasswordReset {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column()
-  user_id: number;
+  user_id: string;
 
   @Column()
   token: string;

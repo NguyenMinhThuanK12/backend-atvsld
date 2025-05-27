@@ -4,11 +4,11 @@ import { Permission } from './permission.entity';
 
 @Entity('role_permissions')
 export class RolePermission {
-  @PrimaryColumn()
-  role_id: number;
+  @PrimaryColumn('uuid')
+  role_id: string;
 
-  @PrimaryColumn()
-  permission_id: number;
+  @PrimaryColumn('uuid')
+  permission_id: string;
 
   @ManyToOne(() => Role, (role) => role.rolePermissions)
   @JoinColumn({ name: 'role_id' })

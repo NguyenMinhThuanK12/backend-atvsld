@@ -13,8 +13,8 @@ import { GenderEnum } from '../../libs/shared/ATVSLD/enums/gender.enum';
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ length: 50, unique: true })
   account: string;
@@ -49,7 +49,7 @@ export class User {
   business: Business;
 
   @Column()
-  business_id: number;
+  business_id: string;
 
   @Column({ default: true })
   is_active: boolean;

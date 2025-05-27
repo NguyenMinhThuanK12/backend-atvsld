@@ -48,10 +48,25 @@ export class BusinessController {
     return this.businessService.findAllPaginated(query);
   }
 
+  @Get(':id')
+  // @UseGuards(JwtAuthGuard)
+  async getBusinessById(@Param('id') id: string): Promise<ApiResponse<BusinessResponse>> {
+    return this.businessService.findById(id);
+  }
   @Get('search')
   // @UseGuards(JwtAuthGuard)
   async findAdvancedBusiness(@Query() query: SearchBusinessQueryRequest) {
     return this.businessService.findAdvanced(query);
+  }
+
+  @Get('check-duplicate-tax-code')
+  async checkDuplicateTaxCode(@Query('taxCode') taxCode: string) {
+    return this.businessService.checkDuplicateTaxCode(taxCode);
+  }
+
+  @Get('check-duplicate-email')
+  async checkDuplicateEmail(@Query('email') email: string) {
+    return this.businessService.checkDuplicateEmail(email);
   }
 
   @Post()
@@ -114,7 +129,7 @@ export class BusinessController {
   @Patch(':id/status')
   // @UseGuards(JwtAuthGuard)
   async updateStatus(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: string,
     @Body() dto: UpdateBusinessStatusRequest,
   ): Promise<ApiResponse<BusinessResponse>> {
     return this.businessService.updateStatus(id, dto.isActive);
@@ -129,7 +144,7 @@ export class BusinessController {
     ]),
   )
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @UploadedFiles() files,
     @Body() dto: UpdateBusinessRequest,
   ): Promise<ApiResponse<BusinessResponse>> {
@@ -138,7 +153,7 @@ export class BusinessController {
 
   @Delete(':id')
   // @UseGuards(JwtAuthGuard)
-  async delete(@Param('id', ParseIntPipe) id: number): Promise<ApiResponse<null>> {
+  async delete(@Param('id') id: string): Promise<ApiResponse<null>> {
     return this.businessService.delete(id);
   }
   @Post('export')

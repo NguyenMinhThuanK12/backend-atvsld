@@ -11,7 +11,7 @@ export class PasswordResetRepository implements IPasswordResetRepository {
     private readonly repo: Repository<PasswordReset>,
   ) {}
 
-  async createAndSave(userId: number, token: string, expiresAt: Date): Promise<PasswordReset> {
+  async createAndSave(userId: string, token: string, expiresAt: Date): Promise<PasswordReset> {
     const reset = this.repo.create({ user_id: userId, token, expires_at: expiresAt });
     return await this.repo.save(reset);
   }

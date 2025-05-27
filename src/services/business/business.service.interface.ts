@@ -7,11 +7,13 @@ import { UpdateBusinessRequest } from 'libs/shared/ATVSLD/models/requests/busine
 import { BusinessResponse } from 'libs/shared/ATVSLD/models/response/business/business.response';
 
 export interface IBusinessService {
-  findById(id: number): Promise<ApiResponse<BusinessResponse>>;
+  findById(id: string): Promise<ApiResponse<BusinessResponse>>;
   findAllPaginated(query: PaginationQueryRequest): Promise<ApiResponse<PaginatedResponse<BusinessResponse>>>;
   findAdvanced(query: SearchBusinessQueryRequest): Promise<ApiResponse<PaginatedResponse<BusinessResponse>>>;
   create(data: CreateBusinessRequest): Promise<ApiResponse<BusinessResponse>>;
-  update(id: number, data: UpdateBusinessRequest): Promise<ApiResponse<BusinessResponse>>;
-  updateStatus(id: number, isActive: boolean): Promise<ApiResponse<BusinessResponse>>;
-  delete(id: number): Promise<ApiResponse<null>>;
+  update(id: string, data: UpdateBusinessRequest): Promise<ApiResponse<BusinessResponse>>;
+  updateStatus(id: string, isActive: boolean): Promise<ApiResponse<BusinessResponse>>;
+  delete(id: string): Promise<ApiResponse<null>>;
+  checkDuplicateTaxCode(taxCode: string): Promise<ApiResponse<boolean>>;
+  checkDuplicateEmail(email: string): Promise<ApiResponse<boolean>>;
 }

@@ -1,11 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { RolePermission } from './role-permission.entity';
 import { PermissionEnum } from '../../libs/shared/ATVSLD/enums/permission.enum';
 
 @Entity('permissions')
 export class Permission {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ length: 100, unique: true })
   code: string;
@@ -16,12 +16,9 @@ export class Permission {
   @Column({ type: 'enum', enum: PermissionEnum })
   type: PermissionEnum;
 
+  @Column({ name: 'parent_code', type: 'varchar', length: 100, nullable: true })
+  parentCode?: string;
+
   @OneToMany(() => RolePermission, (rp) => rp.permission)
   rolePermissions: RolePermission[];
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @DeleteDateColumn({ nullable: true })
-  deletedAt?: Date;
 }

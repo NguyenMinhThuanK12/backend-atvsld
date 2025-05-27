@@ -12,7 +12,7 @@ import { UserModule } from './user.module';
 import { UserToken } from 'src/entities/user-token.entity';
 import { PasswordReset } from 'src/entities/password-reset.entity';
 import { UserRepository } from 'src/repositories/user/user.repository';
-import { PasswordResetRepository } from 'src/repositories/password-reset/password-reset.repository';
+// import { PasswordResetRepository } from 'src/repositories/password-reset/password-reset.repository';
 import { PasswordResetModule } from './password-reset.module';
 @Module({
   imports: [
@@ -36,7 +36,6 @@ import { PasswordResetModule } from './password-reset.module';
       provide: 'IUserRepository',
       useClass: UserRepository,
     },
-    
   ],
   exports: [AuthService],
 })
