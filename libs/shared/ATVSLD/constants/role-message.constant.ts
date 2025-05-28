@@ -3,6 +3,7 @@ export const ERROR_ROLE_CODE_ALREADY_EXISTS = 'Mã vai trò đã tồn tại';
 export const ERROR_ROLE_NOT_FOUND = 'Không tìm thấy vai trò';
 export const ERROR_PERMISSION_NOT_FOUND = 'Một hoặc nhiều quyền không tồn tại';
 export const ERROR_ROLE_MUST_HAVE_PERMISSIONS = 'Vai trò phải có ít nhất một quyền';
+export const ERROR_ROLE_IN_USE = 'Vai trò đang được sử dụng, không thể xóa';
 
 // SUCCESS messages
 export const SUCCESS_GET_ROLE_LIST = 'Lấy danh sách vai trò thành công';

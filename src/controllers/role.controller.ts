@@ -6,6 +6,7 @@ import { RoleResponse } from 'libs/shared/ATVSLD/models/response/role/role.respo
 import { UpdateRoleRequest } from 'libs/shared/ATVSLD/models/requests/role/update-role.request';
 import { PaginatedResponse } from 'libs/shared/ATVSLD/common/paginated-response';
 import { PaginationQueryRequest } from 'libs/shared/ATVSLD/common/pagination-query.request';
+import { SearchRoleQueryRequest } from 'libs/shared/ATVSLD/models/requests/role/search-role-query.request';
 
 @Controller('roles')
 export class RoleController {
@@ -16,6 +17,14 @@ export class RoleController {
     @Query() query: PaginationQueryRequest,
   ): Promise<ApiResponse<PaginatedResponse<RoleResponse>>> {
     return this.roleService.findAllPaginated(query);
+  }
+  @Get('search')
+  async search(@Query() query: SearchRoleQueryRequest) {
+    return this.roleService.findAdvanced(query);
+  }
+  @Get(':id')
+  async getById(@Param('id') id: string): Promise<ApiResponse<RoleResponse>> {
+    return this.roleService.findById(id);
   }
 
   @Post()

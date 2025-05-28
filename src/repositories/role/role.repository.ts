@@ -5,6 +5,7 @@ import { Role } from 'src/entities/role.entity';
 import { BaseRepository } from 'src/repositories/base/base.repository';
 import { IRoleRepository } from './role.repository.interface';
 import { RolePermission } from 'src/entities/role-permission.entity';
+import { SearchRoleQueryRequest } from 'libs/shared/ATVSLD/models/requests/role/search-role-query.request';
 
 @Injectable()
 export class RoleRepository extends BaseRepository<Role> implements IRoleRepository {
@@ -29,5 +30,46 @@ export class RoleRepository extends BaseRepository<Role> implements IRoleReposit
       return rp;
     });
     await this.rolePermissionRepo.save(records);
+  }
+  async clearPermissions(roleId: string): Promise<void> {
+    await this.rolePermissionRepo.delete({ role: { id: roleId } });
+  }
+
+  async findPaginated(page: number, limit: number): Promise<[Role[], number]> {
+    return this.repo.findAndCount({
+      relations: ['rolePermissions'],
+      skip: (page - 1) * limit,
+      take: limit,
+      order: {
+        code: 'ASC', //  Sắp xếp tăng dần theo code
+      } as any,
+    });
+  }
+
+  async findById(id: string): Promise<Role | null> {
+    return this.repo.findOne({
+      where: { id },
+      relations: ['rolePermissions'],
+      order: {
+        code: 'ASC', //  Sắp xếp tăng dần theo code
+      } as any,
+    });
+  }
+
+  async findAdvanced(query: SearchRoleQueryRequest): Promise<[Role[], number]> {
+    const qb = this.repo.createQueryBuilder('role').leftJoinAndSelect('role.rolePermissions', 'rolePermissions');
+
+    if (query.code) {
+      qb.andWhere('role.code ILIKE :code', { code: `%${query.code}%` });
+    }
+
+    if (query.name) {
+      qb.andWhere('role.name ILIKE :name', { name: `%${query.name}%` });
+    }
+
+    qb.orderBy('role.code', 'ASC');
+    qb.skip((query.page - 1) * query.limit).take(query.limit);
+
+    return qb.getManyAndCount();
   }
 }

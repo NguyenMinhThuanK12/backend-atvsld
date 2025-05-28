@@ -48,17 +48,6 @@ export class BusinessController {
     return this.businessService.findAllPaginated(query);
   }
 
-  @Get(':id')
-  // @UseGuards(JwtAuthGuard)
-  async getBusinessById(@Param('id') id: string): Promise<ApiResponse<BusinessResponse>> {
-    return this.businessService.findById(id);
-  }
-  @Get('search')
-  // @UseGuards(JwtAuthGuard)
-  async findAdvancedBusiness(@Query() query: SearchBusinessQueryRequest) {
-    return this.businessService.findAdvanced(query);
-  }
-
   @Get('check-duplicate-tax-code')
   async checkDuplicateTaxCode(@Query('taxCode') taxCode: string) {
     return this.businessService.checkDuplicateTaxCode(taxCode);
@@ -67,6 +56,18 @@ export class BusinessController {
   @Get('check-duplicate-email')
   async checkDuplicateEmail(@Query('email') email: string) {
     return this.businessService.checkDuplicateEmail(email);
+  }
+
+  @Get('search')
+  // @UseGuards(JwtAuthGuard)
+  async findAdvancedBusiness(@Query() query: SearchBusinessQueryRequest) {
+    return this.businessService.findAdvanced(query);
+  }
+
+  @Get(':id')
+  // @UseGuards(JwtAuthGuard)
+  async getBusinessById(@Param('id') id: string): Promise<ApiResponse<BusinessResponse>> {
+    return this.businessService.findById(id);
   }
 
   @Post()

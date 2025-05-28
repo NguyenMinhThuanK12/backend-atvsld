@@ -4,10 +4,11 @@ import {
   IPermissionRepository as IPermissionRepoToken,
 } from 'src/repositories/permission/permission.repository.interface';
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
-import { PermissionEnum } from 'libs/shared/ATVSLD/enums/permission.enum';
-import { PermissionResponse } from 'libs/shared/ATVSLD/models/response/permission/permission.response';
 import { mapToPermissionResponse } from 'libs/shared/ATVSLD/mappers/permission.mapper';
+import { PaginationQueryRequest } from 'libs/shared/ATVSLD/common/pagination-query.request';
 import { SUCCESS_GET_PERMISSION_GROUPED } from 'libs/shared/ATVSLD/constants/permission-message.constant';
+import { PaginatedResponse } from 'libs/shared/ATVSLD/common/paginated-response';
+import { PermissionResponse } from 'libs/shared/ATVSLD/models/response/permission/permission.response';
 
 @Injectable()
 export class PermissionService {
@@ -16,17 +17,27 @@ export class PermissionService {
     private readonly permissionRepo: IPermissionRepository,
   ) {}
 
-  async getGroupedPermissions(): Promise<ApiResponse<PermissionResponse[]>> {
-    const all = await this.permissionRepo.findAll();
-    const groups = all.filter((p) => p.type === PermissionEnum.GROUP);
-    const components = all.filter((p) => p.type === PermissionEnum.COMPONENT);
+  async getGroupPermissions(query: PaginationQueryRequest) {
+    const [items, total] = await this.permissionRepo.findGroupPaginated(query.page, query.limit);
+    const data = items.map((item) => mapToPermissionResponse(item));
 
-    const result: PermissionResponse[] = groups.map((group) => {
-      const children = components.filter((c) => c.parentCode === group.code).map((c) => mapToPermissionResponse(c));
+    const response: PaginatedResponse<PermissionResponse> = {
+      data,
+      meta: {
+        totalItems: total,
+        itemCount: data.length,
+        itemsPerPage: query.limit,
+        totalPages: Math.ceil(total / query.limit),
+        currentPage: query.page,
+      },
+    };
 
-      return mapToPermissionResponse(group, children);
-    });
+    return ApiResponse.success(200, SUCCESS_GET_PERMISSION_GROUPED, response);
+  }
+  async getComponentPermissionsByGroup(parentCode: string) {
+    const items = await this.permissionRepo.findComponentsByParentCode(parentCode);
+    const data = items.map(mapToPermissionResponse);
 
-    return ApiResponse.success(200, SUCCESS_GET_PERMISSION_GROUPED, result);
+    return ApiResponse.success(200, SUCCESS_GET_PERMISSION_GROUPED, data);
   }
 }

@@ -5,6 +5,5 @@ export class PermissionResponse {
   code: string;
   name: string;
   type: PermissionEnum; // 'Group' | 'Component'
-  parentCode?: string;
-  children?: PermissionResponse[]; // dùng khi type === 'Group'
+  parentCode?: string; // chỉ có nếu là Component
 }

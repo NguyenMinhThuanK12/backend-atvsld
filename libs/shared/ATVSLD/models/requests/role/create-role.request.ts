@@ -1,5 +1,15 @@
+import { IsString, IsNotEmpty, IsArray, IsUUID } from 'class-validator';
+
 export class CreateRoleRequest {
+  @IsString()
+  @IsNotEmpty()
   code: string;
+
+  @IsString()
+  @IsNotEmpty()
   name: string;
-  permissionIds: string[]; // UUID của các quyền
+
+  @IsArray()
+  @IsUUID('all', { each: true })
+  permissionIds: string[];
 }

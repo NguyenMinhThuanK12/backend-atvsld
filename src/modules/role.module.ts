@@ -9,9 +9,12 @@ import { RoleController } from 'src/controllers/role.controller';
 import { IPermissionRepository } from 'src/repositories/permission/permission.repository.interface';
 import { PermissionRepository } from 'src/repositories/permission/permission.repository';
 import { Permission } from 'src/entities/permission.entity';
+import { User } from 'src/entities/user.entity';
+import { IUserRepository } from 'src/repositories/user/user.repository.interface';
+import { UserRepository } from 'src/repositories/user/user.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Role, RolePermission, Permission])],
+  imports: [TypeOrmModule.forFeature([Role, RolePermission, Permission, User])],
   providers: [
     RoleService,
     {
@@ -21,6 +24,10 @@ import { Permission } from 'src/entities/permission.entity';
     {
       provide: IPermissionRepository,
       useClass: PermissionRepository,
+    },
+    {
+      provide: IUserRepository,
+      useClass: UserRepository,
     },
   ],
   controllers: [RoleController],
