@@ -39,7 +39,7 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
       skip: (page - 1) * limit,
       take: limit,
       order: {
-        id: 'DESC',
+        createdAt: 'DESC',
       } as any,
     });
   }

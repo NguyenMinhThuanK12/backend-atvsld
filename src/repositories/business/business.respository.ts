@@ -64,8 +64,8 @@ export class BusinessRepository extends BaseRepository<Business> implements IBus
       });
     }
 
-    // Sắp xếp theo ID giảm dần
-    qb.orderBy('business.id', 'DESC');
+    // Sắp xếp theo Ngày tạotạo giảm dần
+    qb.orderBy('business.createdAt', 'DESC');
 
     // phân trang
     qb.skip((query.page - 1) * query.limit).take(query.limit);
