@@ -20,17 +20,17 @@ export class SearchBusinessQueryRequest extends PaginationQueryRequest {
 
   @IsOptional()
   @IsString()
-  operationCity?: string;
+  registrationCity?: string;
 
   @IsOptional()
   @IsString()
-  operationDistrict?: string;
+  registrationDistrict?: string;
 
   @IsOptional()
   @IsString()
-  operationWard?: string;
+  registrationWard?: string;
 
   @IsOptional()
   @IsString()
-  operationAddress?: string;
+  registrationAddress?: string;
 }

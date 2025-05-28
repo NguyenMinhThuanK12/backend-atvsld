@@ -17,8 +17,11 @@ export class PermissionService {
     private readonly permissionRepo: IPermissionRepository,
   ) {}
 
-  async getGroupPermissions(query: PaginationQueryRequest) {
-    const [items, total] = await this.permissionRepo.findGroupPaginated(query.page, query.limit);
+  async getGroupPermissions(query: PaginationQueryRequest & { code?: string; name?: string }) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+
+    const [items, total] = await this.permissionRepo.findGroupPaginated(page, limit, query.code, query.name);
     const data = items.map((item) => mapToPermissionResponse(item));
 
     const response: PaginatedResponse<PermissionResponse> = {
@@ -26,14 +29,15 @@ export class PermissionService {
       meta: {
         totalItems: total,
         itemCount: data.length,
-        itemsPerPage: query.limit,
-        totalPages: Math.ceil(total / query.limit),
-        currentPage: query.page,
+        itemsPerPage: limit,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
       },
     };
 
     return ApiResponse.success(200, SUCCESS_GET_PERMISSION_GROUPED, response);
   }
+
   async getComponentPermissionsByGroup(parentCode: string) {
     const items = await this.permissionRepo.findComponentsByParentCode(parentCode);
     const data = items.map(mapToPermissionResponse);

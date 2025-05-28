@@ -8,7 +8,6 @@ import {
   Patch,
   Delete,
   Param,
-  ParseIntPipe,
   UseInterceptors,
   HttpException,
   HttpStatus,
@@ -16,6 +15,7 @@ import {
   // Header,
   Res,
   UploadedFiles,
+  // UseGuards,
 } from '@nestjs/common';
 // import { JwtAuthGuard } from 'libs/core/auth/jwt-auth.guard';
 import { BusinessService } from 'src/services/business/business.service';
@@ -34,8 +34,12 @@ import { Express } from 'express';
 import { Response } from 'express';
 import { BusinessImportService } from 'src/imports/business-import.service';
 import { ExportBusinessRequest } from 'libs/shared/ATVSLD/models/requests/export/export-business.request';
+// import { JwtAuthGuard } from 'libs/core/auth/jwt-auth.guard';
+// import { PermissionsGuard } from 'libs/core/auth/permissions.guard';
+// import { Permission } from 'libs/core/auth/permissions.decorator';
 
 @Controller('business')
+// @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class BusinessController {
   constructor(
     private readonly businessService: BusinessService,
@@ -43,7 +47,7 @@ export class BusinessController {
   ) {}
 
   @Get()
-  // @UseGuards(JwtAuthGuard)
+  // @Permission('ADMIN.C_DEPARTMENT_VIEW')
   async getAllBusiness(@Query() query: PaginationQueryRequest) {
     return this.businessService.findAllPaginated(query);
   }
@@ -59,19 +63,16 @@ export class BusinessController {
   }
 
   @Get('search')
-  // @UseGuards(JwtAuthGuard)
   async findAdvancedBusiness(@Query() query: SearchBusinessQueryRequest) {
     return this.businessService.findAdvanced(query);
   }
 
   @Get(':id')
-  // @UseGuards(JwtAuthGuard)
   async getBusinessById(@Param('id') id: string): Promise<ApiResponse<BusinessResponse>> {
     return this.businessService.findById(id);
   }
 
   @Post()
-  // @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -100,7 +101,6 @@ export class BusinessController {
   }
 
   @Post('import')
-  // @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -128,16 +128,14 @@ export class BusinessController {
   }
 
   @Patch(':id/status')
-  // @UseGuards(JwtAuthGuard)
   async updateStatus(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('id') id: string,
     @Body() dto: UpdateBusinessStatusRequest,
   ): Promise<ApiResponse<BusinessResponse>> {
     return this.businessService.updateStatus(id, dto.isActive);
   }
 
   @Patch(':id')
-  // @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'businessLicense', maxCount: 1 },
@@ -153,12 +151,10 @@ export class BusinessController {
   }
 
   @Delete(':id')
-  // @UseGuards(JwtAuthGuard)
   async delete(@Param('id') id: string): Promise<ApiResponse<null>> {
     return this.businessService.delete(id);
   }
   @Post('export')
-  // @UseGuards(JwtAuthGuard)
   async exportPdf(@Body() dto: ExportBusinessRequest, @Res() res: Response): Promise<void> {
     const pdfBuffer = await this.businessService.exportPdf(dto.ids);
     res.set({

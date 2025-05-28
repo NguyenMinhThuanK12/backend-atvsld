@@ -8,9 +8,10 @@ import { BusinessRepository } from 'src/repositories/business/business.resposito
 import { BusinessImportService } from 'src/imports/business-import.service';
 import { PdfModule } from './pdf.module';
 import { SupabaseModule } from 'libs/core/supabase/supabase.module';
+import { PermissionModule } from './permission.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Business]), PdfModule, SupabaseModule],
+  imports: [TypeOrmModule.forFeature([Business]), PdfModule, SupabaseModule, PermissionModule],
   controllers: [BusinessController],
   providers: [
     BusinessImportService,

@@ -4,6 +4,7 @@ import { Permission } from 'src/entities/permission.entity';
 export const IPermissionRepository = 'IPermissionRepository';
 
 export interface IPermissionRepository extends IBaseRepository<Permission> {
-  findGroupPaginated(page: number, limit: number): Promise<[Permission[], number]>;
+  findGroupPaginated(page: number, limit: number, code?: string, name?: string): Promise<[Permission[], number]>;
   findComponentsByParentCode(parentCode: string): Promise<Permission[]>;
+  getPermissionCodesByUserId(userId: string): Promise<string[]>;
 }

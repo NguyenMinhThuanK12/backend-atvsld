@@ -10,7 +10,9 @@ export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
   @Get('groups')
-  async getGroups(@Query() query: PaginationQueryRequest): Promise<ApiResponse<PaginatedResponse<PermissionResponse>>> {
+  async getGroups(
+    @Query() query: PaginationQueryRequest & { code?: string; name?: string },
+  ): Promise<ApiResponse<PaginatedResponse<PermissionResponse>>> {
     return this.permissionService.getGroupPermissions(query);
   }
 

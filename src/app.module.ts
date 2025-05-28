@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import configuration from './configurations/configuration';
+import { APP_GUARD } from '@nestjs/core';
+import { PermissionsGuard } from 'libs/core/auth/permissions.guard';
 
 import { UserModule } from './modules/user.module';
 import { BusinessModule } from './modules/business.module';
@@ -56,7 +58,13 @@ import { SupabaseModule } from 'libs/core/supabase/supabase.module';
     RoleModule,
   ],
   controllers: [],
-  providers: [CloudinaryService],
+  providers: [
+    CloudinaryService,
+    {
+      provide: APP_GUARD,
+      useClass: PermissionsGuard, // Kích hoạt guard toàn cục
+    },
+  ],
   exports: [CloudinaryService],
 })
 export class AppModule {}

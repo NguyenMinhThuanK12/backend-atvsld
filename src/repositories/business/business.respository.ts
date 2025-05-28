@@ -27,11 +27,11 @@ export class BusinessRepository extends BaseRepository<Business> implements IBus
     const qb = this.repo.createQueryBuilder('business');
 
     if (query.name) {
-      qb.andWhere('business.name ILIKE :name', { name: `%${query.name}%` });
+      qb.andWhere('unaccent(business.name) ILIKE unaccent(:name)', { name: `%${query.name}%` });
     }
 
     if (query.taxCode) {
-      qb.andWhere('business.taxCode ILIKE :taxCode', { taxCode: `%${query.taxCode}%` });
+      qb.andWhere('unaccent(business.taxCode) ILIKE unaccent(:taxCode)', { taxCode: `%${query.taxCode}%` });
     }
 
     if (query.businessType) {
@@ -39,35 +39,39 @@ export class BusinessRepository extends BaseRepository<Business> implements IBus
     }
 
     if (query.mainBusinessField) {
-      qb.andWhere('business.mainBusinessField ILIKE :mainBusinessField', {
+      qb.andWhere('unaccent(business.mainBusinessField) ILIKE unaccent(:mainBusinessField)', {
         mainBusinessField: `%${query.mainBusinessField}%`,
       });
     }
 
-    if (query.operationCity) {
-      qb.andWhere('business.operationCity = :operationCity', { operationCity: query.operationCity });
-    }
-
-    if (query.operationDistrict) {
-      qb.andWhere('business.operationDistrict = :operationDistrict', {
-        operationDistrict: query.operationDistrict,
+    if (query.registrationCity) {
+      qb.andWhere('unaccent(business.registrationCity) ILIKE unaccent(:registrationCity)', {
+        registrationCity: `%${query.registrationCity}%`,
       });
     }
 
-    if (query.operationWard) {
-      qb.andWhere('business.operationWard = :operationWard', { operationWard: query.operationWard });
-    }
-
-    if (query.operationAddress) {
-      qb.andWhere('business.operationAddress ILIKE :operationAddress', {
-        operationAddress: `%${query.operationAddress}%`,
+    if (query.registrationDistrict) {
+      qb.andWhere('unaccent(business.registrationDistrict) ILIKE unaccent(:registrationDistrict)', {
+        registrationDistrict: `%${query.registrationDistrict}%`,
       });
     }
 
-    // Sắp xếp theo Ngày tạotạo giảm dần
+    if (query.registrationWard) {
+      qb.andWhere('unaccent(business.registrationWard) ILIKE unaccent(:registrationWard)', {
+        registrationWard: `%${query.registrationWard}%`,
+      });
+    }
+
+    if (query.registrationAddress) {
+      qb.andWhere('unaccent(business.registrationAddress) ILIKE unaccent(:registrationAddress)', {
+        registrationAddress: `%${query.registrationAddress}%`,
+      });
+    }
+
+    // Sắp xếp theo Ngày tạo giảm dần
     qb.orderBy('business.createdAt', 'DESC');
 
-    // phân trang
+    // Phân trang
     qb.skip((query.page - 1) * query.limit).take(query.limit);
 
     return qb.getManyAndCount();
