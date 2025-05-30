@@ -17,7 +17,6 @@ import { Repository } from 'typeorm/repository/Repository';
 
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 
-import { UserAuthenticatedResponse } from 'libs/shared/ATVSLD/models/response/user/userAuthenticated';
 import { ForgotPasswordRequest } from 'libs/shared/ATVSLD/models/requests/auth/forgot-password.request';
 import { ResetPasswordRequest } from 'libs/shared/ATVSLD/models/requests/auth/reset-password.request';
 import {
@@ -32,6 +31,8 @@ import {
   EMAIL_RESET_PASSWORD_SUCCESS,
   ERROR_EMAIL_NOT_FOUND,
 } from 'libs/shared/ATVSLD/constants/mail.constant';
+import { IPermissionRepository } from 'src/repositories/permission/permission.repository.interface';
+import { JwtPayload } from 'libs/shared/ATVSLD/models/requests/auth/jwt-payload';
 
 @Injectable()
 export class AuthService {
@@ -44,6 +45,9 @@ export class AuthService {
 
     @Inject('IPasswordResetRepository')
     private readonly passwordResetRepository: IPasswordResetRepository,
+
+    @Inject('IPermissionRepository')
+    private readonly permissionRepo: IPermissionRepository,
 
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -72,11 +76,9 @@ export class AuthService {
   //  login trả access + refresh token
   async login(account: string, password: string) {
     const user = await this.validateUser(account, password);
-    const payload: UserAuthenticatedResponse = {
+    const userPermissions = await this.permissionRepo.getPermissionCodesByUserId(user.id);
+    const payload: JwtPayload = {
       id: user.id,
-      account: user.account,
-      full_name: user.full_name,
-      role_code: user.role?.code ?? '',
     };
 
     const access_token = this.jwtService.sign(payload, {
@@ -101,8 +103,7 @@ export class AuthService {
       userAuthenticated: {
         id: user.id,
         full_name: user.full_name,
-        account: user.account,
-        role_code: payload.role_code,
+        permissions: userPermissions,
       },
     } as AuthResponse;
   }

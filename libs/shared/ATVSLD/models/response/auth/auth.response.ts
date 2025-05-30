@@ -1,7 +1,9 @@
-import { UserAuthenticatedResponse } from '../user/userAuthenticated';
-
 export interface AuthResponse {
-  userAuthenticated: UserAuthenticatedResponse;
+  userAuthenticated: {
+    id: string;
+    full_name: string;
+    permissions: string[];
+  };
   access_token: string;
   refresh_token: string;
 }

@@ -1,5 +1,6 @@
 // ERROR messages
 export const ERROR_ROLE_CODE_ALREADY_EXISTS = 'Mã vai trò đã tồn tại';
+export const ERROR_ROLE_NAME_ALREADY_EXISTS = 'Tên vai trò đã tồn tại';
 export const ERROR_ROLE_NOT_FOUND = 'Không tìm thấy vai trò';
 export const ERROR_PERMISSION_NOT_FOUND = 'Một hoặc nhiều quyền không tồn tại';
 export const ERROR_ROLE_MUST_HAVE_PERMISSIONS = 'Vai trò phải có ít nhất một quyền';

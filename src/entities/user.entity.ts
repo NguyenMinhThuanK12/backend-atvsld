@@ -10,6 +10,7 @@ import {
 import { Role } from './role.entity';
 import { Business } from './business.entity';
 import { GenderEnum } from '../../libs/shared/ATVSLD/enums/gender.enum';
+import { UserTypeEnum } from '../../libs/shared/ATVSLD/enums/user-type.enum';
 
 @Entity('users')
 export class User {
@@ -31,6 +32,9 @@ export class User {
   @Column({ type: 'enum', enum: GenderEnum })
   gender: GenderEnum;
 
+  @Column({ type: 'enum', enum: UserTypeEnum })
+  user_type: UserTypeEnum;
+
   @Column({ type: 'date', nullable: true })
   birthday: Date;
 
@@ -48,7 +52,7 @@ export class User {
   @JoinColumn({ name: 'business_id' })
   business: Business;
 
-  @Column()
+  @Column({ nullable: true })
   business_id: string;
 
   @Column({ default: true })

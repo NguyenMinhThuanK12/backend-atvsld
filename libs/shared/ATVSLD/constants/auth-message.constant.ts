@@ -2,7 +2,6 @@ export const SUCCESS_LOGIN = 'Đăng nhập thành công';
 export const SUCCESS_LOGOUT = 'Đăng xuất thành công';
 export const SUCCESS_REFRESH_TOKEN = 'Làm mới access_token thành công';
 export const SUCCESS_RESET_PASSWORD = 'Khôi phục mật khẩu thành công';
-
 export const ERROR_INVALID_ACCOUNT = 'Tài khoản hoặc mật khẩu không đúng';
 export const ERROR_INACTIVE_ACCOUNT = 'Tài khoản đã bị khóa';
 export const ERROR_INVALID_TOKEN = 'Token hết hạn hoặc không hợp lệ';

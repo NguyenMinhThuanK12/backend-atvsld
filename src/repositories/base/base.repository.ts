@@ -1,4 +1,4 @@
-import { DeepPartial, In, Repository } from 'typeorm';
+import { DeepPartial, FindOptionsWhere, In, Repository } from 'typeorm';
 import { IBaseRepository } from './base.repository.interface';
 
 export abstract class BaseRepository<T> implements IBaseRepository<T> {
@@ -53,11 +53,26 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
   }
 
   // kiểm tra trùng khi cập nhật (trừ chính nó ra)
-  async checkDuplicateFieldExceptId<K extends keyof T>(field: K, value: T[K], id: string): Promise<boolean> {
-    if (!value) return false;
 
-    const where = { [field]: value } as any;
-    const result = await this.repo.findOne({ where });
-    return !!(result && (result as any).id !== id);
+  async checkDuplicateFieldExceptId<K extends keyof T>(field: K, value: T[K], id: string): Promise<boolean> {
+    if (!value) {
+      return false;
+    }
+
+    const condition: FindOptionsWhere<T> = {
+      [field]: value,
+    } as unknown as FindOptionsWhere<T>;
+
+    const existingRecord = await this.repo.findOne({ where: condition });
+
+    if (!existingRecord) {
+      return false;
+    }
+
+    if ((existingRecord as T & { id: string }).id === id) {
+      return false;
+    }
+
+    return true;
   }
 }

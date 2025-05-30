@@ -38,4 +38,6 @@ export default () => ({
   frontend: {
     url: process.env.FRONTEND_URL || 'http://localhost:3001',
   },
+  authDisabled: process.env.AUTH_DISABLED === 'true',
+  permissionDisabled: process.env.PERMISSION_DISABLED === 'true',
 });

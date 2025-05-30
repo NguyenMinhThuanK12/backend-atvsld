@@ -14,6 +14,7 @@ import { AuthModule } from './modules/auth.module';
 import { PdfModule } from './modules/pdf.module';
 import { CloudinaryService } from 'libs/core/cloudinary/cloudinary.service';
 import { SupabaseModule } from 'libs/core/supabase/supabase.module';
+import { JwtAuthGuard } from 'libs/core/auth/jwt-auth.guard';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -62,7 +63,11 @@ import { SupabaseModule } from 'libs/core/supabase/supabase.module';
     CloudinaryService,
     {
       provide: APP_GUARD,
-      useClass: PermissionsGuard, // Kích hoạt guard toàn cục
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionsGuard,
     },
   ],
   exports: [CloudinaryService],

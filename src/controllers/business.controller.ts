@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  // UseGuards,
   Body,
   Post,
   Query,
@@ -12,16 +11,12 @@ import {
   HttpException,
   HttpStatus,
   UploadedFile,
-  // Header,
   Res,
   UploadedFiles,
-  // UseGuards,
 } from '@nestjs/common';
-// import { JwtAuthGuard } from 'libs/core/auth/jwt-auth.guard';
 import { BusinessService } from 'src/services/business/business.service';
 import { CreateBusinessRequest } from 'libs/shared/ATVSLD/models/requests/business/create-business.request';
 import { BusinessResponse } from 'libs/shared/ATVSLD/models/response/business/business.response';
-
 import { UpdateBusinessRequest } from 'libs/shared/ATVSLD/models/requests/business/update-business.request';
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import { PaginationQueryRequest } from 'libs/shared/ATVSLD/common/pagination-query.request';
@@ -30,28 +25,20 @@ import { UpdateBusinessStatusRequest } from 'libs/shared/ATVSLD/models/requests/
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
-import { Express } from 'express';
-import { Response } from 'express';
+import { Express, Response } from 'express';
 import { BusinessImportService } from 'src/imports/business-import.service';
 import { ExportBusinessRequest } from 'libs/shared/ATVSLD/models/requests/export/export-business.request';
-// import { JwtAuthGuard } from 'libs/core/auth/jwt-auth.guard';
-// import { PermissionsGuard } from 'libs/core/auth/permissions.guard';
-// import { Permission } from 'libs/core/auth/permissions.decorator';
+import { RequirePermission } from 'libs/core/auth/require-permission.decorator';
+import { PermissionConstant } from 'libs/shared/ATVSLD/constants/permission-message.constant';
 
-@Controller('business')
-// @UseGuards(JwtAuthGuard, PermissionsGuard)
+@Controller('businesses')
 export class BusinessController {
   constructor(
     private readonly businessService: BusinessService,
     private readonly businessImportService: BusinessImportService,
   ) {}
 
-  @Get()
-  // @Permission('ADMIN.C_DEPARTMENT_VIEW')
-  async getAllBusiness(@Query() query: PaginationQueryRequest) {
-    return this.businessService.findAllPaginated(query);
-  }
-
+  // ------- PUBLIC -------
   @Get('check-duplicate-tax-code')
   async checkDuplicateTaxCode(@Query('taxCode') taxCode: string) {
     return this.businessService.checkDuplicateTaxCode(taxCode);
@@ -62,16 +49,38 @@ export class BusinessController {
     return this.businessService.checkDuplicateEmail(email);
   }
 
+  // ------- VIEW -------
+  @RequirePermission(PermissionConstant.BUSINESS.VIEW)
+  @Get()
+  async getAllBusiness(@Query() query: PaginationQueryRequest) {
+    return this.businessService.findAllPaginated(query);
+  }
+
+  @RequirePermission(PermissionConstant.BUSINESS.CREATE)
   @Get('search')
   async findAdvancedBusiness(@Query() query: SearchBusinessQueryRequest) {
     return this.businessService.findAdvanced(query);
   }
 
+  @RequirePermission(PermissionConstant.BUSINESS.VIEW)
   @Get(':id')
   async getBusinessById(@Param('id') id: string): Promise<ApiResponse<BusinessResponse>> {
     return this.businessService.findById(id);
   }
 
+  @RequirePermission(PermissionConstant.BUSINESS.VIEW)
+  @Post('export')
+  async exportPdf(@Body() dto: ExportBusinessRequest, @Res() res: Response): Promise<void> {
+    const pdfBuffer = await this.businessService.exportPdf(dto.ids);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename="danhsach_doanhnghiep.pdf"',
+    });
+    res.send(pdfBuffer);
+  }
+
+  // ------- CREATE -------
+  @RequirePermission(PermissionConstant.BUSINESS.CREATE)
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -90,16 +99,13 @@ export class BusinessController {
     ),
   )
   async createBusinessWithFiles(
-    @UploadedFiles()
-    files: {
-      businessLicense?: Express.Multer.File[];
-      otherDocument?: Express.Multer.File[];
-    },
+    @UploadedFiles() files: { businessLicense?: Express.Multer.File[]; otherDocument?: Express.Multer.File[] },
     @Body() dto: CreateBusinessRequest,
   ): Promise<ApiResponse<BusinessResponse>> {
     return this.businessService.create(dto, files);
   }
 
+  @RequirePermission(PermissionConstant.BUSINESS.CREATE)
   @Post('import')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -123,10 +129,11 @@ export class BusinessController {
     if (!file) {
       throw new HttpException('Không có file nào được upload', HttpStatus.BAD_REQUEST);
     }
-
     return this.businessImportService.importFromExcel(file.path);
   }
 
+  // ------- UPDATE -------
+  @RequirePermission(PermissionConstant.BUSINESS.UPDATE)
   @Patch(':id/status')
   async updateStatus(
     @Param('id') id: string,
@@ -135,6 +142,7 @@ export class BusinessController {
     return this.businessService.updateStatus(id, dto.isActive);
   }
 
+  @RequirePermission(PermissionConstant.BUSINESS.UPDATE)
   @Patch(':id')
   @UseInterceptors(
     FileFieldsInterceptor([
@@ -150,17 +158,10 @@ export class BusinessController {
     return this.businessService.update(id, dto, files);
   }
 
+  // ------- DELETE -------
+  @RequirePermission(PermissionConstant.BUSINESS.DELETE)
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<ApiResponse<null>> {
     return this.businessService.delete(id);
-  }
-  @Post('export')
-  async exportPdf(@Body() dto: ExportBusinessRequest, @Res() res: Response): Promise<void> {
-    const pdfBuffer = await this.businessService.exportPdf(dto.ids);
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': 'attachment; filename="danhsach_doanhnghiep.pdf"',
-    });
-    res.send(pdfBuffer);
   }
 }
