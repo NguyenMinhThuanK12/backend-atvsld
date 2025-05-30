@@ -29,7 +29,7 @@ import { Express, Response } from 'express';
 import { BusinessImportService } from 'src/imports/business-import.service';
 import { ExportBusinessRequest } from 'libs/shared/ATVSLD/models/requests/export/export-business.request';
 import { RequirePermission } from 'libs/core/auth/require-permission.decorator';
-import { PermissionConstant } from 'libs/shared/ATVSLD/constants/permission-message.constant';
+import { PermissionConstant } from 'libs/shared/ATVSLD/common/permission';
 
 @Controller('businesses')
 export class BusinessController {

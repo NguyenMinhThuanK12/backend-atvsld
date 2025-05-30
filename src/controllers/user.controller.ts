@@ -4,7 +4,7 @@ import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import { UserResponse } from 'libs/shared/ATVSLD/models/response/user/user.response';
 import { PaginatedResponse } from 'libs/shared/ATVSLD/common/paginated-response';
 import { RequirePermission } from 'libs/core/auth/require-permission.decorator';
-import { PermissionConstant } from 'libs/shared/ATVSLD/constants/permission-message.constant';
+import { PermissionConstant } from 'libs/shared/ATVSLD/common/permission';
 import { CreateUserRequest } from 'libs/shared/ATVSLD/models/requests/user/create-user.request';
 import { SearchUserQueryRequest } from 'libs/shared/ATVSLD/models/requests/user/search-user-query.request';
 import { UpdateUserRequest } from 'libs/shared/ATVSLD/models/requests/user/update-user.request';

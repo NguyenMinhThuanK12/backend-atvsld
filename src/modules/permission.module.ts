@@ -5,7 +5,7 @@ import { PermissionService } from 'src/services/permission/permission.service';
 
 import { PermissionRepository } from 'src/repositories/permission/permission.repository';
 import { IPermissionRepository } from 'src/repositories/permission/permission.repository.interface';
-import { PermissionController } from 'src/controllers/permission.contrller';
+import { PermissionController } from 'src/controllers/permission.controller';
 import { IUserRepository } from 'src/repositories/user/user.repository.interface';
 import { UserRepository } from 'src/repositories/user/user.repository';
 import { User } from 'src/entities/user.entity';

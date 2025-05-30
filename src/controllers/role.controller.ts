@@ -8,7 +8,7 @@ import { PaginatedResponse } from 'libs/shared/ATVSLD/common/paginated-response'
 import { PaginationQueryRequest } from 'libs/shared/ATVSLD/common/pagination-query.request';
 import { SearchRoleQueryRequest } from 'libs/shared/ATVSLD/models/requests/role/search-role-query.request';
 import { RequirePermission } from 'libs/core/auth/require-permission.decorator';
-import { PermissionConstant } from 'libs/shared/ATVSLD/constants/permission-message.constant';
+import { PermissionConstant } from 'libs/shared/ATVSLD/common/permission';
 
 @Controller('roles')
 export class RoleController {

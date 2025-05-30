@@ -33,6 +33,7 @@ import {
 } from 'libs/shared/ATVSLD/constants/mail.constant';
 import { IPermissionRepository } from 'src/repositories/permission/permission.repository.interface';
 import { JwtPayload } from 'libs/shared/ATVSLD/models/requests/auth/jwt-payload';
+import { mapPermissionsToBooleanObject } from 'libs/shared/ATVSLD/common/permission';
 
 @Injectable()
 export class AuthService {
@@ -77,6 +78,7 @@ export class AuthService {
   async login(account: string, password: string) {
     const user = await this.validateUser(account, password);
     const userPermissions = await this.permissionRepo.getPermissionCodesByUserId(user.id);
+    const permissionMap = mapPermissionsToBooleanObject(userPermissions);
     const payload: JwtPayload = {
       id: user.id,
     };
@@ -103,7 +105,7 @@ export class AuthService {
       userAuthenticated: {
         id: user.id,
         full_name: user.full_name,
-        permissions: userPermissions,
+        permissions: permissionMap,
       },
     } as AuthResponse;
   }

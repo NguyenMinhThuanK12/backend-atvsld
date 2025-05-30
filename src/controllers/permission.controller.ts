@@ -4,9 +4,9 @@ import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import { PermissionResponse } from 'libs/shared/ATVSLD/models/response/permission/permission.response';
 import { PaginatedResponse } from 'libs/shared/ATVSLD/common/paginated-response';
 import { RequirePermission } from 'libs/core/auth/require-permission.decorator';
-import { PermissionConstant } from 'libs/shared/ATVSLD/constants/permission-message.constant';
 import { SearchPermissionGroupRequest } from 'libs/shared/ATVSLD/models/requests/permission/search-permission-group.request';
 import { SearchPermissionComponentRequest } from 'libs/shared/ATVSLD/models/requests/permission/search-permission-component.request';
+import { PermissionConstant } from 'libs/shared/ATVSLD/common/permission';
 @Controller('permissions')
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
