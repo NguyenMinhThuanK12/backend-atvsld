@@ -96,10 +96,11 @@ export class RoleService implements IRoleService {
     }
 
     // Gán quyền
-    const updated = await this.roleRepo.update(role, data);
+    await this.roleRepo.update(role, data);
     await this.roleRepo.assignPermissions(id, data.permissionIds);
-    const result = mapToRoleResponse(updated);
-    return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_ROLE, result);
+    //  Load lại để có rolePermissions
+    const result = await this.roleRepo.findById(id);
+    return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_ROLE, mapToRoleResponse(result));
   }
 
   async deleteRole(id: string): Promise<ApiResponse<null>> {
