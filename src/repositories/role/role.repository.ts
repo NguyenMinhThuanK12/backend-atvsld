@@ -44,7 +44,7 @@ export class RoleRepository extends BaseRepository<Role> implements IRoleReposit
       skip: (page - 1) * limit,
       take: limit,
       order: {
-        code: 'ASC', //  Sắp xếp tăng dần theo code
+        createdAt: 'DESC',
       } as any,
     });
   }
@@ -54,7 +54,7 @@ export class RoleRepository extends BaseRepository<Role> implements IRoleReposit
       where: { id },
       relations: ['rolePermissions'],
       order: {
-        code: 'ASC', //  Sắp xếp tăng dần theo code
+        createdAt: 'DESC',
       } as any,
     });
   }
@@ -70,7 +70,7 @@ export class RoleRepository extends BaseRepository<Role> implements IRoleReposit
       qb.andWhere('role.name ILIKE :name', { name: `%${query.name}%` });
     }
 
-    qb.orderBy('role.code', 'ASC');
+    qb.orderBy('role.createdAt', 'DESC');
     qb.skip((query.page - 1) * query.limit).take(query.limit);
 
     return qb.getManyAndCount();
