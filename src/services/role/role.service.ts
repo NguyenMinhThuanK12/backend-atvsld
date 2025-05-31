@@ -96,8 +96,8 @@ export class RoleService implements IRoleService {
     }
 
     // Gán quyền
-    await this.roleRepo.assignPermissions(id, data.permissionIds);
     const updated = await this.roleRepo.update(role, data);
+    await this.roleRepo.assignPermissions(id, data.permissionIds);
     const result = mapToRoleResponse(updated);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_ROLE, result);
   }
