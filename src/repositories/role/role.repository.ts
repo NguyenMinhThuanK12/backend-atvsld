@@ -32,6 +32,7 @@ export class RoleRepository extends BaseRepository<Role> implements IRoleReposit
       rp.permission_id = pid;
       return rp;
     });
+    console.log('Records to insert:', records);
     await this.rolePermissionRepo.save(records);
   }
   async clearPermissions(roleId: string): Promise<void> {
@@ -43,9 +44,6 @@ export class RoleRepository extends BaseRepository<Role> implements IRoleReposit
       relations: ['rolePermissions'],
       skip: (page - 1) * limit,
       take: limit,
-      order: {
-        createdAt: 'DESC',
-      } as any,
     });
   }
 
@@ -53,9 +51,6 @@ export class RoleRepository extends BaseRepository<Role> implements IRoleReposit
     return this.repo.findOne({
       where: { id },
       relations: ['rolePermissions'],
-      order: {
-        createdAt: 'DESC',
-      } as any,
     });
   }
 
@@ -70,7 +65,7 @@ export class RoleRepository extends BaseRepository<Role> implements IRoleReposit
       qb.andWhere('role.name ILIKE :name', { name: `%${query.name}%` });
     }
 
-    qb.orderBy('role.createdAt', 'DESC');
+    qb.orderBy('role.created_at', 'DESC');
     qb.skip((query.page - 1) * query.limit).take(query.limit);
 
     return qb.getManyAndCount();
