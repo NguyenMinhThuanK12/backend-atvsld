@@ -162,4 +162,9 @@ export class RoleService implements IRoleService {
       },
     });
   }
+
+  async checkDuplicateCode(code: string, excludeId?: string): Promise<ApiResponse<boolean>> {
+    const isDuplicate = await this.roleRepo.checkDuplicateFieldExceptId('code', code, excludeId);
+    return ApiResponse.success(HttpStatus.OK, ERROR_ROLE_CODE_ALREADY_EXISTS, isDuplicate);
+  }
 }

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsArray, IsUUID } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsUUID, IsOptional } from 'class-validator';
 
 export class CreateRoleRequest {
   @IsString()
@@ -11,5 +11,6 @@ export class CreateRoleRequest {
 
   @IsArray()
   @IsUUID('all', { each: true })
+  @IsOptional()
   permissionIds: string[];
 }

@@ -186,13 +186,13 @@ export class BusinessService implements IBusinessService {
     return this.pdfGenerator.generatePdf(business, template);
   }
 
-  async checkDuplicateTaxCode(taxCode: string): Promise<ApiResponse<boolean>> {
-    const isDuplicate = await this.businessRepo.checkDuplicateField('taxCode', taxCode);
+  async checkDuplicateTaxCode(taxCode: string, excludeId?: string): Promise<ApiResponse<boolean>> {
+    const isDuplicate = await this.businessRepo.checkDuplicateFieldExceptId('taxCode', taxCode, excludeId);
     return ApiResponse.success(HttpStatus.OK, ERROR_TAXCODE_ALREADY_EXISTS, isDuplicate);
   }
 
-  async checkDuplicateEmail(email: string): Promise<ApiResponse<boolean>> {
-    const isDuplicate = await this.businessRepo.checkDuplicateField('email', email);
+  async checkDuplicateEmail(email: string, excludeId?: string): Promise<ApiResponse<boolean>> {
+    const isDuplicate = await this.businessRepo.checkDuplicateFieldExceptId('email', email, excludeId);
     return ApiResponse.success(HttpStatus.OK, ERROR_EMAIL_ALREADY_EXISTS, isDuplicate);
   }
 

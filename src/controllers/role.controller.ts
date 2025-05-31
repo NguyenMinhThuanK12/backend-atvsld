@@ -14,12 +14,16 @@ import { PermissionConstant } from 'libs/shared/ATVSLD/common/permission';
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
+  // ------- PUBLIC -------
+  @Get('check-duplicate-code')
+  async checkDuplicateCode(@Query('code') code: string, @Query('excludeId') excludeId?: string) {
+    return this.roleService.checkDuplicateCode(code, excludeId);
+  }
+
   // ------- VIEW -------
   @RequirePermission(PermissionConstant.ROLE.VIEW)
   @Get()
-  async getPaginatedRoles(
-    @Query() query: PaginationQueryRequest,
-  ): Promise<ApiResponse<PaginatedResponse<RoleResponse>>> {
+  async getPaginatedRoles(@Query() query: PaginationQueryRequest) {
     return this.roleService.getPaginatedRoles(query);
   }
 

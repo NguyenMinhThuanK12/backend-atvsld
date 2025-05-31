@@ -40,13 +40,13 @@ export class BusinessController {
 
   // ------- PUBLIC -------
   @Get('check-duplicate-tax-code')
-  async checkDuplicateTaxCode(@Query('taxCode') taxCode: string) {
-    return this.businessService.checkDuplicateTaxCode(taxCode);
+  async checkDuplicateTaxCode(@Query('taxCode') taxCode: string, @Query('excludeId') excludeId?: string) {
+    return this.businessService.checkDuplicateTaxCode(taxCode, excludeId);
   }
 
   @Get('check-duplicate-email')
-  async checkDuplicateEmail(@Query('email') email: string) {
-    return this.businessService.checkDuplicateEmail(email);
+  async checkDuplicateEmail(@Query('email') email: string, @Query('excludeId') excludeId?: string) {
+    return this.businessService.checkDuplicateEmail(email, excludeId);
   }
 
   // ------- VIEW -------

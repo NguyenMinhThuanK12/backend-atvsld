@@ -22,6 +22,9 @@ export class RoleRepository extends BaseRepository<Role> implements IRoleReposit
     // Xoá hết quyền cũ
     await this.rolePermissionRepo.delete({ role_id: roleId });
 
+    if (!permissionIds || permissionIds.length === 0) {
+      return; // Không gán quyền mới nếu không có danh sách
+    }
     // Thêm mới quyền
     const records = permissionIds.map((pid) => {
       const rp = new RolePermission();

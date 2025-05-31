@@ -1,6 +1,7 @@
 import { IsOptional, IsString } from 'class-validator';
+import { PaginationQueryRequest } from 'libs/shared/ATVSLD/common/pagination-query.request';
 
-export class SearchRoleQueryRequest {
+export class SearchRoleQueryRequest extends PaginationQueryRequest {
   @IsOptional()
   @IsString()
   code?: string;
@@ -8,10 +9,4 @@ export class SearchRoleQueryRequest {
   @IsOptional()
   @IsString()
   name?: string;
-
-  @IsOptional()
-  page?: number = 1;
-
-  @IsOptional()
-  limit?: number = 10;
 }

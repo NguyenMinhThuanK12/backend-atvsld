@@ -13,4 +13,5 @@ export interface IRoleService {
   createRole(dto: CreateRoleRequest): Promise<ApiResponse<RoleResponse>>;
   updateRole(id: string, dto: UpdateRoleRequest): Promise<ApiResponse<RoleResponse>>;
   deleteRole(id: string): Promise<ApiResponse<null>>;
+  checkDuplicateCode(code: string, excludeId?: string): Promise<ApiResponse<boolean>>;
 }

@@ -14,6 +14,6 @@ export interface IBusinessService {
   update(id: string, data: UpdateBusinessRequest): Promise<ApiResponse<BusinessResponse>>;
   updateStatus(id: string, isActive: boolean): Promise<ApiResponse<BusinessResponse>>;
   delete(id: string): Promise<ApiResponse<null>>;
-  checkDuplicateTaxCode(taxCode: string): Promise<ApiResponse<boolean>>;
-  checkDuplicateEmail(email: string): Promise<ApiResponse<boolean>>;
+  checkDuplicateTaxCode(taxCode: string, excludeId?: string): Promise<ApiResponse<boolean>>;
+  checkDuplicateEmail(email: string, excludeId?: string): Promise<ApiResponse<boolean>>;
 }

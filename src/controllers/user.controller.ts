@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Param, Post, Patch, Delete, Query } from '@nestjs/common';
-
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import { UserResponse } from 'libs/shared/ATVSLD/models/response/user/user.response';
 import { PaginatedResponse } from 'libs/shared/ATVSLD/common/paginated-response';
@@ -14,6 +13,7 @@ import { UserService } from 'src/services/user/user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  // ------- VIEW -------
   @RequirePermission(PermissionConstant.USER.VIEW)
   @Get()
   async findAll(@Query() query: SearchUserQueryRequest): Promise<ApiResponse<PaginatedResponse<UserResponse>>> {
@@ -26,22 +26,18 @@ export class UserController {
     return this.userService.findById(id);
   }
 
+  // ------- CREATE -------
   @RequirePermission(PermissionConstant.USER.CREATE)
   @Post()
   async create(@Body() dto: CreateUserRequest): Promise<ApiResponse<UserResponse>> {
     return this.userService.createUser(dto);
   }
 
+  // ------- UPDATE -------
   @RequirePermission(PermissionConstant.USER.UPDATE)
   @Patch(':id')
   async update(@Param('id') id: string, @Body() dto: UpdateUserRequest): Promise<ApiResponse<UserResponse>> {
     return this.userService.updateUser(id, dto);
-  }
-
-  @RequirePermission(PermissionConstant.USER.DELETE)
-  @Delete(':id')
-  async delete(@Param('id') id: string): Promise<ApiResponse<null>> {
-    return this.userService.deleteUser(id);
   }
 
   @RequirePermission(PermissionConstant.USER.UPDATE)
@@ -54,5 +50,12 @@ export class UserController {
   @Patch(':id/reset-password')
   async resetPassword(@Param('id') id: string): Promise<ApiResponse<string>> {
     return this.userService.resetPassword(id);
+  }
+
+  // ------- DELETE -------
+  @RequirePermission(PermissionConstant.USER.DELETE)
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<ApiResponse<null>> {
+    return this.userService.deleteUser(id);
   }
 }
