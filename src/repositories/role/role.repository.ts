@@ -58,14 +58,18 @@ export class RoleRepository extends BaseRepository<Role> implements IRoleReposit
     const qb = this.repo.createQueryBuilder('role').leftJoinAndSelect('role.rolePermissions', 'rolePermissions');
 
     if (query.code) {
-      qb.andWhere('role.code ILIKE :code', { code: `%${query.code}%` });
+      qb.andWhere('unaccent(role.code) ILIKE unaccent(:code)', {
+        code: `%${query.code}%`,
+      });
     }
 
     if (query.name) {
-      qb.andWhere('role.name ILIKE :name', { name: `%${query.name}%` });
+      qb.andWhere('unaccent(role.name) ILIKE unaccent(:name)', {
+        name: `%${query.name}%`,
+      });
     }
 
-    qb.orderBy('role.created_at', 'DESC');
+    // Phân trang
     qb.skip((query.page - 1) * query.limit).take(query.limit);
 
     return qb.getManyAndCount();
