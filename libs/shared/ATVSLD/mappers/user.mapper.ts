@@ -34,8 +34,8 @@ export function mapToUserEntity(dto: CreateUserRequest): User {
   user.birthday = dto.birthday ? new Date(dto.birthday) : null;
   user.email = dto.email;
   user.phone = dto.phoneNumber;
-  user.business_id = dto.businessId;
-  user.role = { id: dto.roleId } as any;
+  user.role_id = dto.roleId || null;
+  user.business_id = dto.businessId || null;
   user.province = dto.province || null;
   user.district = dto.district || null;
   user.ward = dto.ward || null;

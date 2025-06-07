@@ -34,6 +34,7 @@ import {
 import { IPermissionRepository } from 'src/repositories/permission/permission.repository.interface';
 import { JwtPayload } from 'libs/shared/ATVSLD/models/requests/auth/jwt-payload';
 import { mapPermissionsToBooleanObject } from 'libs/shared/ATVSLD/common/permission';
+import { UserTypeEnum } from 'libs/shared/ATVSLD/enums/user-type.enum';
 
 @Injectable()
 export class AuthService {
@@ -105,7 +106,9 @@ export class AuthService {
       userAuthenticated: {
         id: user.id,
         full_name: user.full_name,
-        permissions: permissionMap,
+        user_type: user.user_type,
+        avatar: user.avatar_url,
+        permissions: user.user_type === UserTypeEnum.ADMIN ? permissionMap : undefined,
       },
     } as AuthResponse;
   }

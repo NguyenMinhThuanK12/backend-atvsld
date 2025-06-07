@@ -60,6 +60,9 @@ export class User {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
+  @Column({ nullable: true }) // hoặc bỏ nếu bạn cần required
+  role_id: string;
+
   @ManyToOne(() => Business, (business) => business.users)
   @JoinColumn({ name: 'business_id' })
   business: Business;
