@@ -44,6 +44,18 @@ export class User {
   @Column({ length: 15, unique: true, nullable: true })
   phone: string;
 
+  @Column({ length: 100, nullable: true })
+  province: string;
+
+  @Column({ length: 100, nullable: true })
+  district: string;
+
+  @Column({ length: 100, nullable: true })
+  ward: string;
+
+  @Column({ length: 255, nullable: true })
+  address: string;
+
   @ManyToOne(() => Role, (role) => role.users)
   @JoinColumn({ name: 'role_id' })
   role: Role;

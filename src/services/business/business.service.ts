@@ -11,6 +11,7 @@ import {
   ERROR_TAXCODE_ALREADY_EXISTS,
   SUCCESS_CREATE_BUSINESS,
   SUCCESS_DELETE_BUSINESS,
+  SUCCESS_GET_ACTIVE_BUSINESS_LIST,
   SUCCESS_GET_BUSINESS_LIST,
   SUCCESS_UPDATE_BUSINESS,
   SUCCESS_UPDATE_BUSINESS_STATUS,
@@ -25,12 +26,15 @@ import { PdfGeneratorService } from 'libs/core/pdf/pdf-generator.service';
 import { PdfTemplate } from 'libs/core/pdf/pdf-template.interface';
 import { Business } from 'src/entities/business.entity';
 import { SupabaseService } from 'libs/core/supabase/supabase.service';
+import { IUserRepository } from 'src/repositories/user/user.repository.interface';
 
 @Injectable()
 export class BusinessService implements IBusinessService {
   constructor(
     @Inject(IBusinessRepository)
     private readonly businessRepo: IBusinessRepository,
+    @Inject(IUserRepository)
+    private readonly userRepo: IUserRepository,
     private readonly pdfGenerator: PdfGeneratorService,
     private readonly supabaseService: SupabaseService,
   ) {}
@@ -84,6 +88,12 @@ export class BusinessService implements IBusinessService {
     return ApiResponse.success(HttpStatus.OK, message, response);
   }
 
+  async findActive(): Promise<ApiResponse<BusinessResponse[]>> {
+    const businesses = await this.businessRepo.findActive();
+    const data = businesses.map(mapToBusinessResponse);
+    return ApiResponse.success(HttpStatus.OK, SUCCESS_GET_ACTIVE_BUSINESS_LIST, data);
+  }
+
   async create(
     data: CreateBusinessRequest,
     files?: {
@@ -115,7 +125,11 @@ export class BusinessService implements IBusinessService {
     if (!business) {
       throw new NotFoundException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_BUSINESS_NOT_FOUND));
     }
-
+    if (!isActive) {
+      await this.userRepo.deactivateAllUsersByBusiness(id); // Tắt toàn bộ user
+    } else {
+      await this.userRepo.activateAllUsersByBusiness(id); // Bật lại toàn bộ user
+    }
     const updated = await this.businessRepo.updateStatus(id, isActive);
     const result = mapToBusinessResponse(updated);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_BUSINESS_STATUS, result);

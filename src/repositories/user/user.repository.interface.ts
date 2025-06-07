@@ -11,4 +11,6 @@ export interface IUserRepository extends IBaseRepository<User> {
   findAdvanced(query: SearchUserQueryRequest): Promise<[User[], number]>;
   count(options?: FindManyOptions<User>): Promise<number>;
   save(user: User): Promise<User>;
+  deactivateAllUsersByBusiness(businessId: string): Promise<void>;
+  activateAllUsersByBusiness(businessId: string): Promise<void>;
 }

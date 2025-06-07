@@ -1,18 +1,21 @@
-import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { GenderEnum } from 'libs/shared/ATVSLD/enums/gender.enum';
 import { UserTypeEnum } from 'libs/shared/ATVSLD/enums/user-type.enum';
 
 export class UpdateUserRequest {
-  @IsOptional() @IsString() account?: string;
-  @IsOptional() @IsString() full_name?: string;
-  @IsOptional() @IsString() job_title?: string;
+  @IsOptional() @IsString() fullName?: string;
+  @IsOptional() @IsString() jobTitle?: string;
   @IsOptional() @IsEnum(GenderEnum) gender?: GenderEnum;
-  @IsOptional() @IsEnum(UserTypeEnum) user_type?: UserTypeEnum;
+  @IsOptional() @IsEnum(UserTypeEnum) userType?: UserTypeEnum;
   @IsOptional() @IsString() birthday?: string;
-  @IsOptional() @IsEmail() email?: string;
-  @IsOptional() @IsString() phone?: string;
-  @IsOptional() @IsString() role_id?: string;
-  @IsOptional() @IsString() business_id?: string;
-  @IsOptional() @IsString() avatar_url?: string;
+  @IsOptional() @IsString() phoneNumber?: string;
+  @IsOptional() @IsString() province?: string;
+  @IsOptional() @IsString() district?: string;
+  @IsOptional() @IsString() ward?: string;
+  @IsOptional() @IsString() address?: string;
+  @IsOptional() @IsString() roleId?: string;
+  @IsOptional() @IsString() businessId?: string;
+
+  @IsOptional() @IsString() avatar?: string;
   @IsOptional() is_active?: boolean;
 }

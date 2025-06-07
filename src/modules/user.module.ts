@@ -15,9 +15,10 @@ import { BusinessRepository } from 'src/repositories/business/business.resposito
 import { IBusinessRepository } from 'src/repositories/business/business.repository.interface';
 import { IUserRepository } from 'src/repositories/user/user.repository.interface';
 import { Business } from 'src/entities/business.entity';
+import { SupabaseModule } from 'libs/core/supabase/supabase.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Role, Permission, RolePermission, Business])],
+  imports: [TypeOrmModule.forFeature([User, Role, Permission, RolePermission, Business]), SupabaseModule],
   controllers: [UserController],
   providers: [
     UserService,

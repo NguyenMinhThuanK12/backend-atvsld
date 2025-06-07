@@ -37,6 +37,29 @@ export class SupabaseService {
     return publicUrl;
   }
 
+  async uploadImage(fileBuffer: Buffer, originalName: string, oldUrl?: string): Promise<string> {
+    if (oldUrl) {
+      await this.deleteByUrl(oldUrl); // Xoá avatar cũ nếu có
+    }
+
+    const ext = originalName.split('.').pop(); // jpg, png...
+    const cleanName = slugify(originalName, { lower: true, strict: true });
+    const filePath = `avatars/${cleanName}-${uuid()}.${ext}`;
+
+    const { data, error } = await this.supabase.storage.from(this.bucket).upload(filePath, fileBuffer, {
+      contentType: `image/${ext === 'jpg' ? 'jpeg' : ext}`, // image/jpeg or image/png
+      upsert: true,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    const { publicUrl } = this.supabase.storage.from(this.bucket).getPublicUrl(data.path).data;
+
+    return publicUrl;
+  }
+
   async deleteByUrl(fileUrl: string): Promise<void> {
     try {
       const baseUrl = `${this.configService.get<string>('SUPABASE_URL')}/storage/v1/object/public/${this.bucket}/`;

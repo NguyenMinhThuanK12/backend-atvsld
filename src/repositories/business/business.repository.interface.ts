@@ -6,5 +6,6 @@ export const IBusinessRepository = 'IBusinessRepository';
 
 export interface IBusinessRepository extends IBaseRepository<Business> {
   findAdvanced(query: SearchBusinessQueryRequest): Promise<[Business[], number]>;
+  findActive(): Promise<Business[]>;
   updateStatus(id: string, isActive: boolean): Promise<Business>;
 }

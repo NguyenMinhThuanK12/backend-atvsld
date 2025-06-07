@@ -13,4 +13,6 @@ export interface IUserService {
   deleteUser(id: string): Promise<ApiResponse<null>>;
   toggleActive(id: string, isActive: boolean): Promise<ApiResponse<UserResponse>>;
   resetPassword(id: string): Promise<ApiResponse<string>>;
+  checkDuplicateEmail(email: string, excludeId?: string): Promise<ApiResponse<boolean>>;
+  checkDuplicateAccount(account: string, excludeId?: string): Promise<ApiResponse<boolean>>;
 }

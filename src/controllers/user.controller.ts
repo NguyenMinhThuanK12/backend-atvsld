@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, Post, Patch, Delete, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Patch,
+  Delete,
+  Query,
+  UseInterceptors,
+  UploadedFiles,
+} from '@nestjs/common';
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import { UserResponse } from 'libs/shared/ATVSLD/models/response/user/user.response';
 import { PaginatedResponse } from 'libs/shared/ATVSLD/common/paginated-response';
@@ -8,10 +19,22 @@ import { CreateUserRequest } from 'libs/shared/ATVSLD/models/requests/user/creat
 import { SearchUserQueryRequest } from 'libs/shared/ATVSLD/models/requests/user/search-user-query.request';
 import { UpdateUserRequest } from 'libs/shared/ATVSLD/models/requests/user/update-user.request';
 import { UserService } from 'src/services/user/user.service';
+import { FileFieldsInterceptor } from '@nestjs/platform-express/multer';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  // ------- PUBLIC -------
+  @Get('check-duplicate-email')
+  async checkDuplicateEmail(@Query('email') email: string, @Query('excludeId') excludeId?: string) {
+    return this.userService.checkDuplicateEmail(email, excludeId);
+  }
+
+  @Get('check-duplicate-account')
+  async checkDuplicateAccount(@Query('account') account: string, @Query('excludeId') excludeId?: string) {
+    return this.userService.checkDuplicateAccount(account, excludeId);
+  }
 
   // ------- VIEW -------
   @RequirePermission(PermissionConstant.USER.VIEW)
@@ -29,15 +52,24 @@ export class UserController {
   // ------- CREATE -------
   @RequirePermission(PermissionConstant.USER.CREATE)
   @Post()
-  async create(@Body() dto: CreateUserRequest): Promise<ApiResponse<UserResponse>> {
-    return this.userService.createUser(dto);
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
+  async create(
+    @UploadedFiles() files: { avatar?: Express.Multer.File[] },
+    @Body() dto: CreateUserRequest,
+  ): Promise<ApiResponse<UserResponse>> {
+    return this.userService.createUser(dto, files);
   }
 
   // ------- UPDATE -------
   @RequirePermission(PermissionConstant.USER.UPDATE)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateUserRequest): Promise<ApiResponse<UserResponse>> {
-    return this.userService.updateUser(id, dto);
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
+  async update(
+    @Param('id') id: string,
+    @UploadedFiles() files: { avatar?: Express.Multer.File[] },
+    @Body() dto: UpdateUserRequest,
+  ): Promise<ApiResponse<UserResponse>> {
+    return this.userService.updateUser(id, dto, files);
   }
 
   @RequirePermission(PermissionConstant.USER.UPDATE)

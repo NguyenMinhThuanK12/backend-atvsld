@@ -41,41 +41,69 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
   }
 
   async findAdvanced(query: SearchUserQueryRequest): Promise<[User[], number]> {
-    const qb = this.repo.createQueryBuilder('user').leftJoinAndSelect('user.role', 'role').where('1=1');
+    const qb = this.repo
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role')
+      .leftJoinAndSelect('user.business', 'business')
+      .where('1=1'); // để nối điều kiện dễ dàng
 
-    if (query.account) {
-      qb.andWhere('unaccent(user.account) ILIKE unaccent(:account)', {
-        account: `%${query.account}%`,
+    if (query.username) {
+      qb.andWhere('unaccent(user.account) ILIKE unaccent(:username)', {
+        username: `%${query.username}%`,
       });
     }
 
-    if (query.full_name) {
-      qb.andWhere('unaccent(user.full_name) ILIKE unaccent(:full_name)', {
-        full_name: `%${query.full_name}%`,
+    if (query.fullName) {
+      qb.andWhere('unaccent(user.full_name) ILIKE unaccent(:fullName)', {
+        fullName: `%${query.fullName}%`,
       });
     }
 
-    if (query.email) {
-      qb.andWhere('unaccent(user.email) ILIKE unaccent(:email)', {
-        email: `%${query.email}%`,
+    if (query.jobTitle) {
+      qb.andWhere('unaccent(user.job_title) ILIKE unaccent(:jobTitle)', {
+        jobTitle: `%${query.jobTitle}%`,
       });
     }
 
-    if (query.phone) {
-      qb.andWhere('user.phone ILIKE :phone', { phone: `%${query.phone}%` });
-    }
-
-    if (query.role_id) {
-      qb.andWhere('user.role_id = :role_id', { role_id: query.role_id });
+    if (query.roleId) {
+      qb.andWhere('user.role_id = :roleId', { roleId: query.roleId });
     }
 
     if (query.user_type) {
       qb.andWhere('user.user_type = :user_type', { user_type: query.user_type });
     }
 
+    if (query.businessId) {
+      qb.andWhere('user.business_id = :businessId', { businessId: query.businessId });
+    }
+
+    if (query.is_active !== undefined) {
+      qb.andWhere('user.is_active = :is_active', { is_active: query.is_active });
+    }
+
     qb.orderBy('user.created_at', 'DESC');
     qb.skip((query.page - 1) * query.limit).take(query.limit);
 
     return qb.getManyAndCount();
+  }
+
+  // Tắt tất cả user thuộc doanh nghiệp
+  async deactivateAllUsersByBusiness(businessId: string): Promise<void> {
+    await this.repo
+      .createQueryBuilder()
+      .update(User)
+      .set({ is_active: false })
+      .where('business_id = :businessId', { businessId })
+      .execute();
+  }
+
+  // Bật lại tất cả user thuộc doanh nghiệp
+  async activateAllUsersByBusiness(businessId: string): Promise<void> {
+    await this.repo
+      .createQueryBuilder()
+      .update(User)
+      .set({ is_active: true })
+      .where('business_id = :businessId', { businessId })
+      .execute();
   }
 }

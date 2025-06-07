@@ -24,10 +24,12 @@ import {
   SUCCESS_RESET_PASSWORD,
   SUCCESS_UPDATE_USER,
   SUCCESS_UPDATE_USER_STATUS,
+  ERROR_CANNOT_ACTIVATE_USER_WHEN_BUSINESS_INACTIVE,
 } from 'libs/shared/ATVSLD/constants/user-message.constant';
 import { ERROR_BUSINESS_NOT_FOUND } from 'libs/shared/ATVSLD/constants/business-message.constant';
 import { ERROR_ROLE_NOT_FOUND } from 'libs/shared/ATVSLD/constants/role-message.constant';
 import { UserTypeEnum } from 'libs/shared/ATVSLD/enums/user-type.enum';
+import { SupabaseService } from 'libs/core/supabase/supabase.service';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -38,6 +40,7 @@ export class UserService implements IUserService {
     private readonly roleRepo: IRoleRepository,
     @Inject('IBusinessRepository')
     private readonly businessRepo: IBusinessRepository,
+    private readonly supabaseService: SupabaseService,
   ) {}
 
   async findById(id: string): Promise<ApiResponse<UserResponse>> {
@@ -65,10 +68,19 @@ export class UserService implements IUserService {
     });
   }
 
-  async createUser(dto: CreateUserRequest): Promise<ApiResponse<UserResponse>> {
-    await this.validateDuplicate(dto.account, dto.email, dto.phone);
-    await this.validateRoleAndBusiness(dto);
+  async createUser(
+    dto: CreateUserRequest,
+    files?: { avatar?: Express.Multer.File[] },
+  ): Promise<ApiResponse<UserResponse>> {
+    await this.validateDuplicate(dto.username, dto.email, dto.phoneNumber);
+    await this.validateRole(dto);
+    await this.validateBusiness(dto);
 
+    // Upload avatar nếu có
+    if (files?.avatar?.[0]) {
+      const file = files.avatar[0];
+      dto.avatar = await this.supabaseService.uploadImage(file.buffer, file.originalname);
+    }
     const hashed = await bcrypt.hash(dto.password, 10);
     const entity = mapToUserEntity({ ...dto, password: hashed });
     const created = await this.userRepo.create(entity);
@@ -77,17 +89,28 @@ export class UserService implements IUserService {
     return ApiResponse.success(HttpStatus.CREATED, SUCCESS_CREATE_USER, mapToUserResponse(user));
   }
 
-  async updateUser(id: string, dto: UpdateUserRequest): Promise<ApiResponse<UserResponse>> {
+  async updateUser(
+    id: string,
+    dto: UpdateUserRequest,
+    files?: { avatar?: Express.Multer.File[] },
+  ): Promise<ApiResponse<UserResponse>> {
     const user = await this.userRepo.findById(id);
     if (!user) {
       throw new HttpException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_USER_NOT_FOUND), HttpStatus.NOT_FOUND);
     }
 
-    await this.validateDuplicate(dto.account, dto.email, dto.phone, id);
-    await this.validateRoleAndBusiness(dto);
-    console.log('Updating user with ID:', id, 'and data:', dto);
+    await this.validateDuplicate(dto.phoneNumber, id);
+    await this.validateRole(dto);
+
+    // Upload avatar mới nếu có
+    if (files?.avatar?.[0]) {
+      const file = files.avatar[0];
+      dto.avatar = await this.supabaseService.uploadImage(file.buffer, file.originalname, user.avatar_url); // xoá ảnh cũ nếu có
+    }
+
     const updated = await this.userRepo.update(user, dto);
-    return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_USER, mapToUserResponse(updated));
+    const result = await this.userRepo.findById(updated.id);
+    return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_USER, mapToUserResponse(result));
   }
 
   async deleteUser(id: string): Promise<ApiResponse<null>> {
@@ -106,8 +129,18 @@ export class UserService implements IUserService {
       throw new HttpException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_USER_NOT_FOUND), HttpStatus.NOT_FOUND);
     }
 
+    if (isActive && user.business_id) {
+      const business = await this.businessRepo.findById(user.business_id);
+      if (!business?.isActive) {
+        throw new HttpException(
+          ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_CANNOT_ACTIVATE_USER_WHEN_BUSINESS_INACTIVE),
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
     const updated = await this.userRepo.update(user, { is_active: isActive });
-    return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_USER_STATUS, mapToUserResponse(updated));
+    const result = await this.userRepo.findById(updated.id);
+    return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_USER_STATUS, mapToUserResponse(result));
   }
 
   async resetPassword(id: string): Promise<ApiResponse<string>> {
@@ -140,21 +173,25 @@ export class UserService implements IUserService {
     }
   }
 
-  private async validateRoleAndBusiness(dto: CreateUserRequest | UpdateUserRequest): Promise<void> {
-    const role = await this.roleRepo.findById(dto.role_id);
+  async checkDuplicateEmail(email: string, excludeId?: string): Promise<ApiResponse<boolean>> {
+    const isDuplicate = await this.userRepo.checkDuplicateFieldExceptId('email', email, excludeId);
+    return ApiResponse.success(HttpStatus.OK, ERROR_USER_EMAIL_ALREADY_EXISTS, isDuplicate);
+  }
+
+  async checkDuplicateAccount(account: string, excludeId?: string): Promise<ApiResponse<boolean>> {
+    const isDuplicate = await this.userRepo.checkDuplicateFieldExceptId('account', account, excludeId);
+    return ApiResponse.success(HttpStatus.OK, ERROR_USER_ACCOUNT_ALREADY_EXISTS, isDuplicate);
+  }
+  private async validateRole(dto: CreateUserRequest | UpdateUserRequest): Promise<void> {
+    const role = await this.roleRepo.findById(dto.roleId);
     if (!role) {
       throw new HttpException(ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_ROLE_NOT_FOUND), HttpStatus.BAD_REQUEST);
     }
+  }
 
-    if (dto.user_type === UserTypeEnum.BUSINESS) {
-      if (!dto.business_id) {
-        throw new HttpException(
-          ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_BUSINESS_NOT_FOUND),
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      const business = await this.businessRepo.findById(dto.business_id);
+  private async validateBusiness(dto: CreateUserRequest): Promise<void> {
+    if (dto.userType === UserTypeEnum.BUSINESS) {
+      const business = await this.businessRepo.findById(dto.businessId);
       if (!business) {
         throw new HttpException(
           ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_BUSINESS_NOT_FOUND),

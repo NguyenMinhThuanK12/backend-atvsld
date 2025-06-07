@@ -1,4 +1,4 @@
 export enum UserTypeEnum {
-  ADMIN = 'ADMIN',
-  BUSINESS = 'BUSINESS',
+  ADMIN = 'Quản trị viên',
+  BUSINESS = 'Doanh nghiệp',
 }

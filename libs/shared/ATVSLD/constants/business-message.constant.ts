@@ -9,6 +9,7 @@ export const ERROR_BUSINESS_NOT_FOUND = 'Không tìm thấy doanh nghiệp';
 
 // SUCCESS messages
 export const SUCCESS_GET_BUSINESS_LIST = 'Lấy danh sách doanh nghiệp thành công';
+export const SUCCESS_GET_ACTIVE_BUSINESS_LIST = 'Danh sách doanh nghiệp đang hoạt động';
 export const SUCCESS_CREATE_BUSINESS = 'Tạo doanh nghiệp thành công';
 export const SUCCESS_UPDATE_BUSINESS = 'Cập nhật doanh nghiệp thành công';
 export const SUCCESS_UPDATE_BUSINESS_STATUS = 'Cập nhật trạng thái doanh nghiệp thành công';

@@ -10,6 +10,7 @@ export interface IBusinessService {
   findById(id: string): Promise<ApiResponse<BusinessResponse>>;
   findAllPaginated(query: PaginationQueryRequest): Promise<ApiResponse<PaginatedResponse<BusinessResponse>>>;
   findAdvanced(query: SearchBusinessQueryRequest): Promise<ApiResponse<PaginatedResponse<BusinessResponse>>>;
+  findActive(): Promise<ApiResponse<BusinessResponse[]>>;
   create(data: CreateBusinessRequest): Promise<ApiResponse<BusinessResponse>>;
   update(id: string, data: UpdateBusinessRequest): Promise<ApiResponse<BusinessResponse>>;
   updateStatus(id: string, isActive: boolean): Promise<ApiResponse<BusinessResponse>>;

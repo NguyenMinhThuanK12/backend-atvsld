@@ -30,6 +30,7 @@ import { BusinessImportService } from 'src/imports/business-import.service';
 import { ExportBusinessRequest } from 'libs/shared/ATVSLD/models/requests/export/export-business.request';
 import { RequirePermission } from 'libs/core/auth/require-permission.decorator';
 import { PermissionConstant } from 'libs/shared/ATVSLD/common/permission';
+import { Public } from 'libs/core/auth/public.decorator';
 
 @Controller('businesses')
 export class BusinessController {
@@ -62,6 +63,12 @@ export class BusinessController {
     return this.businessService.findAdvanced(query);
   }
 
+  @Public()
+  @Get('active')
+  async getActiveBusinesses(): Promise<ApiResponse<BusinessResponse[]>> {
+    return this.businessService.findActive();
+  }
+
   @RequirePermission(PermissionConstant.BUSINESS.VIEW)
   @Get(':id')
   async getBusinessById(@Param('id') id: string): Promise<ApiResponse<BusinessResponse>> {
@@ -83,20 +90,10 @@ export class BusinessController {
   @RequirePermission(PermissionConstant.BUSINESS.CREATE)
   @Post()
   @UseInterceptors(
-    FileFieldsInterceptor(
-      [
-        { name: 'businessLicense', maxCount: 1 },
-        { name: 'otherDocument', maxCount: 1 },
-      ],
-      {
-        fileFilter: (req, file, cb) => {
-          if (!file.originalname.match(/\.(pdf)$/)) {
-            return cb(new Error('Chỉ cho phép file PDF'), false);
-          }
-          cb(null, true);
-        },
-      },
-    ),
+    FileFieldsInterceptor([
+      { name: 'businessLicense', maxCount: 1 },
+      { name: 'otherDocument', maxCount: 1 },
+    ]),
   )
   async createBusinessWithFiles(
     @UploadedFiles() files: { businessLicense?: Express.Multer.File[]; otherDocument?: Express.Multer.File[] },

@@ -1,14 +1,20 @@
 export class UserResponse {
   id: string;
-  account: string;
-  full_name: string;
+  username: string;
+  password: string;
+  fullName: string;
   email: string;
-  phone: string;
-  job_title: string;
-  role: { id: string; name: string };
-  user_type: string;
+  phoneNumber: string;
+  jobTitle: string;
+  roleId: string | null;
+  businessId: string | null;
+  userType: string;
   gender: string;
   is_active: boolean;
-  avatar_url?: string;
-  created_at: string;
+  avatar?: string;
+  address?: string | null;
+  province?: string | null;
+  district?: string | null;
+  ward?: string | null;
+  birthday?: Date | null;
 }
