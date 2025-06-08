@@ -36,6 +36,11 @@ export class UserController {
     return this.userService.checkDuplicateAccount(account, excludeId);
   }
 
+  @Get('check-duplicate-phoneNumber')
+  async checkDuplicatePhone(@Query('phoneNumber') phoneNumber: string, @Query('excludeId') excludeId?: string) {
+    return this.userService.checkDuplicatePhoneNumber(phoneNumber, excludeId);
+  }
+
   // ------- VIEW -------
   @RequirePermission(PermissionConstant.USER.VIEW)
   @Get()

@@ -185,6 +185,12 @@ export class UserService implements IUserService {
     const isDuplicate = await this.userRepo.checkDuplicateFieldExceptId('username', username, excludeId);
     return ApiResponse.success(HttpStatus.OK, ERROR_USER_ACCOUNT_ALREADY_EXISTS, isDuplicate);
   }
+
+  async checkDuplicatePhoneNumber(phoneNumber: string, excludeId?: string): Promise<ApiResponse<boolean>> {
+    const isDuplicate = await this.userRepo.checkDuplicateFieldExceptId('phoneNumber', phoneNumber, excludeId);
+    return ApiResponse.success(HttpStatus.OK, ERROR_USER_PHONE_ALREADY_EXISTS, isDuplicate);
+  }
+
   private async validateRole(dto: CreateUserRequest | UpdateUserRequest): Promise<void> {
     const role = await this.roleRepo.findById(dto.roleId);
     if (!role) {

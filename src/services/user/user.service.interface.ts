@@ -15,4 +15,5 @@ export interface IUserService {
   resetPassword(id: string): Promise<ApiResponse<string>>;
   checkDuplicateEmail(email: string, excludeId?: string): Promise<ApiResponse<boolean>>;
   checkDuplicateAccount(account: string, excludeId?: string): Promise<ApiResponse<boolean>>;
+  checkDuplicatePhoneNumber(phoneNumber: string, excludeId?: string): Promise<ApiResponse<boolean>>;
 }
