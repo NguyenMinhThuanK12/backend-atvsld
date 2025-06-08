@@ -21,5 +21,4 @@ export class CreateUserRequest {
   @IsString()
   businessId: string;
   @IsOptional() @IsString() avatar?: string;
-  @IsOptional() is_active?: boolean;
 }
