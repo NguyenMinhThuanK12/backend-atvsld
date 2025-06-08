@@ -1,45 +1,47 @@
 import { User } from 'src/entities/user.entity';
 import { UserResponse } from '../models/response/user/user.response';
 import { CreateUserRequest } from '../models/requests/user/create-user.request';
+
 export function mapToUserResponse(user: User): UserResponse {
   return {
     id: user.id,
-    username: user.account,
+    username: user.username,
     password: user.password,
-    fullName: user.full_name,
+    fullName: user.fullName,
     birthday: user.birthday || null,
     email: user.email,
-    phoneNumber: user.phone,
-    jobTitle: user.job_title,
-    roleId: user.role_id || null,
-    businessId: user.business_id || null,
-    userType: user.user_type,
+    phoneNumber: user.phoneNumber,
+    jobTitle: user.jobTitle,
+    roleId: user.roleId || null,
+    businessId: user.businessId || null,
+    userType: user.userType,
     gender: user.gender,
-    is_active: user.is_active,
-    avatar: user.avatar_url,
+    is_active: user.isActive,
+    avatar: user.avatar,
     address: user.address || null,
     province: user.province || null,
     district: user.district || null,
     ward: user.ward || null,
   };
 }
+
 export function mapToUserEntity(dto: CreateUserRequest): User {
   const user = new User();
-  user.account = dto.username;
-  user.password = dto.password; // bcrypt xử lý trước khi gọi hàm
-  user.full_name = dto.fullName;
-  user.job_title = dto.jobTitle;
+  user.username = dto.username;
+  user.password = dto.password;
+  user.fullName = dto.fullName;
+  user.jobTitle = dto.jobTitle;
   user.gender = dto.gender;
-  user.user_type = dto.userType;
+  user.userType = dto.userType;
   user.birthday = dto.birthday ? new Date(dto.birthday) : null;
   user.email = dto.email;
-  user.phone = dto.phoneNumber;
-  user.role_id = dto.roleId || null;
-  user.business_id = dto.businessId || null;
+  user.phoneNumber = dto.phoneNumber;
+  user.roleId = dto.roleId || null;
+  user.businessId = dto.businessId || null;
   user.province = dto.province || null;
   user.district = dto.district || null;
   user.ward = dto.ward || null;
   user.address = dto.address || null;
-  user.avatar_url = dto.avatar || null;
+  user.avatar = dto.avatar || null;
   return user;
 }

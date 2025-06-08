@@ -14,20 +14,22 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
   ) {
     super(repo);
   }
+
   async delete(id: string): Promise<void> {
-    await this.softDelete(id); // dùng soft delete  (override lại hàm delete trong BaseRepository)
+    await this.softDelete(id);
   }
-  async findByAccount(account: string): Promise<User | null> {
+
+  async findByAccount(username: string): Promise<User | null> {
     return await this.repo.findOne({
-      where: {
-        account,
-      },
+      where: { username },
       relations: ['role'],
     });
   }
+
   async count(options?: FindManyOptions<User>): Promise<number> {
     return this.repo.count(options);
   }
+
   async findByEmail(email: string): Promise<User | null> {
     return await this.repo.findOne({ where: { email } });
   }
@@ -45,7 +47,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.role', 'role')
       .leftJoinAndSelect('user.business', 'business')
-      .where('1=1'); // để nối điều kiện dễ dàng
+      .where('1=1');
 
     if (query.username) {
       qb.andWhere('unaccent(user.account) ILIKE unaccent(:username)', {
@@ -69,16 +71,16 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
       qb.andWhere('user.role_id = :roleId', { roleId: query.roleId });
     }
 
-    if (query.user_type) {
-      qb.andWhere('user.user_type = :user_type', { user_type: query.user_type });
+    if (query.userType) {
+      qb.andWhere('user.user_type = :userType', { userType: query.userType });
     }
 
     if (query.businessId) {
       qb.andWhere('user.business_id = :businessId', { businessId: query.businessId });
     }
 
-    if (query.is_active !== undefined) {
-      qb.andWhere('user.is_active = :is_active', { is_active: query.is_active });
+    if (query.isActive !== undefined) {
+      qb.andWhere('user.is_active = :isActive', { isActive: query.isActive });
     }
 
     qb.orderBy('user.created_at', 'DESC');
@@ -87,22 +89,20 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     return qb.getManyAndCount();
   }
 
-  // Tắt tất cả user thuộc doanh nghiệp
   async deactivateAllUsersByBusiness(businessId: string): Promise<void> {
     await this.repo
       .createQueryBuilder()
       .update(User)
-      .set({ is_active: false })
+      .set({ isActive: false })
       .where('business_id = :businessId', { businessId })
       .execute();
   }
 
-  // Bật lại tất cả user thuộc doanh nghiệp
   async activateAllUsersByBusiness(businessId: string): Promise<void> {
     await this.repo
       .createQueryBuilder()
       .update(User)
-      .set({ is_active: true })
+      .set({ isActive: true })
       .where('business_id = :businessId', { businessId })
       .execute();
   }

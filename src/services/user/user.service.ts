@@ -105,7 +105,8 @@ export class UserService implements IUserService {
     // Upload avatar mới nếu có
     if (files?.avatar?.[0]) {
       const file = files.avatar[0];
-      dto.avatar = await this.supabaseService.uploadImage(file.buffer, file.originalname, user.avatar_url); // xoá ảnh cũ nếu có
+      console.log('old avatar:', user.avatar);
+      dto.avatar = await this.supabaseService.uploadImage(file.buffer, file.originalname, user.avatar); // xoá ảnh cũ nếu có
     }
 
     const updated = await this.userRepo.update(user, dto);
@@ -129,8 +130,8 @@ export class UserService implements IUserService {
       throw new HttpException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_USER_NOT_FOUND), HttpStatus.NOT_FOUND);
     }
 
-    if (isActive && user.business_id) {
-      const business = await this.businessRepo.findById(user.business_id);
+    if (isActive && user.businessId) {
+      const business = await this.businessRepo.findById(user.businessId);
       if (!business?.isActive) {
         throw new HttpException(
           ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_CANNOT_ACTIVATE_USER_WHEN_BUSINESS_INACTIVE),
@@ -138,7 +139,7 @@ export class UserService implements IUserService {
         );
       }
     }
-    const updated = await this.userRepo.update(user, { is_active: isActive });
+    const updated = await this.userRepo.update(user, { isActive: isActive });
     const result = await this.userRepo.findById(updated.id);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_USER_STATUS, mapToUserResponse(result));
   }
@@ -156,11 +157,13 @@ export class UserService implements IUserService {
     return ApiResponse.success(HttpStatus.OK, SUCCESS_RESET_PASSWORD, newPassword);
   }
 
-  private async validateDuplicate(account: string, email: string, phone?: string, excludeId?: string) {
+  private async validateDuplicate(username: string, email: string, phoneNumber?: string, excludeId?: string) {
     const checks = await Promise.all([
-      this.userRepo.checkDuplicateFieldExceptId('account', account, excludeId),
+      this.userRepo.checkDuplicateFieldExceptId('username', username, excludeId),
       this.userRepo.checkDuplicateFieldExceptId('email', email, excludeId),
-      phone ? this.userRepo.checkDuplicateFieldExceptId('phone', phone, excludeId) : Promise.resolve(false),
+      phoneNumber
+        ? this.userRepo.checkDuplicateFieldExceptId('phoneNumber', phoneNumber, excludeId)
+        : Promise.resolve(false),
     ]);
 
     const errors: string[] = [];
@@ -178,8 +181,8 @@ export class UserService implements IUserService {
     return ApiResponse.success(HttpStatus.OK, ERROR_USER_EMAIL_ALREADY_EXISTS, isDuplicate);
   }
 
-  async checkDuplicateAccount(account: string, excludeId?: string): Promise<ApiResponse<boolean>> {
-    const isDuplicate = await this.userRepo.checkDuplicateFieldExceptId('account', account, excludeId);
+  async checkDuplicateAccount(username: string, excludeId?: string): Promise<ApiResponse<boolean>> {
+    const isDuplicate = await this.userRepo.checkDuplicateFieldExceptId('username', username, excludeId);
     return ApiResponse.success(HttpStatus.OK, ERROR_USER_ACCOUNT_ALREADY_EXISTS, isDuplicate);
   }
   private async validateRole(dto: CreateUserRequest | UpdateUserRequest): Promise<void> {

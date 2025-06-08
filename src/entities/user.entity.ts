@@ -17,23 +17,23 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 50, unique: true })
-  account: string;
+  @Column({ name: 'account', length: 50, unique: true })
+  username: string;
 
   @Column({ length: 255 })
   password: string;
 
-  @Column({ length: 100 })
-  full_name: string;
+  @Column({ name: 'full_name', length: 100 })
+  fullName: string;
 
-  @Column({ length: 100, nullable: true })
-  job_title: string;
+  @Column({ name: 'job_title', length: 100, nullable: true })
+  jobTitle: string;
 
   @Column({ type: 'enum', enum: GenderEnum })
   gender: GenderEnum;
 
-  @Column({ type: 'enum', enum: UserTypeEnum })
-  user_type: UserTypeEnum;
+  @Column({ name: 'user_type', type: 'enum', enum: UserTypeEnum })
+  userType: UserTypeEnum;
 
   @Column({ type: 'date', nullable: true })
   birthday: Date;
@@ -41,8 +41,8 @@ export class User {
   @Column({ length: 100, unique: true })
   email: string;
 
-  @Column({ length: 15, unique: true, nullable: true })
-  phone: string;
+  @Column({ name: 'phone', length: 15, unique: true, nullable: true })
+  phoneNumber: string;
 
   @Column({ length: 100, nullable: true })
   province: string;
@@ -60,21 +60,21 @@ export class User {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  @Column({ nullable: true }) // hoặc bỏ nếu bạn cần required
-  role_id: string;
+  @Column({ name: 'role_id', nullable: true })
+  roleId: string;
 
   @ManyToOne(() => Business, (business) => business.users)
   @JoinColumn({ name: 'business_id' })
   business: Business;
 
-  @Column({ nullable: true })
-  business_id: string;
+  @Column({ name: 'business_id', nullable: true })
+  businessId: string;
 
-  @Column({ default: true })
-  is_active: boolean;
+  @Column({ name: 'is_active', default: true })
+  isActive: boolean;
 
-  @Column({ type: 'text', nullable: true })
-  avatar_url: string;
+  @Column({ name: 'avatar_url', type: 'text', nullable: true })
+  avatar: string;
 
   @CreateDateColumn()
   created_at: Date;

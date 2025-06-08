@@ -63,7 +63,7 @@ export class AuthService {
       throw new HttpException(ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_INVALID_ACCOUNT), HttpStatus.BAD_REQUEST);
     }
 
-    if (!user.is_active) {
+    if (!user.isActive) {
       throw new HttpException(ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_INACTIVE_ACCOUNT), HttpStatus.BAD_REQUEST);
     }
 
@@ -105,10 +105,10 @@ export class AuthService {
       refresh_token,
       userAuthenticated: {
         id: user.id,
-        full_name: user.full_name,
-        user_type: user.user_type,
-        avatar: user.avatar_url,
-        permissions: user.user_type === UserTypeEnum.ADMIN ? permissionMap : undefined,
+        full_name: user.fullName,
+        user_type: user.userType,
+        avatar: user.avatar,
+        permissions: user.userType === UserTypeEnum.ADMIN ? permissionMap : undefined,
       },
     } as AuthResponse;
   }
