@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { GenderEnum } from 'libs/shared/ATVSLD/enums/gender.enum';
 import { UserTypeEnum } from 'libs/shared/ATVSLD/enums/user-type.enum';
@@ -15,7 +16,9 @@ export class UpdateUserRequest {
   @IsOptional() @IsString() address?: string;
   @IsOptional() @IsString() roleId?: string;
   @IsOptional() @IsString() businessId?: string;
-
   @IsOptional() @IsString() avatar?: string;
-  @IsOptional() is_active?: boolean;
+
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsOptional()
+  isActive?: boolean;
 }

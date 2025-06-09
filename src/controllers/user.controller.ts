@@ -79,8 +79,8 @@ export class UserController {
 
   @RequirePermission(PermissionConstant.USER.UPDATE)
   @Patch(':id/toggle')
-  async toggleActive(@Param('id') id: string, @Body('isActive') isActive: boolean): Promise<ApiResponse<UserResponse>> {
-    return this.userService.toggleActive(id, isActive);
+  async toggleActive(@Param('id') id: string): Promise<ApiResponse<{ isActive: boolean }>> {
+    return this.userService.toggleActive(id);
   }
 
   @RequirePermission(PermissionConstant.USER.UPDATE)

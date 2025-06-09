@@ -124,24 +124,30 @@ export class UserService implements IUserService {
     return ApiResponse.success(HttpStatus.OK, SUCCESS_DELETE_USER, null);
   }
 
-  async toggleActive(id: string, isActive: boolean): Promise<ApiResponse<UserResponse>> {
+  async toggleActive(id: string): Promise<ApiResponse<{ isActive: boolean }>> {
     const user = await this.userRepo.findById(id);
     if (!user) {
-      throw new HttpException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_USER_NOT_FOUND), HttpStatus.NOT_FOUND);
+      throw new HttpException(ApiResponse.fail(HttpStatus.OK, ERROR_USER_NOT_FOUND), HttpStatus.OK);
     }
 
-    if (isActive && user.businessId) {
+    const newStatus = !user.isActive;
+
+    // Không cho bật user nếu business bị tắt
+    if (newStatus && user.businessId) {
       const business = await this.businessRepo.findById(user.businessId);
       if (!business?.isActive) {
         throw new HttpException(
-          ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_CANNOT_ACTIVATE_USER_WHEN_BUSINESS_INACTIVE),
-          HttpStatus.BAD_REQUEST,
+          ApiResponse.fail(HttpStatus.OK, ERROR_CANNOT_ACTIVATE_USER_WHEN_BUSINESS_INACTIVE),
+          HttpStatus.OK,
         );
       }
     }
-    const updated = await this.userRepo.update(user, { isActive: isActive });
-    const result = await this.userRepo.findById(updated.id);
-    return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_USER_STATUS, mapToUserResponse(result));
+
+    await this.userRepo.update(user, { isActive: newStatus });
+
+    return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_USER_STATUS, {
+      isActive: newStatus,
+    });
   }
 
   async resetPassword(id: string): Promise<ApiResponse<string>> {

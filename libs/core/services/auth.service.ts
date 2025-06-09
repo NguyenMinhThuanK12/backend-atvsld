@@ -60,16 +60,16 @@ export class AuthService {
   async validateUser(account: string, password: string): Promise<User> {
     const user = await this.userRepo.findByAccount(account);
     if (!user) {
-      throw new HttpException(ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_INVALID_ACCOUNT), HttpStatus.BAD_REQUEST);
+      throw new HttpException(ApiResponse.fail(HttpStatus.OK, ERROR_INVALID_ACCOUNT), HttpStatus.OK);
     }
 
     if (!user.isActive) {
-      throw new HttpException(ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_INACTIVE_ACCOUNT), HttpStatus.BAD_REQUEST);
+      throw new HttpException(ApiResponse.fail(HttpStatus.OK, ERROR_INACTIVE_ACCOUNT), HttpStatus.OK);
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      throw new HttpException(ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_INVALID_ACCOUNT), HttpStatus.BAD_REQUEST);
+      throw new HttpException(ApiResponse.fail(HttpStatus.OK, ERROR_INVALID_ACCOUNT), HttpStatus.OK);
     }
 
     return user;

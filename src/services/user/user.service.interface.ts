@@ -11,7 +11,7 @@ export interface IUserService {
   createUser(dto: CreateUserRequest): Promise<ApiResponse<UserResponse>>;
   updateUser(id: string, dto: UpdateUserRequest): Promise<ApiResponse<UserResponse>>;
   deleteUser(id: string): Promise<ApiResponse<null>>;
-  toggleActive(id: string, isActive: boolean): Promise<ApiResponse<UserResponse>>;
+  toggleActive(id: string): Promise<ApiResponse<{ isActive: boolean }>>;
   resetPassword(id: string): Promise<ApiResponse<string>>;
   checkDuplicateEmail(email: string, excludeId?: string): Promise<ApiResponse<boolean>>;
   checkDuplicateAccount(account: string, excludeId?: string): Promise<ApiResponse<boolean>>;
