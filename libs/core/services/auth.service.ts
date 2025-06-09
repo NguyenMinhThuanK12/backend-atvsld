@@ -33,7 +33,7 @@ import {
 } from 'libs/shared/ATVSLD/constants/mail.constant';
 import { IPermissionRepository } from 'src/repositories/permission/permission.repository.interface';
 import { JwtPayload } from 'libs/shared/ATVSLD/models/requests/auth/jwt-payload';
-import { mapPermissionsToBooleanObject } from 'libs/shared/ATVSLD/common/permission';
+import { mapPermissionsToBooleanObject, PermissionConstant, PermissionMap } from 'libs/shared/ATVSLD/common/permission';
 import { UserTypeEnum } from 'libs/shared/ATVSLD/enums/user-type.enum';
 
 @Injectable()
@@ -78,8 +78,22 @@ export class AuthService {
   //  login trả access + refresh token
   async login(account: string, password: string) {
     const user = await this.validateUser(account, password);
-    const userPermissions = await this.permissionRepo.getPermissionCodesByUserId(user.id);
-    const permissionMap = mapPermissionsToBooleanObject(userPermissions);
+    let permissionMap: PermissionMap;
+
+    if (user.username === 'superadmin') {
+      // Gán toàn bộ quyền là true
+      const fullPermissionCodes = Object.fromEntries(
+        Object.entries(PermissionConstant).map(([groupKey, group]) => [
+          groupKey,
+          Object.fromEntries(Object.keys(group).map((actionKey) => [actionKey, true])),
+        ]),
+      ) as PermissionMap;
+
+      permissionMap = fullPermissionCodes;
+    } else {
+      const userPermissions = await this.permissionRepo.getPermissionCodesByUserId(user.id);
+      permissionMap = mapPermissionsToBooleanObject(userPermissions);
+    }
     const payload: JwtPayload = {
       id: user.id,
     };
