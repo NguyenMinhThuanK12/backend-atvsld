@@ -102,11 +102,27 @@ export class UserService implements IUserService {
     await this.validateDuplicate(dto.phoneNumber, id);
     await this.validateRole(dto);
 
-    // Upload avatar mới nếu có
+    //  Kiểm tra trạng thái sẽ áp dụng sau cập nhật
+    let willBeActive = user.isActive; // mặc định là trạng thái cũ
+    if (dto.isActive !== undefined && dto.isActive !== null) {
+      willBeActive = dto.isActive;
+    }
+
+    //  Nếu user sắp được bật lại mà là loại doanh nghiệp thì kiểm tra doanh nghiệp
+    if (willBeActive && user.businessId) {
+      const business = await this.businessRepo.findById(user.businessId);
+      if (!business?.isActive) {
+        throw new HttpException(
+          ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_CANNOT_ACTIVATE_USER_WHEN_BUSINESS_INACTIVE),
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+
+    //  Upload avatar mới nếu có
     if (files?.avatar?.[0]) {
       const file = files.avatar[0];
-      console.log('old avatar:', user.avatar);
-      dto.avatar = await this.supabaseService.uploadImage(file.buffer, file.originalname, user.avatar); // xoá ảnh cũ nếu có
+      dto.avatar = await this.supabaseService.uploadImage(file.buffer, file.originalname, user.avatar);
     }
 
     const updated = await this.userRepo.update(user, dto);
