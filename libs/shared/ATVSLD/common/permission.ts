@@ -20,6 +20,10 @@ export const PermissionConstant = {
   PERMISSION: {
     VIEW: 'ADMIN.C_PERMISSION_VIEW',
   },
+  REPORT_CONFIGURATION: {
+    CREATE: 'ADMIN.C_REPORT_CONFIGURATION_CREATE',
+    UPDATE: 'ADMIN.C_REPORT_CONFIGURATION_UPDATE',
+  },
 } as const;
 type PermissionGroupKeys = keyof typeof PermissionConstant;
 
