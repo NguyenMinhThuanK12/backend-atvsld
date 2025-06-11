@@ -47,7 +47,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.role', 'role')
       .leftJoinAndSelect('user.business', 'business')
-      .where('1=1');
+      .where('user.account != :superadmin', { superadmin: 'superadmin' });
 
     if (query.username) {
       qb.andWhere('unaccent(user.account) ILIKE unaccent(:username)', {

@@ -89,11 +89,4 @@ export class Business {
 
   @OneToMany(() => User, (user) => user.business)
   users: User[];
-
-  // @Column()
-  // level: number;
-
-  // @ManyToOne(() => Business)
-  // @JoinColumn({ name: 'parent_id' })
-  // parent: Business;
 }

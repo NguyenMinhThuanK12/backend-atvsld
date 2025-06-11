@@ -73,8 +73,13 @@ export class UserService implements IUserService {
     files?: { avatar?: Express.Multer.File[] },
   ): Promise<ApiResponse<UserResponse>> {
     await this.validateDuplicate(dto.username, dto.email, dto.phoneNumber);
-    await this.validateRole(dto);
-    await this.validateBusiness(dto);
+    if (dto.roleId) {
+      await this.validateRole(dto);
+    }
+
+    if (dto.businessId) {
+      await this.validateBusiness(dto);
+    }
 
     // Upload avatar nếu có
     if (files?.avatar?.[0]) {
@@ -100,7 +105,9 @@ export class UserService implements IUserService {
     }
 
     await this.validateDuplicate(dto.phoneNumber, id);
-    await this.validateRole(dto);
+    if (dto.roleId) {
+      await this.validateRole(dto);
+    }
 
     //  Kiểm tra trạng thái sẽ áp dụng sau cập nhật
     let willBeActive = user.isActive; // mặc định là trạng thái cũ
@@ -113,8 +120,8 @@ export class UserService implements IUserService {
       const business = await this.businessRepo.findById(user.businessId);
       if (!business?.isActive) {
         throw new HttpException(
-          ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_CANNOT_ACTIVATE_USER_WHEN_BUSINESS_INACTIVE),
-          HttpStatus.BAD_REQUEST,
+          ApiResponse.fail(HttpStatus.OK, ERROR_CANNOT_ACTIVATE_USER_WHEN_BUSINESS_INACTIVE),
+          HttpStatus.OK,
         );
       }
     }
@@ -216,7 +223,7 @@ export class UserService implements IUserService {
   private async validateRole(dto: CreateUserRequest | UpdateUserRequest): Promise<void> {
     const role = await this.roleRepo.findById(dto.roleId);
     if (!role) {
-      throw new HttpException(ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_ROLE_NOT_FOUND), HttpStatus.BAD_REQUEST);
+      throw new HttpException(ApiResponse.fail(HttpStatus.OK, ERROR_ROLE_NOT_FOUND), HttpStatus.OK);
     }
   }
 
@@ -224,10 +231,7 @@ export class UserService implements IUserService {
     if (dto.userType === UserTypeEnum.BUSINESS) {
       const business = await this.businessRepo.findById(dto.businessId);
       if (!business) {
-        throw new HttpException(
-          ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_BUSINESS_NOT_FOUND),
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new HttpException(ApiResponse.fail(HttpStatus.OK, ERROR_BUSINESS_NOT_FOUND), HttpStatus.OK);
       }
     }
   }

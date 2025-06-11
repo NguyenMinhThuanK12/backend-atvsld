@@ -15,6 +15,9 @@ import { PdfModule } from './modules/pdf.module';
 import { CloudinaryService } from 'libs/core/cloudinary/cloudinary.service';
 import { SupabaseModule } from 'libs/core/supabase/supabase.module';
 import { JwtAuthGuard } from 'libs/core/auth/jwt-auth.guard';
+import { ReportConfigurationModule } from './modules/report-configuration.module';
+import { ReportInstanceModule } from './modules/report-instance.module';
+import { ReportDetailModule } from './modules/report-detail.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -57,6 +60,9 @@ import { JwtAuthGuard } from 'libs/core/auth/jwt-auth.guard';
     BusinessModule,
     PermissionModule,
     RoleModule,
+    ReportConfigurationModule,
+    ReportInstanceModule,
+    ReportDetailModule,
   ],
   controllers: [],
   providers: [
