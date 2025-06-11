@@ -42,7 +42,9 @@ export class ReportInstanceRepository extends BaseRepository<ReportInstance> imp
     } else if (query.endDate) {
       qb.andWhere('config.endDate <= :end', { end: query.endDate });
     }
-
+    if (query.year) {
+      qb.andWhere('EXTRACT(YEAR FROM config.startDate) = :year', { year: query.year });
+    }
     if (query.period) {
       qb.andWhere('config.period = :period', { period: query.period });
     }

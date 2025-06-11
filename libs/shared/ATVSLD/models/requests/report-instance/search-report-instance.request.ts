@@ -1,5 +1,5 @@
 import { PaginationQueryRequest } from 'libs/shared/ATVSLD/common/pagination-query.request';
-import { IsEnum, IsOptional, IsString, IsDateString } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsDateString, IsNumber } from 'class-validator';
 import { ReportStatusEnum } from 'libs/shared/ATVSLD/enums/report-status.enum';
 import { ReportPeriodEnum } from 'libs/shared/ATVSLD/enums/reporting-period.enum';
 
@@ -23,6 +23,10 @@ export class SearchReportInstanceRequest extends PaginationQueryRequest {
   @IsOptional()
   @IsEnum(ReportPeriodEnum)
   period?: ReportPeriodEnum;
+
+  @IsOptional()
+  @IsNumber()
+  year?: number;
 
   @IsOptional()
   @IsDateString()
