@@ -15,7 +15,7 @@ import { mapToReportDetailEntity, mapToReportDetailResponse } from 'libs/shared/
 import { ReportStatusEnum } from 'libs/shared/ATVSLD/enums/report-status.enum';
 import { ReportInstance } from 'src/entities/report-instance.entity';
 import { UpdateReportDetailRequest } from 'libs/shared/ATVSLD/models/requests/report-detail/update-report-detail.request';
-import { DataSource } from 'typeorm/data-source';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class ReportDetailService implements IReportDetailService {
