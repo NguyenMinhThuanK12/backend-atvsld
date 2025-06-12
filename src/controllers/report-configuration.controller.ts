@@ -16,7 +16,7 @@ export class ReportConfigurationController {
     @Query('year') year: string,
     @Query('excludeId') excludeId?: string,
   ) {
-    return this.service.checkDuplicate(reportName, Number(year), excludeId);
+    return this.service.checkDuplicate(reportName, year, excludeId);
   }
   @Post()
   async create(@Body() dto: CreateReportConfigRequest): Promise<ApiResponse<ReportConfigResponse>> {
