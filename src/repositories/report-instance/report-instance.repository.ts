@@ -37,14 +37,17 @@ export class ReportInstanceRepository extends BaseRepository<ReportInstance> imp
     }
 
     if (query.startDate && query.endDate) {
-      qb.andWhere('(config.startDate <= :endDate AND config.endDate >= :startDate)', {
+      qb.andWhere('DATE(config.startDate) >= DATE(:startDate) AND DATE(config.endDate) <= DATE(:endDate)', {
         startDate: query.startDate,
         endDate: query.endDate,
       });
     } else if (query.startDate) {
-      qb.andWhere('config.startDate >= :start', { start: query.startDate });
-    } else if (query.endDate) {
-      qb.andWhere('config.endDate <= :end', { end: query.endDate });
+      qb.andWhere('config.startDate >= :startDate', { startDate: query.startDate });
+    }
+
+    // Ngày kết thúc
+    else if (!query.startDate && query.endDate) {
+      qb.andWhere('config.endDate <= :endDate', { endDate: query.endDate });
     }
 
     if (query.year) {
@@ -57,11 +60,8 @@ export class ReportInstanceRepository extends BaseRepository<ReportInstance> imp
       qb.andWhere('config.period = :period', { period: query.period });
     }
 
-    if (query.lastUpdatedFrom && query.lastUpdatedTo) {
-      qb.andWhere('instance.lastUpdatedDate BETWEEN :from AND :to', {
-        from: query.lastUpdatedFrom,
-        to: query.lastUpdatedTo,
-      });
+    if (query.lastUpdated) {
+      qb.andWhere('instance.lastUpdatedDate  >= :lastUpdated', { lastUpdated: query.lastUpdated });
     }
 
     if (query.updatedBy) {

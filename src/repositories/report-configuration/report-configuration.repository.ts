@@ -32,7 +32,7 @@ export class ReportConfigurationRepository
     }
 
     if (query.startDate && query.endDate) {
-      qb.andWhere('(config.startDate <= :endDate AND config.endDate >= :startDate)', {
+      qb.andWhere('DATE(config.startDate) >= DATE(:startDate) AND DATE(config.endDate) <= DATE(:endDate)', {
         startDate: query.startDate,
         endDate: query.endDate,
       });
@@ -41,7 +41,7 @@ export class ReportConfigurationRepository
     }
 
     // Ngày kết thúc
-    if (!query.startDate && query.endDate) {
+    else if (!query.startDate && query.endDate) {
       qb.andWhere('config.endDate <= :endDate', { endDate: query.endDate });
     }
 

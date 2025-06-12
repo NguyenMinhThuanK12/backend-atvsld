@@ -107,7 +107,7 @@ export class ReportDetail {
 
   // ===== 12. Thời điểm đánh giá =====
 
-  @Column({ type: 'varchar', length: 20 }) riskAssessmentTime: string;
+  @Column({ type: 'varchar', length: 20, default: '' }) riskAssessmentTime: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

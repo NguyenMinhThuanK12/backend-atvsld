@@ -30,11 +30,7 @@ export class SearchReportInstanceRequest extends PaginationQueryRequest {
 
   @IsOptional()
   @IsDateString()
-  lastUpdatedFrom?: Date;
-
-  @IsOptional()
-  @IsDateString()
-  lastUpdatedTo?: Date;
+  lastUpdated?: Date;
 
   @IsOptional()
   @IsString()
