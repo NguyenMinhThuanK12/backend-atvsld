@@ -25,6 +25,7 @@ import {
   SUCCESS_GET_CONFIG_LIST,
   SUCCESS_UPDATE_CONFIG,
 } from 'libs/shared/ATVSLD/constants/report-configuration-message.constant';
+import { ReportDetail } from 'src/entities/report-detail.entity';
 
 @Injectable()
 export class ReportConfigurationService implements IReportConfigurationService {
@@ -46,17 +47,34 @@ export class ReportConfigurationService implements IReportConfigurationService {
       throw new HttpException(ERROR_DUPLICATE_YEAR, HttpStatus.OK);
     }
 
+    // Tạo cấu hình báo cáo
     const config = await this.repo.create(mapToReportConfigEntity(dto));
 
-    const businesses = await this.businessRepo.findActive();
-    const instances = businesses.map((biz) => {
-      const ri = new ReportInstance();
-      ri.configId = config.id;
-      ri.businessId = biz.id;
-      ri.status = ReportStatusEnum.PENDING;
-      return ri;
+    // Lấy danh sách doanh nghiệp
+    const businesses = await this.businessRepo.findAll();
+
+    const instanceRepo = this.dataSource.getRepository(ReportInstance);
+    const detailRepo = this.dataSource.getRepository(ReportDetail);
+
+    // Tạo danh sách report instance
+    const instances: ReportInstance[] = businesses.map((biz) => {
+      const instance = new ReportInstance();
+      instance.configId = config.id;
+      instance.businessId = biz.id;
+      instance.status = ReportStatusEnum.PENDING;
+      return instance;
     });
-    await this.dataSource.getRepository(ReportInstance).save(instances);
+
+    const savedInstances = await instanceRepo.save(instances);
+
+    // Với mỗi instance, tạo 1 ReportDetail có instanceId
+    const details: ReportDetail[] = savedInstances.map((instance) => {
+      const detail = new ReportDetail();
+      detail.instanceId = instance.id;
+      return detail;
+    });
+
+    await detailRepo.save(details);
 
     return ApiResponse.success(HttpStatus.CREATED, SUCCESS_CREATE_CONFIG, mapToReportConfigResponse(config));
   }
@@ -91,11 +109,11 @@ export class ReportConfigurationService implements IReportConfigurationService {
     if (!config) {
       throw new NotFoundException(ApiResponse.fail(HttpStatus.OK, ERROR_CONFIG_NOT_FOUND));
     }
-
-    await this.repo.update(config, { isActive: !config.isActive });
+    const newStatus = !config.isActive;
+    await this.repo.update(config, { isActive: newStatus });
 
     return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_CONFIG, {
-      isActive: !config.isActive,
+      isActive: newStatus,
     });
   }
   async findById(id: string): Promise<ApiResponse<ReportConfigResponse>> {

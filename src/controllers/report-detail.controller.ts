@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { CreateReportDetailRequest } from 'libs/shared/ATVSLD/models/requests/report-detail/create-report-detail.request';
 import { UpdateReportDetailRequest } from 'libs/shared/ATVSLD/models/requests/report-detail/update-report-detail.request';
 
 import { ReportDetailService } from 'src/services/report-detail/report-detail.service';
@@ -21,13 +20,13 @@ export class ReportDetailController {
   }
   // Tạo mới chi tiết báo cáo
   @Post()
-  async create(@Body() dto: CreateReportDetailRequest) {
+  async create(@Body() dto: UpdateReportDetailRequest) {
     return this.reportDetailService.create(dto);
   }
 
   // Cập nhật chi tiết báo cáo theo instanceId
   @Patch('instance/:instanceId')
   async update(@Param('instanceId') instanceId: string, @Body() dto: UpdateReportDetailRequest) {
-    return this.reportDetailService.update(instanceId, dto);
+    return this.reportDetailService.update(instanceId, dto, dto.fullName);
   }
 }

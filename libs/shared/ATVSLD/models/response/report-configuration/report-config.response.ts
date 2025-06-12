@@ -1,8 +1,9 @@
+import { ReportNameEnum } from 'libs/shared/ATVSLD/enums/report-name.enum';
 import { ReportPeriodEnum } from 'libs/shared/ATVSLD/enums/reporting-period.enum';
 
 export class ReportConfigResponse {
   id: string;
-  reportName: string;
+  reportName: ReportNameEnum;
   year: number;
   period: ReportPeriodEnum;
   startDate: Date;

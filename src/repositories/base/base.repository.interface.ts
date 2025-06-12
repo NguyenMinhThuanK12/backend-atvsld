@@ -3,6 +3,7 @@ import { DeepPartial } from 'typeorm/common/DeepPartial';
 export interface IBaseRepository<T> {
   findById(id: string): Promise<T | null>;
   findByIds(ids: string[]): Promise<T[]>;
+  findAll(): Promise<T[]>;
   create(data: T): Promise<T>;
   update(target: T, data: DeepPartial<T>): Promise<T>;
   delete(id: string): Promise<void>;

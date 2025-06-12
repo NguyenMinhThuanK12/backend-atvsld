@@ -26,13 +26,15 @@ export class ReportConfigurationRepository
     }
 
     if (query.year) {
-      qb.andWhere('config.year = :year', { year: query.year });
+      qb.andWhere(`TO_CHAR(config.startDate, 'YYYY') LIKE :year`, {
+        year: `%${query.year}%`,
+      });
     }
-    // Ngày bắt đầu
+
     if (query.startDate && query.endDate) {
-      qb.andWhere('config.startDate BETWEEN :start AND :end', {
-        start: query.startDate,
-        end: query.endDate,
+      qb.andWhere('(config.startDate <= :endDate AND config.endDate >= :startDate)', {
+        startDate: query.startDate,
+        endDate: query.endDate,
       });
     } else if (query.startDate) {
       qb.andWhere('config.startDate >= :startDate', { startDate: query.startDate });

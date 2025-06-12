@@ -5,5 +5,5 @@ import { ReportInstance } from 'src/entities/report-instance.entity';
 export const IReportInstanceRepository = 'IReportInstanceRepository';
 
 export interface IReportInstanceRepository extends IBaseRepository<ReportInstance> {
-  findAdvanced(query: SearchReportInstanceRequest): Promise<[ReportInstance[], number]>;
+  findAdvanced(query: SearchReportInstanceRequest, businessId?: string): Promise<[ReportInstance[], number]>;
 }

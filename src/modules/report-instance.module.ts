@@ -7,7 +7,7 @@ import { ReportInstanceRepository } from 'src/repositories/report-instance/repor
 import { ReportInstanceService } from 'src/services/report-instance/report-instance.service';
 import { ReportConfiguration } from 'src/entities/report-configuration.entity';
 import { Business } from 'src/entities/business.entity';
-import { IReportInstanceRepository } from 'src/repositories/report-instance/eport-instance.repository.interface';
+import { IReportInstanceRepository } from 'src/repositories/report-instance/report-instance.repository.interface';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ReportInstance, ReportConfiguration, Business])],

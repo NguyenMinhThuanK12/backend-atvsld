@@ -1,5 +1,5 @@
 import { PaginationQueryRequest } from 'libs/shared/ATVSLD/common/pagination-query.request';
-import { IsOptional, IsEnum, IsInt, IsString, IsDateString } from 'class-validator';
+import { IsOptional, IsEnum, IsString, IsDateString } from 'class-validator';
 import { ReportPeriodEnum } from 'libs/shared/ATVSLD/enums/reporting-period.enum';
 
 export class SearchReportConfigRequest extends PaginationQueryRequest {
@@ -8,7 +8,7 @@ export class SearchReportConfigRequest extends PaginationQueryRequest {
   reportName?: string;
 
   @IsOptional()
-  @IsInt()
+  @IsString()
   year?: number;
 
   @IsOptional()

@@ -5,7 +5,7 @@ import { ReportInstance } from 'src/entities/report-instance.entity';
 import { BaseRepository } from '../base/base.repository';
 
 import { SearchReportInstanceRequest } from 'libs/shared/ATVSLD/models/requests/report-instance/search-report-instance.request';
-import { IReportInstanceRepository } from './eport-instance.repository.interface';
+import { IReportInstanceRepository } from './report-instance.repository.interface';
 
 @Injectable()
 export class ReportInstanceRepository extends BaseRepository<ReportInstance> implements IReportInstanceRepository {
@@ -16,13 +16,17 @@ export class ReportInstanceRepository extends BaseRepository<ReportInstance> imp
     super(repo);
   }
 
-  async findAdvanced(query: SearchReportInstanceRequest): Promise<[ReportInstance[], number]> {
+  async findAdvanced(query: SearchReportInstanceRequest, businessId?: string): Promise<[ReportInstance[], number]> {
     const qb = this.repo
       .createQueryBuilder('instance')
       .leftJoinAndSelect('instance.configuration', 'config')
       .leftJoinAndSelect('instance.business', 'business');
 
     qb.andWhere('config.isActive = true');
+
+    if (businessId) {
+      qb.andWhere('instance.businessId = :businessId', { businessId });
+    }
 
     if (query.status) {
       qb.andWhere('instance.status = :status', { status: query.status });
@@ -33,18 +37,22 @@ export class ReportInstanceRepository extends BaseRepository<ReportInstance> imp
     }
 
     if (query.startDate && query.endDate) {
-      qb.andWhere('config.startDate BETWEEN :start AND :end', {
-        start: query.startDate,
-        end: query.endDate,
+      qb.andWhere('(config.startDate <= :endDate AND config.endDate >= :startDate)', {
+        startDate: query.startDate,
+        endDate: query.endDate,
       });
     } else if (query.startDate) {
       qb.andWhere('config.startDate >= :start', { start: query.startDate });
     } else if (query.endDate) {
       qb.andWhere('config.endDate <= :end', { end: query.endDate });
     }
+
     if (query.year) {
-      qb.andWhere('EXTRACT(YEAR FROM config.startDate) = :year', { year: query.year });
+      qb.andWhere(`TO_CHAR(config.startDate, 'YYYY') LIKE :year`, {
+        year: `%${query.year}%`,
+      });
     }
+
     if (query.period) {
       qb.andWhere('config.period = :period', { period: query.period });
     }

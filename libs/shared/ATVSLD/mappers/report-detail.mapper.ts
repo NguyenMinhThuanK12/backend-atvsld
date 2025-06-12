@@ -1,6 +1,6 @@
 import { ReportDetail } from 'src/entities/report-detail.entity';
 import { ReportDetailResponse } from '../models/response/report-detail/report-detail.response';
-import { CreateReportDetailRequest } from '../models/requests/report-detail/create-report-detail.request';
+import { CreateReportDetailRequest } from '../models/requests/report-detail/update-report-detail.request';
 
 export function mapToReportDetailResponse(entity: ReportDetail): ReportDetailResponse {
   return {

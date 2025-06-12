@@ -12,6 +12,13 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
     return this.repo.findBy({ id: In(ids) } as any);
   }
 
+  async findAll(): Promise<T[]> {
+    return this.repo.find({
+      order: {
+        createdAt: 'DESC',
+      } as any,
+    });
+  }
   async create(data: T): Promise<T> {
     const entity = this.repo.create(data);
     return this.repo.save(entity);
