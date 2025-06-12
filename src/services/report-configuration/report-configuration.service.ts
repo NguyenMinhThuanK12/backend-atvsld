@@ -141,4 +141,15 @@ export class ReportConfigurationService implements IReportConfigurationService {
     const message = data.length === 0 ? ERROR_NO_DATA : SUCCESS_GET_CONFIG_LIST;
     return ApiResponse.success(HttpStatus.OK, message, response);
   }
+
+  async checkDuplicate(
+    reportName: string,
+    year: string,
+    excludeId?: string,
+  ): Promise<ApiResponse<{ isDuplicate: boolean }>> {
+    const isDuplicate = await this.repo.checkYearConflict(reportName, Number(year), excludeId);
+    return ApiResponse.success(HttpStatus.OK, ERROR_DUPLICATE_YEAR, {
+      isDuplicate,
+    });
+  }
 }

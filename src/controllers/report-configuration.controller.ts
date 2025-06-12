@@ -10,6 +10,14 @@ import { ReportConfigResponse } from 'libs/shared/ATVSLD/models/response/report-
 export class ReportConfigurationController {
   constructor(private readonly service: ReportConfigurationService) {}
 
+  @Get('check-duplicate-year')
+  async checkDuplicate(
+    @Query('reportName') reportName: string,
+    @Query('year') year: string,
+    @Query('excludeId') excludeId?: string,
+  ) {
+    return this.service.checkDuplicate(reportName, Number(year), excludeId);
+  }
   @Post()
   async create(@Body() dto: CreateReportConfigRequest): Promise<ApiResponse<ReportConfigResponse>> {
     return this.service.create(dto);
