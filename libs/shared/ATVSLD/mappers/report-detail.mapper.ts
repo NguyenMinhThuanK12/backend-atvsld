@@ -1,6 +1,6 @@
 import { ReportDetail } from 'src/entities/report-detail.entity';
 import { ReportDetailResponse } from '../models/response/report-detail/report-detail.response';
-import { CreateReportDetailRequest } from '../models/requests/report-detail/update-report-detail.request';
+import { UpdateReportDetailRequest } from '../models/requests/report-detail/update-report-detail.request';
 
 export function mapToReportDetailResponse(entity: ReportDetail): ReportDetailResponse {
   return {
@@ -96,7 +96,7 @@ export function mapToReportDetailResponse(entity: ReportDetail): ReportDetailRes
     riskAssessmentTime: entity.riskAssessmentTime,
   };
 }
-export function mapToReportDetailEntity(dto: CreateReportDetailRequest): ReportDetail {
+export function mapToReportDetailEntity(dto: UpdateReportDetailRequest): ReportDetail {
   const entity = new ReportDetail();
 
   entity.instanceId = dto.instanceId;
