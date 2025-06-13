@@ -6,6 +6,7 @@ export const mapToReportInstanceResponse = (instance: ReportInstance): ReportIns
   status: instance.status,
 
   businessName: instance.business.name,
+  year: instance.configuration.year.toString(),
 
   startDate: instance.configuration.startDate,
   endDate: instance.configuration.endDate,

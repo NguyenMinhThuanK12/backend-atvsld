@@ -17,7 +17,7 @@ export class ReportInstanceController {
     @Query() query: SearchReportInstanceRequest,
     @CurrentUser() user?: JwtPayload,
   ): Promise<ApiResponse<PaginatedResponse<ReportInstanceResponse>>> {
-    const businessId = user.userType === UserTypeEnum.BUSINESS ? user.businessId : undefined;
+    const businessId = user?.userType === UserTypeEnum.BUSINESS ? user.businessId : undefined;
     return this.service.search(query, businessId);
   }
 }

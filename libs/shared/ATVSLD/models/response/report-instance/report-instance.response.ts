@@ -7,6 +7,8 @@ export class ReportInstanceResponse {
 
   businessName: string;
 
+  year: string;
+
   startDate: Date;
   endDate: Date;
   period: ReportPeriodEnum;
