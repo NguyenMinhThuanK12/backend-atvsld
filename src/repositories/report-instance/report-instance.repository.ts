@@ -51,7 +51,7 @@ export class ReportInstanceRepository extends BaseRepository<ReportInstance> imp
     }
 
     if (query.year) {
-      qb.andWhere(`TO_CHAR(config.startDate, 'YYYY') LIKE :year`, {
+      qb.andWhere('CAST(config.year AS TEXT) LIKE :year', {
         year: `%${query.year}%`,
       });
     }

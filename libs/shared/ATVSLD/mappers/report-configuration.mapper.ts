@@ -5,7 +5,7 @@ import { CreateReportConfigRequest } from '../models/requests/report-configurati
 export const mapToReportConfigResponse = (entity: ReportConfiguration): ReportConfigResponse => ({
   id: entity.id,
   reportName: entity.reportName,
-  year: entity.year,
+  year: entity.year.toString(),
   period: entity.period,
   startDate: entity.startDate,
   endDate: entity.endDate,
