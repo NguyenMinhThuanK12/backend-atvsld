@@ -7,7 +7,7 @@ import { RequirePermission } from 'libs/core/auth/require-permission.decorator';
 import { SearchPermissionGroupRequest } from 'libs/shared/ATVSLD/models/requests/permission/search-permission-group.request';
 import { SearchPermissionComponentRequest } from 'libs/shared/ATVSLD/models/requests/permission/search-permission-component.request';
 import { PermissionConstant } from 'libs/shared/ATVSLD/common/permission';
-@Controller('permissions')
+@Controller({ path: 'permissions', version: '1' })
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 

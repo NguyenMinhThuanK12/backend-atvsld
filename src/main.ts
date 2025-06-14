@@ -1,10 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
-
+import { VersioningType } from '@nestjs/common'; //
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Thêm tiền tố /api vào tất cả route
+  app.setGlobalPrefix('api');
+
+  // Bật versioning theo URI: /v1, /v2...
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
   // Bật validation toàn app
   app.useGlobalPipes(
     new ValidationPipe({

@@ -2,8 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { UpdateReportDetailRequest } from 'libs/shared/ATVSLD/models/requests/report-detail/update-report-detail.request';
 
 import { ReportDetailService } from 'src/services/report-detail/report-detail.service';
-
-@Controller('report-details')
+@Controller({ path: 'report-details', version: '1' })
 export class ReportDetailController {
   constructor(private readonly reportDetailService: ReportDetailService) {}
 

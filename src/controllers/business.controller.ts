@@ -32,7 +32,7 @@ import { RequirePermission } from 'libs/core/auth/require-permission.decorator';
 import { PermissionConstant } from 'libs/shared/ATVSLD/common/permission';
 import { Public } from 'libs/core/auth/public.decorator';
 
-@Controller('businesses')
+@Controller({ path: 'businesses', version: '1' })
 export class BusinessController {
   constructor(
     private readonly businessService: BusinessService,

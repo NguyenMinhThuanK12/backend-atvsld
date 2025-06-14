@@ -10,8 +10,7 @@ import {
   SUCCESS_LOGOUT,
   SUCCESS_REFRESH_TOKEN,
 } from 'libs/shared/ATVSLD/constants/auth-message.constant';
-
-@Controller('auth')
+@Controller({ path: 'auth', version: '1' })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

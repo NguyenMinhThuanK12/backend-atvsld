@@ -21,7 +21,7 @@ import { UpdateUserRequest } from 'libs/shared/ATVSLD/models/requests/user/updat
 import { UserService } from 'src/services/user/user.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express/multer';
 
-@Controller('users')
+@Controller({ path: 'users', version: '1' })
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

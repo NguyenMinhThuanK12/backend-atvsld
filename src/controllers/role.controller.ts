@@ -10,7 +10,7 @@ import { SearchRoleQueryRequest } from 'libs/shared/ATVSLD/models/requests/role/
 import { RequirePermission } from 'libs/core/auth/require-permission.decorator';
 import { PermissionConstant } from 'libs/shared/ATVSLD/common/permission';
 
-@Controller('roles')
+@Controller({ path: 'roles', version: '1' })
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 

@@ -5,8 +5,7 @@ import { UpdateReportConfigRequest } from 'libs/shared/ATVSLD/models/requests/re
 import { SearchReportConfigRequest } from 'libs/shared/ATVSLD/models/requests/report-configuration/search-report-config.request';
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import { ReportConfigResponse } from 'libs/shared/ATVSLD/models/response/report-configuration/report-config.response';
-
-@Controller('report-configurations')
+@Controller({ path: 'report-configurations', version: '1' })
 export class ReportConfigurationController {
   constructor(private readonly service: ReportConfigurationService) {}
 

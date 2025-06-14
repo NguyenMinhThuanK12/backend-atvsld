@@ -7,8 +7,7 @@ import { JwtPayload } from 'libs/shared/ATVSLD/models/requests/auth/jwt-payload'
 import { SearchReportInstanceRequest } from 'libs/shared/ATVSLD/models/requests/report-instance/search-report-instance.request';
 import { ReportInstanceResponse } from 'libs/shared/ATVSLD/models/response/report-instance/report-instance.response';
 import { ReportInstanceService } from 'src/services/report-instance/report-instance.service';
-
-@Controller('report-instances')
+@Controller({ path: 'report-instances', version: '1' })
 export class ReportInstanceController {
   constructor(private readonly service: ReportInstanceService) {}
 
