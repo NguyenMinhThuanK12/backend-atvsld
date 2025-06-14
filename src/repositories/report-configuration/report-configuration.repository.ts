@@ -22,7 +22,9 @@ export class ReportConfigurationRepository
     const qb = this.repo.createQueryBuilder('config');
 
     if (query.reportName) {
-      qb.andWhere('LOWER(config.reportName) ILIKE LOWER(:name)', { name: `%${query.reportName}%` });
+      qb.andWhere('config.report_name::text ILIKE :name', {
+        name: `%${query.reportName}%`,
+      });
     }
 
     if (query.year) {
