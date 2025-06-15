@@ -47,11 +47,7 @@ export class ReportDetailService implements IReportDetailService {
     return ApiResponse.success(HttpStatus.CREATED, SUCCESS_CREATE_DETAIL, mapToReportDetailResponse(result));
   }
 
-  async update(
-    id: string,
-    dto: UpdateReportDetailRequest,
-    userFullName: string,
-  ): Promise<ApiResponse<ReportDetailResponse>> {
+  async update(id: string, dto: UpdateReportDetailRequest): Promise<ApiResponse<ReportDetailResponse>> {
     const current = await this.repo.findById(id);
     if (!current) {
       throw new NotFoundException(ApiResponse.fail(HttpStatus.OK, ERROR_DETAIL_NOT_FOUND));
@@ -64,7 +60,7 @@ export class ReportDetailService implements IReportDetailService {
 
     if (instance) {
       instance.status = dto.status === 'Hoàn thành' ? ReportStatusEnum.COMPLETED : ReportStatusEnum.EDITING;
-      instance.lastUpdatedBy = userFullName;
+      instance.lastUpdatedBy = dto.fullName;
       instance.lastUpdatedDate = new Date();
       await instanceRepo.save(instance);
     }
