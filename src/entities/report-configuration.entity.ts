@@ -30,6 +30,9 @@ export class ReportConfiguration {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
+  @Column({ name: 'is_overdue', default: false })
+  isOverdue: boolean;
+
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 

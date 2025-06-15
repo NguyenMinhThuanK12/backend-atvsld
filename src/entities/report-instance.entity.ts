@@ -25,9 +25,6 @@ export class ReportInstance {
   @Column({ type: 'enum', enum: ReportStatusEnum, default: ReportStatusEnum.PENDING })
   status: ReportStatusEnum;
 
-  @Column({ name: 'is_overdue', default: false })
-  isOverdue: boolean;
-
   @Column({ name: 'last_updated_date', type: 'timestamp', nullable: true })
   lastUpdatedDate: Date;
 
