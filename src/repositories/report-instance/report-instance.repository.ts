@@ -70,10 +70,22 @@ export class ReportInstanceRepository extends BaseRepository<ReportInstance> imp
       });
     }
 
-    qb.orderBy('instance.createdAt', 'DESC')
-      .skip((query.page - 1) * query.limit)
-      .take(query.limit);
+    qb.orderBy('instance.createdAt', 'DESC');
 
     return qb.getManyAndCount();
+  }
+
+  async findActiveYears(): Promise<number[]> {
+    const results = await this.repo
+      .createQueryBuilder('instance')
+      .leftJoin('instance.configuration', 'config')
+      .where('config.isActive = true')
+      .select('config.year', 'year')
+      .addSelect('MAX(instance.createdAt)', 'createdAt')
+      .groupBy('config.year')
+      .orderBy('MAX(instance.createdAt)', 'DESC')
+      .getRawMany();
+
+    return results.map((r) => Number(r.year));
   }
 }

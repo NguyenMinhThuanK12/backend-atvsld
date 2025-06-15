@@ -26,7 +26,7 @@ export class SearchReportInstanceRequest extends PaginationQueryRequest {
 
   @IsOptional()
   @IsString()
-  year?: number;
+  year?: string;
 
   @IsOptional()
   @IsDateString()

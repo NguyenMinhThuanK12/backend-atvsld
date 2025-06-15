@@ -208,10 +208,7 @@ export class AuthService {
     });
 
     if (!savedToken) {
-      throw new HttpException(
-        ApiResponse.fail(HttpStatus.UNAUTHORIZED, 'ERROR_INVALID_TOKEN'),
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new HttpException(ApiResponse.fail(HttpStatus.UNAUTHORIZED, ERROR_INVALID_TOKEN), HttpStatus.UNAUTHORIZED);
     }
 
     let payload: AuthResponse;

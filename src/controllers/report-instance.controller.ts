@@ -1,7 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { CurrentUser } from 'libs/core/auth/current-user.decorator';
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
-import { PaginatedResponse } from 'libs/shared/ATVSLD/common/paginated-response';
 import { UserTypeEnum } from 'libs/shared/ATVSLD/enums/user-type.enum';
 import { JwtPayload } from 'libs/shared/ATVSLD/models/requests/auth/jwt-payload';
 import { SearchReportInstanceRequest } from 'libs/shared/ATVSLD/models/requests/report-instance/search-report-instance.request';
@@ -15,8 +14,12 @@ export class ReportInstanceController {
   async search(
     @Query() query: SearchReportInstanceRequest,
     @CurrentUser() user?: JwtPayload,
-  ): Promise<ApiResponse<PaginatedResponse<ReportInstanceResponse>>> {
+  ): Promise<ApiResponse<ReportInstanceResponse[]>> {
     const businessId = user?.userType === UserTypeEnum.BUSINESS ? user.businessId : undefined;
     return this.service.search(query, businessId);
+  }
+  @Get('years')
+  async getYears(): Promise<ApiResponse<number[]>> {
+    return this.service.getActiveYears();
   }
 }
