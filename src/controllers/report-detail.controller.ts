@@ -26,6 +26,6 @@ export class ReportDetailController {
   // Cập nhật chi tiết báo cáo theo instanceId
   @Patch('instance/:instanceId')
   async update(@Param('instanceId') instanceId: string, @Body() dto: UpdateReportDetailRequest) {
-    return this.reportDetailService.update(instanceId, dto, dto.fullName);
+    return this.reportDetailService.update(instanceId, dto);
   }
 }
