@@ -4,7 +4,7 @@ import { ReportInstanceResponse } from '../models/response/report-instance/repor
 export const mapToReportInstanceResponse = (instance: ReportInstance): ReportInstanceResponse => ({
   id: instance.id,
   status: instance.status,
-
+  isOverdue: instance.isOverdue,
   businessName: instance.business.name,
   year: instance.configuration.year.toString(),
 

@@ -5,6 +5,8 @@ export class ReportInstanceResponse {
   id: string;
   status: ReportStatusEnum;
 
+  isOverdue: boolean;
+
   businessName: string;
 
   year: string;
