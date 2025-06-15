@@ -29,7 +29,7 @@ export class User {
   @Column({ name: 'job_title', length: 100, nullable: true })
   jobTitle: string;
 
-  @Column({ type: 'enum', enum: GenderEnum })
+  @Column({ type: 'enum', enum: GenderEnum, nullable: true })
   gender: GenderEnum;
 
   @Column({ name: 'user_type', type: 'enum', enum: UserTypeEnum })
@@ -41,7 +41,7 @@ export class User {
   @Column({ length: 100, unique: true })
   email: string;
 
-  @Column({ name: 'phone', length: 15, unique: true, nullable: true })
+  @Column({ name: 'phone', length: 15, nullable: true })
   phoneNumber: string;
 
   @Column({ length: 100, nullable: true })

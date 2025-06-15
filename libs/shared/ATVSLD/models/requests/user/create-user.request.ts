@@ -14,21 +14,21 @@ export class CreateUserRequest {
 
   @IsString()
   jobTitle: string;
-
+  @IsOptional()
   @IsEnum(GenderEnum)
   gender: GenderEnum;
 
   @IsEnum(UserTypeEnum)
   userType: UserTypeEnum;
-
+  @IsOptional()
   @IsString()
-  birthday: string; // yyyy-MM-dd
+  birthday?: string; // yyyy-MM-dd
 
   @IsEmail()
   email: string;
-
+  @IsOptional()
   @IsString()
-  phoneNumber: string;
+  phoneNumber?: string;
 
   @IsOptional()
   @IsString()
