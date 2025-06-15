@@ -19,7 +19,8 @@ export class ReportInstanceController {
     return this.service.search(query, businessId);
   }
   @Get('years')
-  async getYears(): Promise<ApiResponse<number[]>> {
-    return this.service.getActiveYears();
+  async getYears(@CurrentUser() user?: JwtPayload): Promise<ApiResponse<number[]>> {
+    const businessId = user?.userType === UserTypeEnum.BUSINESS ? user.businessId : undefined;
+    return this.service.getActiveYears(businessId);
   }
 }

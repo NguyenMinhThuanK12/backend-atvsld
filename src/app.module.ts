@@ -18,8 +18,11 @@ import { JwtAuthGuard } from 'libs/core/auth/jwt-auth.guard';
 import { ReportConfigurationModule } from './modules/report-configuration.module';
 import { ReportInstanceModule } from './modules/report-instance.module';
 import { ReportDetailModule } from './modules/report-detail.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ReportConfigCronService } from './cron/report-config-cron.service';
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -75,6 +78,7 @@ import { ReportDetailModule } from './modules/report-detail.module';
       provide: APP_GUARD,
       useClass: PermissionsGuard,
     },
+    ReportConfigCronService,
   ],
   exports: [CloudinaryService],
 })

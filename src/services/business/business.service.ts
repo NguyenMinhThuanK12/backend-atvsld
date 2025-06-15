@@ -27,7 +27,11 @@ import { PdfTemplate } from 'libs/core/pdf/pdf-template.interface';
 import { Business } from 'src/entities/business.entity';
 import { SupabaseService } from 'libs/core/supabase/supabase.service';
 import { IUserRepository } from 'src/repositories/user/user.repository.interface';
-
+import { ReportConfiguration } from 'src/entities/report-configuration.entity';
+import { ReportInstance } from 'src/entities/report-instance.entity';
+import { ReportDetail } from 'src/entities/report-detail.entity';
+import { ReportStatusEnum } from 'libs/shared/ATVSLD/enums/report-status.enum';
+import { DataSource, MoreThan } from 'typeorm';
 @Injectable()
 export class BusinessService implements IBusinessService {
   constructor(
@@ -37,6 +41,7 @@ export class BusinessService implements IBusinessService {
     private readonly userRepo: IUserRepository,
     private readonly pdfGenerator: PdfGeneratorService,
     private readonly supabaseService: SupabaseService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async findById(id: string): Promise<ApiResponse<BusinessResponse>> {
@@ -116,6 +121,38 @@ export class BusinessService implements IBusinessService {
 
     const entity = mapToBusinessEntity(data);
     const saved = await this.businessRepo.create(entity);
+
+    const now = new Date();
+
+    // Lấy tất cả cấu hình chưa quá hạn
+    const configRepo = this.dataSource.getRepository(ReportConfiguration);
+    const instanceRepo = this.dataSource.getRepository(ReportInstance);
+    const detailRepo = this.dataSource.getRepository(ReportDetail);
+
+    const configs = await configRepo.find({
+      where: {
+        isOverdue: false,
+        endDate: MoreThan(now), // chưa hết hạn
+      },
+    });
+
+    // Tạo report-instance và detail tương ứng
+    const instances: ReportInstance[] = configs.map((config) => {
+      const instance = new ReportInstance();
+      instance.configId = config.id;
+      instance.businessId = saved.id; // doanh nghiệp mới
+      instance.status = ReportStatusEnum.PENDING;
+      return instance;
+    });
+
+    const savedInstances = await instanceRepo.save(instances);
+
+    const details = savedInstances.map((instance) => {
+      const detail = new ReportDetail();
+      detail.instanceId = instance.id;
+      return detail;
+    });
+    await detailRepo.save(details);
     const result = mapToBusinessResponse(saved);
     return ApiResponse.success<BusinessResponse>(HttpStatus.CREATED, SUCCESS_CREATE_BUSINESS, result);
   }

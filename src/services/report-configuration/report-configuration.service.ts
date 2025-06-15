@@ -82,11 +82,18 @@ export class ReportConfigurationService implements IReportConfigurationService {
   async update(id: string, dto: UpdateReportConfigRequest): Promise<ApiResponse<ReportConfigResponse>> {
     const config = await this.repo.findById(id);
     if (!config) {
-      throw new NotFoundException(ApiResponse.fail(HttpStatus.OK, ERROR_CONFIG_NOT_FOUND));
+      throw new NotFoundException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_CONFIG_NOT_FOUND));
     }
 
+    const now = new Date();
+    const oldEndDate = config.endDate;
+
+    // if (dto.startDate && config.startDate <= now) {
+    //   throw new HttpException('Không thể sửa ngày bắt đầu nếu đã qua hiện tại', HttpStatus.OK);
+    // }
+
     if (dto.startDate && dto.endDate && dto.startDate >= dto.endDate) {
-      throw new HttpException(ERROR_INVALID_DATE_RANGE, HttpStatus.OK);
+      throw new HttpException(ERROR_INVALID_DATE_RANGE, HttpStatus.BAD_REQUEST);
     }
 
     if (dto.year || dto.reportName) {
@@ -96,12 +103,52 @@ export class ReportConfigurationService implements IReportConfigurationService {
         id,
       );
       if (isDuplicate) {
-        throw new HttpException(ERROR_DUPLICATE_YEAR, HttpStatus.OK);
+        throw new HttpException(ERROR_DUPLICATE_YEAR, HttpStatus.CONFLICT);
       }
     }
 
     const updated = await this.repo.update(config, dto);
     const result = await this.repo.findById(updated.id);
+
+    const instanceRepo = this.dataSource.getRepository(ReportInstance);
+    const detailRepo = this.dataSource.getRepository(ReportDetail);
+
+    if (dto.endDate) {
+      const endDateNew = new Date(dto.endDate);
+
+      if (endDateNew > oldEndDate) {
+        // Nếu báo cáo đang là quá hạn và được kéo dài -> chuyển thành chưa hết hạn + tạo instance mới nếu thiếu
+        if (config.isOverdue && endDateNew > now) {
+          await this.repo.update(result, { isOverdue: false });
+
+          const businesses = await this.businessRepo.findAll();
+          const existingInstances = await instanceRepo.find({ where: { configId: config.id } });
+          const existingBizIds = new Set(existingInstances.map((i) => i.businessId));
+
+          const businessesWithoutInstance = businesses.filter((b) => !existingBizIds.has(b.id));
+          const instances = businessesWithoutInstance.map((biz) => {
+            const instance = new ReportInstance();
+            instance.configId = config.id;
+            instance.businessId = biz.id;
+            instance.status = ReportStatusEnum.PENDING;
+            return instance;
+          });
+
+          const savedInstances = await instanceRepo.save(instances);
+          const details = savedInstances.map((i) => {
+            const detail = new ReportDetail();
+            detail.instanceId = i.id;
+            return detail;
+          });
+          await detailRepo.save(details);
+        }
+      }
+
+      if (endDateNew < now) {
+        await this.repo.update(result, { isOverdue: true });
+      }
+    }
+
     return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_CONFIG, mapToReportConfigResponse(result));
   }
   async toggleActive(id: string): Promise<ApiResponse<{ isActive: boolean }>> {

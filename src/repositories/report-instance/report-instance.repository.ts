@@ -76,13 +76,19 @@ export class ReportInstanceRepository extends BaseRepository<ReportInstance> imp
     return qb.getManyAndCount();
   }
 
-  async findActiveYears(): Promise<number[]> {
+  async findActiveYears(businessId?: string): Promise<number[]> {
     const now = new Date();
-    const results = await this.repo
+    const qb = this.repo
       .createQueryBuilder('instance')
       .leftJoin('instance.configuration', 'config')
       .where('config.isActive = true')
-      .andWhere('config.startDate <= :now', { now })
+      .andWhere('config.startDate <= :now', { now });
+
+    if (businessId) {
+      qb.andWhere('instance.businessId = :businessId', { businessId });
+    }
+
+    const results = await qb
       .select('config.year', 'year')
       .addSelect('MAX(instance.createdAt)', 'createdAt')
       .groupBy('config.year')

@@ -4,4 +4,5 @@ import { ReportInstanceResponse } from 'libs/shared/ATVSLD/models/response/repor
 
 export interface IReportInstanceService {
   search(query: SearchReportInstanceRequest): Promise<ApiResponse<ReportInstanceResponse[]>>;
+  getActiveYears(businessId?: string): Promise<ApiResponse<number[]>>;
 }

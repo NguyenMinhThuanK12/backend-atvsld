@@ -27,7 +27,7 @@ export class ReportInstanceService implements IReportInstanceService {
 
     // Nếu toàn bộ query không có gì (năm không có), thì lấy năm mới nhất
     if (!query.year) {
-      const years = await this.repo.findActiveYears();
+      const years = await this.repo.findActiveYears(businessId);
       if (years.length > 0) {
         query.year = String(years[0]); // lấy năm mới nhất
       }
@@ -38,8 +38,8 @@ export class ReportInstanceService implements IReportInstanceService {
     const message = data.length === 0 ? ERROR_NO_DATA : SUCCESS_GET_BUSINESS_LIST;
     return ApiResponse.success(HttpStatus.OK, message, data);
   }
-  async getActiveYears(): Promise<ApiResponse<number[]>> {
-    const years = await this.repo.findActiveYears();
+  async getActiveYears(businessId?: string): Promise<ApiResponse<number[]>> {
+    const years = await this.repo.findActiveYears(businessId);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_GET_ACTIVE_YEARS, years);
   }
 }
