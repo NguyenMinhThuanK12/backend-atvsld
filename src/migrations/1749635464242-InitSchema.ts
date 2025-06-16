@@ -1,0 +1,16 @@
+import { MigrationInterface, QueryRunner } from "typeorm";
+
+export class InitSchema1749635464242 implements MigrationInterface {
+    name = 'InitSchema1749635464242'
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`CREATE TABLE "report_details" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "instance_id" uuid NOT NULL, "totalEmployees" integer NOT NULL, "femaleEmployees" integer NOT NULL, "under15Employees" integer NOT NULL, "atvsldStaff" integer NOT NULL, "medicalStaff" integer NOT NULL, "hazardousWorkers" integer NOT NULL, "minorWorkers" integer NOT NULL, "elderlyWorkers" integer NOT NULL, "disabledWorkers" integer NOT NULL, "accidentCases" integer NOT NULL, "fatalAccidents" integer NOT NULL, "injuredEmployees" integer NOT NULL, "accidentDaysOff" integer NOT NULL, "accidentCost" double precision NOT NULL, "totalBNNBefore" integer NOT NULL, "retiredBNN" integer NOT NULL, "newBNNCases" integer NOT NULL, "bnnLeaveDays" integer NOT NULL, "bnnCost" double precision NOT NULL, "healthTypeI" integer NOT NULL, "healthTypeII" integer NOT NULL, "healthTypeIII" integer NOT NULL, "healthTypeIV" integer NOT NULL, "healthTypeV" integer NOT NULL, "trainingGroup1" integer NOT NULL, "trainingSelf" integer NOT NULL, "trainingGroup2" integer NOT NULL, "trainingProvider" integer NOT NULL, "trainingGroup3" integer NOT NULL, "trainingGroup4" integer NOT NULL, "trainingGroup5" integer NOT NULL, "trainingGroup6" integer NOT NULL, "trainingCost" double precision NOT NULL, "totalMachines" integer NOT NULL, "machinesUsing" integer NOT NULL, "machinesChecked" integer NOT NULL, "machinesDeclared" integer NOT NULL, "machinesUnchecked" integer NOT NULL, "totalWorkers" integer NOT NULL, "totalWorkingHours" integer NOT NULL, "maxWorkingHours" integer NOT NULL, "toxicSupportWorkers" integer NOT NULL, "toxicSupportCost" double precision NOT NULL, "envSamples" integer NOT NULL, "envNotQualified" integer NOT NULL, "tempNotQualified" integer NOT NULL, "humidityNotQualified" integer NOT NULL, "lightNotQualified" integer NOT NULL, "noiseNotQualified" integer NOT NULL, "gasNotQualified" integer NOT NULL, "dustNotQualified" integer NOT NULL, "radiationNotQualified" integer NOT NULL, "otherEnvNotQualified" integer NOT NULL, "costMeasureSafe" double precision NOT NULL, "costMeasureHygiene" double precision NOT NULL, "costHealthcare" double precision NOT NULL, "costTraining" double precision NOT NULL, "costProtection" double precision NOT NULL, "costRiskEval" double precision NOT NULL, "costOthers" double precision NOT NULL, "costTotal" double precision NOT NULL, "atvsldServiceProvider" text, "medicalServiceProvider" text, "riskAssessmentTime" character varying(20) NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_4ef10e2f3dbf8eb4302aeeeed60" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`ALTER TABLE "report_details" ADD CONSTRAINT "FK_87fc39f4451172422a9505caa34" FOREIGN KEY ("instance_id") REFERENCES "report_instances"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "report_details" DROP CONSTRAINT "FK_87fc39f4451172422a9505caa34"`);
+        await queryRunner.query(`DROP TABLE "report_details"`);
+    }
+
+}
