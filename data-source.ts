@@ -14,11 +14,11 @@ import { ReportDetail } from './src/entities/report-detail.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'postgres',
-  password: '3008',
-  database: 'atvsld_dev',
+  host: process.env.DB_HOST || 'localhost',
+  port: Number(process.env.DB_PORT) || 5432,
+  username: process.env.DB_USERNAME || 'postgres',
+  password: process.env.DB_PASSWORD || '3008',
+  database: process.env.DB_NAME || 'atvsld_dev',
   entities: [
     Business,
     Role,
