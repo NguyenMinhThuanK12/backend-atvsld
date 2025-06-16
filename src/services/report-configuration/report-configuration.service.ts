@@ -118,7 +118,7 @@ export class ReportConfigurationService implements IReportConfigurationService {
 
       if (endDateNew > oldEndDate) {
         // Nếu báo cáo đang là quá hạn và được kéo dài -> chuyển thành chưa hết hạn + tạo instance mới nếu thiếu
-        if (config.isOverdue && endDateNew > now) {
+        if (config.isOverdue || endDateNew > now) {
           await this.repo.update(result, { isOverdue: false });
 
           const businesses = await this.businessRepo.findAll();
