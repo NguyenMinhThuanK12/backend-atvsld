@@ -1,11 +1,11 @@
 export default () => ({
   database: {
     type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    username: 'postgres',
-    password: '3008',
-    database: 'atvsld_dev',
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432', 10),
+    username: process.env.DB_USERNAME || 'postgres',
+    password: process.env.DB_PASSWORD || '3008',
+    database: process.env.DB_NAME || 'atvsld_dev',
     autoLoadEntities: true,
   },
 
