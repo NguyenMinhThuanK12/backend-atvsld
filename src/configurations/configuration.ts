@@ -7,6 +7,9 @@ export default () => ({
     password: process.env.DB_PASSWORD || '3008',
     database: process.env.DB_NAME || 'atvsld_dev',
     autoLoadEntities: true,
+    ssl: {
+      rejectUnauthorized: false, // BẮT BUỘC với Render
+    },
   },
 
   jwt: {
