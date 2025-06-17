@@ -10,6 +10,9 @@ export default () => ({
     ssl: {
       rejectUnauthorized: false, // BẮT BUỘC với Render
     },
+    extra: {
+      family: 4, //  thêm dòng này để buộc dùng IPv4
+    },
   },
 
   jwt: {
