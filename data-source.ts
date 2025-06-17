@@ -34,10 +34,6 @@ export const AppDataSource = new DataSource({
   ssl: {
     rejectUnauthorized: false, //  BẮT BUỘC khi dùng Render
   },
-  extra: {
-    //  thêm dòng này để buộc dùng IPv4
-    family: 4,
-  },
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
 });
