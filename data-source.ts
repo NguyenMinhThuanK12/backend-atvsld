@@ -31,6 +31,9 @@ export const AppDataSource = new DataSource({
     ReportInstance,
     ReportDetail, // Assuming ReportDetail is defined in your entities
   ],
+  ssl: {
+    rejectUnauthorized: false, //  BẮT BUỘC khi dùng Render
+  },
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
 });
