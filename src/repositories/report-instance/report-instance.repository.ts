@@ -97,4 +97,12 @@ export class ReportInstanceRepository extends BaseRepository<ReportInstance> imp
 
     return results.map((r) => Number(r.year));
   }
+  async findWithBusinessAndConfigById(id: string): Promise<ReportInstance | null> {
+    return this.repo
+      .createQueryBuilder('instance')
+      .leftJoinAndSelect('instance.business', 'business')
+      .leftJoinAndSelect('instance.configuration', 'config')
+      .where('instance.id = :id', { id })
+      .getOne();
+  }
 }
