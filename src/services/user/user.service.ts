@@ -126,10 +126,14 @@ export class UserService implements IUserService {
       }
     }
 
-    //  Upload avatar mới nếu có
     if (files?.avatar?.[0]) {
+      //  Có ảnh mới: upload và xoá ảnh cũ
       const file = files.avatar[0];
       dto.avatar = await this.supabaseService.uploadImage(file.buffer, file.originalname, user.avatar);
+    } else if (user.avatar) {
+      // Không có file gửi lên → xoá ảnh cũ nếu có
+      await this.supabaseService.deleteByUrl(user.avatar);
+      dto.avatar = null;
     }
 
     const updated = await this.userRepo.update(user, dto);
