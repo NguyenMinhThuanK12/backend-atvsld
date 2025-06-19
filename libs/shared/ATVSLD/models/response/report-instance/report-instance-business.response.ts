@@ -5,4 +5,5 @@ export class ReportInstanceBusinessResponse {
   phoneNumber: string;
   year: number;
   fullAddress: string;
+  lastUpdatedText?: string | null;
 }
