@@ -1,12 +1,8 @@
-import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
-import { ReportStatusEnum } from 'libs/shared/ATVSLD/enums/report-status.enum';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class UpdateReportDetailRequest {
   @IsUUID()
   instanceId: string;
-
-  @IsEnum(ReportStatusEnum)
-  status?: ReportStatusEnum;
 
   @IsString()
   fullName: string;
@@ -28,7 +24,7 @@ export class UpdateReportDetailRequest {
   @IsString() injuredEmployees: string;
   @IsString() accidentDaysOff: string;
   @IsString() accidentCost: string;
-
+  @IsString() accidentDeaths: string;
   // 3. Bệnh nghề nghiệp
   @IsString() totalBNNBefore: string;
   @IsString() retiredBNN: string;
@@ -60,7 +56,7 @@ export class UpdateReportDetailRequest {
   @IsString() machinesChecked: string;
   @IsString() machinesDeclared: string;
   @IsString() machinesUnchecked: string;
-
+  @IsString() machinesUnregistered: string;
   // 7. Giờ làm việc
   @IsString() totalWorkers: string;
   @IsString() totalWorkingHours: string;
@@ -81,7 +77,9 @@ export class UpdateReportDetailRequest {
   @IsString() dustNotQualified: string;
   @IsString() radiationNotQualified: string;
   @IsString() otherEnvNotQualified: string;
-
+  @IsString() windNotQualified: string;
+  @IsString() vibrationNotQualified: string;
+  @IsString() emFieldNotQualified: string;
   // 10. Chi phí ATVS
   @IsString() costMeasureSafe: string;
   @IsString() costMeasureHygiene: string;

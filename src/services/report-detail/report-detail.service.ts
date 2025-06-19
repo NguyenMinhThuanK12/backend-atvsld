@@ -58,13 +58,12 @@ export class ReportDetailService implements IReportDetailService {
     const instanceRepo = this.dataSource.getRepository(ReportInstance);
     const instance = await instanceRepo.findOneBy({ id: current.instanceId });
 
-    if (instance) {
-      instance.status = dto.status === 'Hoàn thành' ? ReportStatusEnum.COMPLETED : ReportStatusEnum.EDITING;
+    if (instance && instance.status !== ReportStatusEnum.COMPLETED) {
+      instance.status = ReportStatusEnum.EDITING;
       instance.lastUpdatedBy = dto.fullName;
       instance.lastUpdatedDate = new Date();
       await instanceRepo.save(instance);
     }
-
     const updated = await this.repo.findById(id);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_DETAIL, mapToReportDetailResponse(updated));
   }

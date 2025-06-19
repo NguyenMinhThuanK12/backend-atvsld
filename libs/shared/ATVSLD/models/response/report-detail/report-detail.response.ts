@@ -21,6 +21,7 @@ export class ReportDetailResponse {
   injuredEmployees: string;
   accidentDaysOff: string;
   accidentCost: string;
+  accidentDeaths: string;
 
   // ===== 3. Bệnh nghề nghiệp =====
   totalBNNBefore: string;
@@ -53,6 +54,7 @@ export class ReportDetailResponse {
   machinesChecked: string;
   machinesDeclared: string;
   machinesUnchecked: string;
+  machinesUnregistered: string;
 
   // ===== 7. Giờ làm việc =====
   totalWorkers: string;
@@ -74,6 +76,9 @@ export class ReportDetailResponse {
   dustNotQualified: string;
   radiationNotQualified: string;
   otherEnvNotQualified: string;
+  windNotQualified: string;
+  vibrationNotQualified: string;
+  emFieldNotQualified: string;
 
   // ===== 10. Chi phí ATVS =====
   costMeasureSafe: string;

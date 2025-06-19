@@ -1,4 +1,4 @@
-import { Injectable, Inject, HttpStatus } from '@nestjs/common';
+import { Injectable, Inject, HttpStatus, NotFoundException } from '@nestjs/common';
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import { mapToReportInstanceResponse } from 'libs/shared/ATVSLD/mappers/report-instance.mapper';
 import { SearchReportInstanceRequest } from 'libs/shared/ATVSLD/models/requests/report-instance/search-report-instance.request';
@@ -7,7 +7,12 @@ import { IReportInstanceRepository } from 'src/repositories/report-instance/repo
 import { IReportInstanceService } from './report-instance.service.interface';
 import { SUCCESS_GET_BUSINESS_LIST } from 'libs/shared/ATVSLD/constants/business-message.constant';
 import { ERROR_NO_DATA } from 'libs/shared/ATVSLD/constants/system.constant';
-import { SUCCESS_GET_ACTIVE_YEARS } from 'libs/shared/ATVSLD/constants/report-message.constant';
+import {
+  ERROR_INSTANCE_NOT_FOUND,
+  SUCCESS_GET_ACTIVE_YEARS,
+  SUCCESS_MARK_COMPLETED,
+} from 'libs/shared/ATVSLD/constants/report-message.constant';
+import { ReportStatusEnum } from 'libs/shared/ATVSLD/enums/report-status.enum';
 
 @Injectable()
 export class ReportInstanceService implements IReportInstanceService {
@@ -41,5 +46,23 @@ export class ReportInstanceService implements IReportInstanceService {
   async getActiveYears(businessId?: string): Promise<ApiResponse<number[]>> {
     const years = await this.repo.findActiveYears(businessId);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_GET_ACTIVE_YEARS, years);
+  }
+  async markCompleted(id: string, fullName: string): Promise<ApiResponse<{ isCompleted: boolean }>> {
+    const instance = await this.repo.findById(id);
+    if (!instance) {
+      throw new NotFoundException(ApiResponse.fail(HttpStatus.OK, ERROR_INSTANCE_NOT_FOUND));
+    }
+
+    if (instance.status !== ReportStatusEnum.COMPLETED) {
+      await this.repo.update(instance, {
+        status: ReportStatusEnum.COMPLETED,
+        lastUpdatedBy: fullName,
+        lastUpdatedDate: new Date(),
+      });
+    }
+
+    return ApiResponse.success(HttpStatus.OK, SUCCESS_MARK_COMPLETED, {
+      isCompleted: true,
+    });
   }
 }

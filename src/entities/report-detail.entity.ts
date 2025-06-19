@@ -39,6 +39,7 @@ export class ReportDetail {
   @Column({ type: 'varchar', default: '' }) injuredEmployees: string;
   @Column({ type: 'varchar', default: '' }) accidentDaysOff: string;
   @Column({ type: 'varchar', default: '' }) accidentCost: string;
+  @Column({ type: 'varchar', default: '' }) accidentDeaths: string;
 
   // ===== 3. Bệnh nghề nghiệp =====
   @Column({ type: 'varchar', default: '' }) totalBNNBefore: string;
@@ -71,6 +72,7 @@ export class ReportDetail {
   @Column({ type: 'varchar', default: '' }) machinesChecked: string;
   @Column({ type: 'varchar', default: '' }) machinesDeclared: string;
   @Column({ type: 'varchar', default: '' }) machinesUnchecked: string;
+  @Column({ type: 'varchar', default: '' }) machinesUnregistered: string;
   // ===== 7. Giờ làm việc =====
   @Column({ type: 'varchar', default: '' }) totalWorkers: string;
   @Column({ type: 'varchar', default: '' }) totalWorkingHours: string;
@@ -90,6 +92,9 @@ export class ReportDetail {
   @Column({ type: 'varchar', default: '' }) dustNotQualified: string;
   @Column({ type: 'varchar', default: '' }) radiationNotQualified: string;
   @Column({ type: 'varchar', default: '' }) otherEnvNotQualified: string;
+  @Column({ type: 'varchar', default: '' }) windNotQualified: string;
+  @Column({ type: 'varchar', default: '' }) vibrationNotQualified: string;
+  @Column({ type: 'varchar', default: '' }) emFieldNotQualified: string;
 
   // ===== 10. Chi phí ATVS =====
   @Column({ type: 'varchar', default: '' }) costMeasureSafe: string;

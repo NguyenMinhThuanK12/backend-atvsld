@@ -24,6 +24,7 @@ export function mapToReportDetailResponse(entity: ReportDetail): ReportDetailRes
     injuredEmployees: entity.injuredEmployees,
     accidentDaysOff: entity.accidentDaysOff,
     accidentCost: entity.accidentCost,
+    accidentDeaths: entity.accidentDeaths,
 
     // ===== 3. Bệnh nghề nghiệp =====
     totalBNNBefore: entity.totalBNNBefore,
@@ -56,6 +57,7 @@ export function mapToReportDetailResponse(entity: ReportDetail): ReportDetailRes
     machinesChecked: entity.machinesChecked,
     machinesDeclared: entity.machinesDeclared,
     machinesUnchecked: entity.machinesUnchecked,
+    machinesUnregistered: entity.machinesUnregistered,
 
     // ===== 7. Giờ làm việc =====
     totalWorkers: entity.totalWorkers,
@@ -77,6 +79,9 @@ export function mapToReportDetailResponse(entity: ReportDetail): ReportDetailRes
     dustNotQualified: entity.dustNotQualified,
     radiationNotQualified: entity.radiationNotQualified,
     otherEnvNotQualified: entity.otherEnvNotQualified,
+    windNotQualified: entity.windNotQualified,
+    vibrationNotQualified: entity.vibrationNotQualified,
+    emFieldNotQualified: entity.emFieldNotQualified,
 
     // ===== 10. Chi phí ATVS =====
     costMeasureSafe: entity.costMeasureSafe,

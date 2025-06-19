@@ -27,8 +27,7 @@ import { Permission } from 'src/entities/permission.entity';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get('JWT_SECRET') || 'secret123',
-        signOptions: { expiresIn: '1d' },
+        secret: config.get('JWT_SECRET'),
       }),
     }),
   ],
