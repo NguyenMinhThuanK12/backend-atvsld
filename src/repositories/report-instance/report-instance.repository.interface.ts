@@ -7,4 +7,5 @@ export const IReportInstanceRepository = 'IReportInstanceRepository';
 export interface IReportInstanceRepository extends IBaseRepository<ReportInstance> {
   findAdvanced(query: SearchReportInstanceRequest, businessId?: string): Promise<[ReportInstance[], number]>;
   findActiveYears(businessId?: string): Promise<number[]>;
+  findWithBusinessAndConfigById(id: string): Promise<ReportInstance | null>;
 }

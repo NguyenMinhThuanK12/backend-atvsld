@@ -1,6 +1,9 @@
 import { Injectable, Inject, HttpStatus, NotFoundException } from '@nestjs/common';
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
-import { mapToReportInstanceResponse } from 'libs/shared/ATVSLD/mappers/report-instance.mapper';
+import {
+  mapToReportInstanceBusinessResponse,
+  mapToReportInstanceResponse,
+} from 'libs/shared/ATVSLD/mappers/report-instance.mapper';
 import { SearchReportInstanceRequest } from 'libs/shared/ATVSLD/models/requests/report-instance/search-report-instance.request';
 import { ReportInstanceResponse } from 'libs/shared/ATVSLD/models/response/report-instance/report-instance.response';
 import { IReportInstanceRepository } from 'src/repositories/report-instance/report-instance.repository.interface';
@@ -13,6 +16,8 @@ import {
   SUCCESS_MARK_COMPLETED,
 } from 'libs/shared/ATVSLD/constants/report-message.constant';
 import { ReportStatusEnum } from 'libs/shared/ATVSLD/enums/report-status.enum';
+import { ReportInstanceBusinessResponse } from 'libs/shared/ATVSLD/models/response/report-instance/report-instance-business.response';
+import { SUCCESS_GET_DETAIL } from 'libs/shared/ATVSLD/constants/report-detail-message.constant';
 
 @Injectable()
 export class ReportInstanceService implements IReportInstanceService {
@@ -64,5 +69,14 @@ export class ReportInstanceService implements IReportInstanceService {
     return ApiResponse.success(HttpStatus.OK, SUCCESS_MARK_COMPLETED, {
       isCompleted: true,
     });
+  }
+
+  async findBusinessInfo(id: string): Promise<ApiResponse<ReportInstanceBusinessResponse>> {
+    const instance = await this.repo.findWithBusinessAndConfigById(id);
+    if (!instance) {
+      throw new NotFoundException(ApiResponse.fail(HttpStatus.OK, ERROR_INSTANCE_NOT_FOUND));
+    }
+
+    return ApiResponse.success(HttpStatus.OK, SUCCESS_GET_DETAIL, mapToReportInstanceBusinessResponse(instance));
   }
 }
