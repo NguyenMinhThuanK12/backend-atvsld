@@ -1,9 +1,6 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class UpdateReportDetailRequest {
-  @IsUUID()
-  instanceId: string;
-
   @IsString()
   fullName: string;
 

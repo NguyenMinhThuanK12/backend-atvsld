@@ -104,7 +104,7 @@ export function mapToReportDetailResponse(entity: ReportDetail): ReportDetailRes
 export function mapToReportDetailEntity(dto: UpdateReportDetailRequest): ReportDetail {
   const entity = new ReportDetail();
 
-  entity.instanceId = dto.instanceId;
+  // entity.instanceId = dto.instanceId;
 
   // ===== 1. Thông tin lao động =====
   entity.totalEmployees = dto.totalEmployees;

@@ -48,7 +48,7 @@ export class ReportDetailService implements IReportDetailService {
   }
 
   async update(id: string, dto: UpdateReportDetailRequest): Promise<ApiResponse<ReportDetailResponse>> {
-    const current = await this.repo.findById(id);
+    const current = await this.repo.findByInstanceId(id);
     if (!current) {
       throw new NotFoundException(ApiResponse.fail(HttpStatus.OK, ERROR_DETAIL_NOT_FOUND));
     }
@@ -64,7 +64,7 @@ export class ReportDetailService implements IReportDetailService {
       instance.lastUpdatedDate = new Date();
       await instanceRepo.save(instance);
     }
-    const updated = await this.repo.findById(id);
+    const updated = await this.repo.findByInstanceId(id);
     return ApiResponse.success(HttpStatus.OK, SUCCESS_UPDATE_DETAIL, mapToReportDetailResponse(updated));
   }
 }
