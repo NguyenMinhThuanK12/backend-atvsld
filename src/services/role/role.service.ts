@@ -106,11 +106,11 @@ export class RoleService implements IRoleService {
   async deleteRole(id: string): Promise<ApiResponse<null>> {
     const role = await this.roleRepo.findById(id);
     if (!role) {
-      throw new HttpException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_ROLE_NOT_FOUND), HttpStatus.NOT_FOUND);
+      throw new HttpException(ApiResponse.fail(HttpStatus.OK, ERROR_ROLE_NOT_FOUND), HttpStatus.OK);
     }
     const usersUsingRole = await this.userRepo.count({ where: { role: { id } } });
     if (usersUsingRole > 0) {
-      throw new HttpException(ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_ROLE_IN_USE), HttpStatus.BAD_REQUEST);
+      throw new HttpException(ApiResponse.fail(HttpStatus.OK, ERROR_ROLE_IN_USE), HttpStatus.OK);
     }
     // Xóa quyền liên kết trước
     await this.roleRepo.clearPermissions(id);

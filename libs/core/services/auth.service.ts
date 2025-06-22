@@ -3,9 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
-// import { v4 as uuid } from 'uuid';
 import ms from 'ms';
-import { generateRandomPassword } from 'libs/shared/ATVSLD/utils/helper.util';
+import { randomBytes } from 'crypto'; // Để sinh token
 import { AuthResponse } from 'libs/shared/ATVSLD/models/response/auth/auth.response';
 import { IUserRepository } from 'src/repositories/user/user.repository.interface';
 import { IPasswordResetRepository } from 'src/repositories/password-reset/password-reset.repository.interface';
@@ -27,9 +26,9 @@ import {
   // SUCCESS_LOGOUT,
 } from 'libs/shared/ATVSLD/constants/auth-message.constant';
 import {
-  EMAIL_NEW_PASSWORD_SENT,
   EMAIL_RESET_PASSWORD_SUCCESS,
   ERROR_EMAIL_NOT_FOUND,
+  SUCCESS_FORGOT_PASSWORD,
 } from 'libs/shared/ATVSLD/constants/mail.constant';
 import { IPermissionRepository } from 'src/repositories/permission/permission.repository.interface';
 import { JwtPayload } from 'libs/shared/ATVSLD/models/requests/auth/jwt-payload';
@@ -130,58 +129,53 @@ export class AuthService {
   }
 
   //  gửi email khôi phục mật khẩu
-  async sendForgotPasswordEmail(dto: ForgotPasswordRequest): Promise<ApiResponse<null>> {
+  async sendForgotPasswordEmail(dto: ForgotPasswordRequest): Promise<ApiResponse<{ token: string }>> {
     const user = await this.userRepo.findByEmail(dto.email);
 
     if (!user) {
-      return ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_EMAIL_NOT_FOUND);
+      return ApiResponse.fail(HttpStatus.OK, ERROR_EMAIL_NOT_FOUND);
     }
 
-    //  Tạo password mới ngẫu nhiên
-    const newPassword = generateRandomPassword();
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // 1. Tạo token ngẫu nhiên an toàn
+    const token = randomBytes(32).toString('hex');
 
-    // Cập nhật vào DB
-    user.password = hashedPassword;
-    await this.userRepo.save(user);
+    // 2. Thời hạn token: 15 phút
+    const expiresAt = new Date(Date.now() + ms('15m'));
 
-    const frontendUrl = this.configService.get<string>('frontend.url');
-    //  Gửi email chứa mật khẩu mới
+    // 3. Lưu vào bảng password_resets
+    await this.passwordResetRepository.createAndSave(user.id, token, expiresAt);
+
+    // 4. Tạo link reset
+    const clientResetUrl = `${this.configService.get('frontend.resetPasswordUrl')}?token=${token}`;
+
+    // 5. Gửi email
     await this.mailerService.sendMail({
       to: user.email,
-      subject: 'Mật khẩu mới',
-      text: `Mật khẩu mới của bạn là: ${newPassword}\n Nhấn vào link sau: ${frontendUrl}.`,
+      subject: 'Đặt lại mật khẩu - ATVSLĐ',
+      html: `
+      <p>Xin chào ${user.fullName},</p>
+      <p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu của bạn.</p>
+      <p>Vui lòng nhấn vào liên kết bên dưới để đặt lại mật khẩu (có hiệu lực trong 15 phút):</p>
+      <p><a href="${clientResetUrl}">${clientResetUrl}</a></p>
+      <p>Nếu bạn không yêu cầu, hãy bỏ qua email này.</p>
+    `,
     });
 
-    return ApiResponse.success(HttpStatus.OK, EMAIL_NEW_PASSWORD_SENT, null);
-
-    // const token = uuid();
-    // const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 phút
-
-    // await this.passwordResetRepository.createAndSave(user.id, token, expiresAt);
-
-    // const frontendUrl = this.configService.get<string>('frontend.url');
-    // const resetLink = `${frontendUrl}/reset-password?token=${token}`;
-
-    // await this.mailerService.sendMail({
-    //   to: user.email,
-    //   subject: 'Khôi phục mật khẩu',
-    //   text: `Bạn đã yêu cầu khôi phục mật khẩu. Nhấn vào link sau: ${resetLink}`,
-    // });
-
-    // return ApiResponse.success(HttpStatus.OK, 'Email khôi phục đã được gửi', null);
+    return ApiResponse.success(HttpStatus.OK, SUCCESS_FORGOT_PASSWORD, {
+      token: token,
+    });
   }
 
-  async resetPassword(dto: ResetPasswordRequest): Promise<ApiResponse<null>> {
+  async resetPassword(dto: ResetPasswordRequest): Promise<ApiResponse<{ newPassword: string }>> {
     const record = await this.passwordResetRepository.findByToken(dto.token);
 
     if (!record || record.expires_at < new Date()) {
-      return ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_INVALID_TOKEN);
+      return ApiResponse.fail(HttpStatus.OK, ERROR_INVALID_TOKEN);
     }
 
     const user = await this.userRepo.findById(record.user_id);
     if (!user) {
-      return ApiResponse.fail(HttpStatus.BAD_REQUEST, ERROR_INVALID_ACCOUNT);
+      return ApiResponse.fail(HttpStatus.OK, ERROR_INVALID_ACCOUNT);
     }
 
     const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
@@ -190,7 +184,9 @@ export class AuthService {
     await this.userRepo.save(user); // cập nhật mật khẩu
     await this.passwordResetRepository.deleteByToken(dto.token); // xóa token sau khi dùng
 
-    return ApiResponse.success(HttpStatus.OK, EMAIL_RESET_PASSWORD_SUCCESS, null);
+    return ApiResponse.success(HttpStatus.OK, EMAIL_RESET_PASSWORD_SUCCESS, {
+      newPassword: dto.newPassword,
+    });
   }
 
   //  refresh token

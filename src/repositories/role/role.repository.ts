@@ -17,6 +17,9 @@ export class RoleRepository extends BaseRepository<Role> implements IRoleReposit
   ) {
     super(roleRepo);
   }
+  async delete(id: string): Promise<void> {
+    await this.softDelete(id);
+  }
 
   async assignPermissions(roleId: string, permissionIds: string[]): Promise<void> {
     // Xoá hết quyền cũ
@@ -32,7 +35,6 @@ export class RoleRepository extends BaseRepository<Role> implements IRoleReposit
       rp.permission_id = pid;
       return rp;
     });
-    console.log('Records to insert:', records);
     await this.rolePermissionRepo.save(records);
   }
   async clearPermissions(roleId: string): Promise<void> {

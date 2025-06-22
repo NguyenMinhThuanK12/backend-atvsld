@@ -39,7 +39,7 @@ export default () => ({
   },
 
   frontend: {
-    url: process.env.FRONTEND_URL || 'http://localhost:3001',
+    resetPasswordUrl: process.env.FRONTEND_RESET_PASSWORD_URL,
   },
   authDisabled: process.env.AUTH_DISABLED === 'true',
   permissionDisabled: process.env.PERMISSION_DISABLED === 'true',
