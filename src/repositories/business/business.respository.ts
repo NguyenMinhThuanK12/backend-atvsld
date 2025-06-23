@@ -73,7 +73,9 @@ export class BusinessRepository extends BaseRepository<Business> implements IBus
         registrationAddress: `%${query.registrationAddress}%`,
       });
     }
-
+    if (query.isActive !== undefined) {
+      qb.andWhere('business.is_active = :isActive', { isActive: query.isActive });
+    }
     // Sắp xếp theo Ngày tạo giảm dần
     qb.orderBy('business.createdAt', 'DESC');
 

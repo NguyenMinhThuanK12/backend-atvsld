@@ -33,4 +33,8 @@ export class SearchBusinessQueryRequest extends PaginationQueryRequest {
   @IsOptional()
   @IsString()
   registrationAddress?: string;
+
+  @IsOptional()
+  @IsString()
+  isActive?: string;
 }
