@@ -6,7 +6,7 @@ export const ERROR_PHONE_ALREADY_EXISTS = 'Số điện thoại đã tồn tại
 export const ERROR_FOREIGN_NAME_ALREADY_EXISTS = 'Tên doanh nghiệp nước ngoài đã tồn tại';
 export const ERROR_REPRESENTATIVE_PHONE_ALREADY_EXISTS = 'Số điện thoại người đại diện đã tồn tại';
 export const ERROR_BUSINESS_NOT_FOUND = 'Không tìm thấy doanh nghiệp';
-
+export const ERROR_BUSINESS_IN_USE = 'Không thể xóa doanh nghiệp vì đang có người dùng thuộc doanh nghiệp này.';
 // SUCCESS messages
 export const SUCCESS_GET_BUSINESS_LIST = 'Lấy danh sách doanh nghiệp thành công';
 export const SUCCESS_GET_ACTIVE_BUSINESS_LIST = 'Danh sách doanh nghiệp đang hoạt động';

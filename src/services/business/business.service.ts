@@ -5,6 +5,7 @@ import { BusinessResponse } from 'libs/shared/ATVSLD/models/response/business/bu
 import { CreateBusinessRequest } from 'libs/shared/ATVSLD/models/requests/business/create-business.request';
 import { ApiResponse } from 'libs/shared/ATVSLD/common/api-response';
 import {
+  ERROR_BUSINESS_IN_USE,
   ERROR_BUSINESS_NOT_FOUND,
   ERROR_EMAIL_ALREADY_EXISTS,
   ERROR_NAME_ALREADY_EXISTS,
@@ -208,6 +209,11 @@ export class BusinessService implements IBusinessService {
     const business = await this.businessRepo.findById(id);
     if (!business) {
       throw new NotFoundException(ApiResponse.fail(HttpStatus.NOT_FOUND, ERROR_BUSINESS_NOT_FOUND));
+    }
+    //  Kiểm tra có user nào đang dùng doanh nghiệp không
+    const usersUsing = await this.userRepo.count({ where: { businessId: id } });
+    if (usersUsing > 0) {
+      throw new HttpException(ApiResponse.fail(HttpStatus.OK, ERROR_BUSINESS_IN_USE), HttpStatus.OK);
     }
     // xóa file trên supabase nếu có
     await this.deleteBusinessFiles(business);
