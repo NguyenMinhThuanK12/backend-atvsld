@@ -188,17 +188,26 @@ export class BusinessService implements IBusinessService {
 
     await this.validateUpdateInput(id, data);
 
-    //  Nếu có file mới, thì upload và xoá file cũ
+    // ------- BUSINESS LICENSE -------
     if (files?.businessLicense?.[0]) {
       const buffer = files.businessLicense[0].buffer;
       const name = files.businessLicense[0].originalname;
       data.businessLicenseFile = await this.supabaseService.uploadPdf(buffer, name, business.businessLicenseFile);
+    } else if (business.businessLicenseFile) {
+      // Không có file mới nhưng có file cũ → xoá
+      await this.supabaseService.deleteByUrl(business.businessLicenseFile);
+      data.businessLicenseFile = null;
     }
 
+    // ------- OTHER DOCUMENT -------
     if (files?.otherDocument?.[0]) {
       const buffer = files.otherDocument[0].buffer;
       const name = files.otherDocument[0].originalname;
       data.otherDocumentFile = await this.supabaseService.uploadPdf(buffer, name, business.otherDocumentFile);
+    } else if (business.otherDocumentFile) {
+      //  Không có file mới nhưng có file cũ → xoá
+      await this.supabaseService.deleteByUrl(business.otherDocumentFile);
+      data.otherDocumentFile = null;
     }
 
     const updated = await this.businessRepo.update(business, data);
